@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LangStitch — Visual LangGraph IDE</title>
+  <meta name="description" content="Design LangGraph agent workflows visually. Skills, guardrails, RAG, multi-intent routing, and Python 3.13 export — try it live in your browser." />
+  <meta property="og:title" content="LangStitch — Visual LangGraph IDE" />
+  <meta property="og:description" content="Drag-and-drop LangGraph IDE with RAG, skills, guardrails, and production export." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://vijayptiwari.github.io/LangStitch/" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="./">LangStitch</a>
+    <div class="nav-links">
+      <a href="#try">Try live</a>
+      <a href="#features">Features</a>
+      <a href="docs/">Docs</a>
+      <a class="nav-cta" href="app/">Open IDE</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Visual LangGraph IDE</p>
+      <h1>Build agent workflows<br />without leaving the canvas</h1>
+      <p class="lead">
+        LangStitch is a drag-and-drop IDE for LangGraph — design graphs, configure skills,
+        guardrails, RAG pipelines, and export a Python&nbsp;3.13 multi-module project in one click.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#try">Try it live ↓</a>
+        <a class="btn btn-secondary" href="app/">Open full IDE</a>
+        <a class="btn btn-secondary" href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
+      </div>
+      <div class="hero-badges">
+        <span>LangGraph</span>
+        <span>Python 3.13</span>
+        <span>RAG</span>
+        <span>LangSmith</span>
+        <span>MCP Studio</span>
+      </div>
+    </div>
+  </header>
+
+  <section id="try" class="try-section">
+    <div class="container-wide">
+      <div class="try-header">
+        <div>
+          <h2>Try LangStitch live</h2>
+          <p class="try-sub">No install — the canvas runs in your browser. Platform API features (Git, export, agent run) need Docker or local dev.</p>
+        </div>
+        <div class="try-actions">
+          <a class="btn btn-primary" href="app/" target="_blank" rel="noopener">Open full screen</a>
+          <a class="btn btn-secondary" href="try.html">Dedicated try page</a>
+        </div>
+      </div>
+      <div class="try-frame-wrap">
+        <iframe
+          src="app/"
+          title="LangStitch IDE — live preview"
+          class="try-frame"
+          loading="lazy"
+          allow="clipboard-read; clipboard-write"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section id="features">
+      <h2>Everything you need to ship agents</h2>
+      <div class="grid grid-3">
+        <article class="card">
+          <div class="card-icon">◇</div>
+          <h3>Visual canvas</h3>
+          <p>LLM, Tool, Agent, RAG, Multi-Intent Classifier, Decision, Subgraph, Function nodes — color-coded and draggable.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">✦</div>
+          <h3>Asset designers</h3>
+          <p>Skill, Guardrail, Business Rules, Persona, and RAG pipeline designers — chunking, embedding, vector / vectorless / hybrid.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Python 3.13 export</h3>
+          <p>Multi-module ZIP: graphs, nodes, skills, prompts, tools, guardrails, rag — plus <code>langsmith.json</code> for IDE re-import.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🔗</div>
+          <h3>Integrations</h3>
+          <p>MCP Studio, tool &amp; agent registry, remote graphs, A2A, LangSmith, Langfuse, structured logging.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🚀</div>
+          <h3>Platform</h3>
+          <p>Git sync, versioning, Docker build, Helm deploy — full stack via FastAPI backend.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">✓</div>
+          <h3>CI &amp; quality</h3>
+          <p>Playwright E2E tests, agent smoke tests, automated GitHub Pages, Docker publish, and releases.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2>Get started in 1–2 steps</h2>
+      <div class="grid">
+        <article class="card card-highlight">
+          <h3>0 steps — try now</h3>
+          <p>Use the live canvas above or open the full IDE.</p>
+          <a class="btn btn-primary" href="app/">Open IDE →</a>
+        </article>
+        <article class="card card-highlight">
+          <h3>2 steps — Docker</h3>
+          <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
+cd LangStitch
+docker compose -f docker-compose.prod.yml up</code></pre>
+          <p>Open <strong>http://localhost:8080</strong></p>
+        </article>
+        <article class="card card-highlight">
+          <h3>2 steps — local dev</h3>
+          <pre><code>npm install && pip install -r server/requirements.txt
+npm start</code></pre>
+          <p>Open <strong>http://localhost:5173</strong></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      LangStitch · MIT License ·
+      <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a> ·
+      <a href="docs/">Documentation</a> ·
+      <a href="app/">IDE</a>
+    </p>
+  </footer>
+</body>
+</html>

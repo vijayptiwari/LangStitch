@@ -35,6 +35,16 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 HELM_CHART = REPO_ROOT / "deploy" / "helm" / "langstitch"
 RUNTIME_AGENT = REPO_ROOT / "runtime" / "basic_agent.py"
 
+DOCUMENT_KEYS = {
+    "version", "name", "description", "stateFields", "subgraphs", "activeSubgraphId",
+    "settings", "remoteGraphs", "toolRegistry", "agentRegistry", "mcpServers",
+    "skillRegistry", "guardrailRegistry", "businessRuleRegistry", "personaRegistry", "ragPipelines",
+}
+
+
+def extract_document(data: dict) -> dict:
+    return {k: data[k] for k in DOCUMENT_KEYS if k in data}
+
 
 # ─── Models ───
 
@@ -240,8 +250,7 @@ def run_agent(req: AgentRunRequest):
 @app.get("/api/project/{project_id}")
 def get_project(project_id: str):
     data = load_project_json(project_dir(project_id))
-    doc_keys = {"version", "name", "description", "stateFields", "subgraphs", "activeSubgraphId"}
-    document = {k: data[k] for k in doc_keys if k in data}
+    document = extract_document(data)
     return {
         "document": document,
         "nodes": data.get("nodes", []),
@@ -311,8 +320,7 @@ def git_sync(req: GitSyncRequest):
         run_git(base, "pull", "--rebase", "origin", check=False)
     try:
         data = load_project_json(base)
-        doc_keys = {"version", "name", "description", "stateFields", "subgraphs", "activeSubgraphId"}
-        document = {k: data[k] for k in doc_keys if k in data}
+        document = extract_document(data)
         return {
             "ok": True,
             "synced": True,
@@ -406,8 +414,7 @@ async def import_project(
         (base / "langstitch.project.json").write_bytes(content)
 
     data = load_project_json(base)
-    doc_keys = {"version", "name", "description", "stateFields", "subgraphs", "activeSubgraphId"}
-    document = {k: data[k] for k in doc_keys if k in data}
+    document = extract_document(data)
     return {
         "ok": True,
         "document": document,
@@ -455,8 +462,7 @@ def restore_version(project_id: str, version_id: str):
     dest = project_dir(project_id) / "langstitch.project.json"
     shutil.copy(src, dest)
     data = json.loads(dest.read_text(encoding="utf-8"))
-    doc_keys = {"version", "name", "description", "stateFields", "subgraphs", "activeSubgraphId"}
-    document = {k: data[k] for k in doc_keys if k in data}
+    document = extract_document(data)
     return {
         "ok": True,
         "document": document,
@@ -483,14 +489,18 @@ def build_project(req: BuildRequest):
             raise HTTPException(status_code=400, detail="\n".join(logs))
 
     targets: list[str] = []
-    if req.target in ("python", "all") and (base / "python").exists():
+    if req.target in ("python", "all") and ((base / "pyproject.toml").exists() or (base / "python").exists()):
         targets.append("python")
     if req.target in ("spring", "all") and (base / "spring").exists():
         targets.append("spring")
 
     for t in targets:
         if t == "python":
-            run_cmd(["docker", "build", "-t", f"langstitch-{req.project_id}-python", "."], base / "python")
+            if (base / "pyproject.toml").exists():
+                run_cmd(["pip", "install", "-e", ".[dev]"], base)
+                run_cmd(["pytest", "-q"], base)
+            elif (base / "python").exists():
+                run_cmd(["docker", "build", "-t", f"langstitch-{req.project_id}-python", "."], base / "python")
         if t == "spring":
             run_cmd(["docker", "build", "-t", f"langstitch-{req.project_id}-spring", "."], base / "spring")
 

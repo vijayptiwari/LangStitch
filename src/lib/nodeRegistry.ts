@@ -10,6 +10,8 @@ export const nodeTypes: Record<NodeKind, string> = {
   function: 'functionNode',
   subgraph: 'subgraphNode',
   agent: 'agentNode',
+  rag: 'ragNode',
+  intent_classifier: 'intentClassifierNode',
 }
 
 export const paletteItems: PaletteItem[] = [
@@ -125,6 +127,54 @@ export const paletteItems: PaletteItem[] = [
       remoteEndpoint: '',
       inputMapping: '{}',
       outputMapping: '{}',
+    },
+  },
+  {
+    kind: 'rag',
+    label: 'RAG Agent',
+    description: 'Retrieval-augmented generation — chunk, embed, vector/vectorless/hybrid',
+    icon: 'database',
+    defaultData: {
+      kind: 'rag',
+      label: 'RAG Agent',
+      pipelineId: 'rag_default',
+      queryKey: 'query',
+      outputKey: 'rag_context',
+      personaId: '',
+      skillIds: [],
+      guardrailIds: [],
+      includeSources: true,
+    },
+  },
+  {
+    kind: 'intent_classifier',
+    label: 'Multi-Intent Classifier',
+    description: 'Special decision node — classify into multiple intents and route',
+    icon: 'git-branch',
+    defaultData: {
+      kind: 'intent_classifier',
+      label: 'Intent Classifier',
+      model: 'gpt-4o-mini',
+      systemPrompt: 'Classify the user message into one or more intent labels from the allowed set.',
+      confidenceThreshold: 0.7,
+      fallbackIntent: 'fallback',
+      multiIntent: true,
+      classifierFn: `def classify_intents(state):
+    """Return primary intent label (or comma-separated for multi-intent)."""
+    messages = state.get("messages", [])
+    if not messages:
+        return "fallback"
+    text = str(messages[-1]).lower()
+    if "help" in text:
+        return "support"
+    if "buy" in text or "order" in text:
+        return "sales"
+    return "fallback"`,
+      intents: [
+        { id: 'i1', label: 'support', description: 'Help and support requests', examples: 'help, issue, problem' },
+        { id: 'i2', label: 'sales', description: 'Sales and purchasing', examples: 'buy, price, order' },
+        { id: 'i3', label: 'fallback', description: 'Default route', examples: '' },
+      ],
     },
   },
 ]

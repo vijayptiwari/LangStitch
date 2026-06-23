@@ -372,6 +372,12 @@ function generateNodeFunction(
       return `${data.code.replace(/^def\s+\w+/, `def ${fnName}`)}\n`
     case 'router':
       return `${data.routerFn.replace(/^def\s+\w+/, `def ${fnName}_route`)}\n`
+    case 'intent_classifier':
+      return `${data.classifierFn.replace(/^def\s+\w+/, `def ${fnName}_route`)}\n`
+    case 'rag': {
+      const pipeline = data.pipelineId || 'rag_default'
+      return `def ${fnName}(state: State) -> dict:\n    """RAG Agent: ${data.label} — pipeline ${pipeline}"""\n    query = state.get("${data.queryKey}", "")\n    emit_audit_event("rag_retrieve", {"pipeline": "${pipeline}"})\n    # Wire to rag.pipeline.run_pipeline at deploy time\n    context = [f"Retrieved context for: {query}"]\n    out = {"${data.outputKey}": context}\n    if ${data.includeSources ?? true}:\n        out["rag_sources"] = context\n    return out\n`
+    }
     case 'subgraph': {
       if (data.connectionType === 'remote') {
         const remote = remoteGraphs.find((r) => r.id === data.remoteGraphId)
@@ -415,7 +421,7 @@ function generateGraphBuilder(
     }
   }
 
-  const routerNodes = nodes.filter((n) => n.data.kind === 'router')
+  const routerNodes = nodes.filter((n) => n.data.kind === 'router' || n.data.kind === 'intent_classifier')
   const routerIds = new Set(routerNodes.map((n) => n.id))
 
   for (const edge of edges) {
@@ -435,10 +441,12 @@ function generateGraphBuilder(
 
   for (const router of routerNodes) {
     const routerEdges = edges.filter((e) => e.source === router.id && e.target !== endNode?.id)
-    const pathMap = router.data.kind === 'router'
-      ? router.data.branches
-          .filter((b: RouterBranch) => b.targetNodeId || routerEdges.some((e) => e.sourceHandle === b.id))
-          .map((branch: RouterBranch) => {
+    const pathMap = router.data.kind === 'router' || router.data.kind === 'intent_classifier'
+      ? (router.data.kind === 'router' ? router.data.branches : router.data.intents)
+          .filter((b: RouterBranch | { id: string; label: string }) =>
+            routerEdges.some((e) => e.sourceHandle === b.id) || ('targetNodeId' in b && b.targetNodeId),
+          )
+          .map((branch: RouterBranch | { id: string; label: string }) => {
             const edge = routerEdges.find((e) => e.sourceHandle === branch.id)
             const targetNode = edge ? nodes.find((n) => n.id === edge.target) : undefined
             const target = targetNode?.data.kind === 'end' ? 'END' : `"${targetNode ? getNodeName(targetNode) : branch.label}"`
@@ -584,11 +592,12 @@ export function exportGraphDocument(
 
 export function createDefaultDocument(): GraphDocument {
   return {
-    version: '1.0',
+    version: '1.1',
     name: 'my_langgraph',
     description: 'A LangGraph workflow built with LangStitch',
     stateFields: [
       { id: 'sf1', name: 'messages', type: 'messages', reducer: 'append' },
+      { id: 'sf2', name: 'query', type: 'str', reducer: 'replace', defaultValue: '""' },
     ],
     subgraphs: [
       {
@@ -605,6 +614,71 @@ export function createDefaultDocument(): GraphDocument {
     toolRegistry: [],
     agentRegistry: [],
     mcpServers: [],
+    skillRegistry: [
+      {
+        id: 'skill_default',
+        name: 'Default Skill',
+        description: 'General-purpose assistant skill',
+        instructions: 'Answer helpfully using available tools and context.',
+        toolIds: [],
+        personaId: 'persona_default',
+        promptTemplate: 'Task: {input}\nContext: {context}',
+        tags: 'default',
+      },
+    ],
+    guardrailRegistry: [
+      {
+        id: 'guardrail_safe',
+        name: 'Safety Guardrail',
+        description: 'Block unsafe content',
+        type: 'both',
+        policy: 'Do not generate harmful, illegal, or abusive content.',
+        action: 'block',
+        severity: 'high',
+        enabled: true,
+      },
+    ],
+    businessRuleRegistry: [
+      {
+        id: 'rule_escalate',
+        name: 'Escalate VIP',
+        description: 'Route VIP users to priority handler',
+        condition: 'context.get("tier") == "vip"',
+        action: 'route_to_priority',
+        priority: 10,
+        enabled: true,
+      },
+    ],
+    personaRegistry: [
+      {
+        id: 'persona_default',
+        name: 'Default Persona',
+        role: 'Helpful assistant',
+        tone: 'Professional and concise',
+        systemPrompt: 'You are a knowledgeable assistant for the user.',
+        constraints: 'Be accurate; cite uncertainty when unsure.',
+        vocabulary: '',
+      },
+    ],
+    ragPipelines: [
+      {
+        id: 'rag_default',
+        name: 'Default RAG',
+        description: 'Hybrid retrieval pipeline',
+        chunkStrategy: 'recursive',
+        chunkSize: 512,
+        chunkOverlap: 64,
+        embeddingProvider: 'openai',
+        embeddingModel: 'text-embedding-3-small',
+        retrievalMode: 'hybrid',
+        vectorStore: 'in_memory',
+        topK: 5,
+        rerankEnabled: false,
+        rerankModel: '',
+        sourcePaths: './data/docs',
+        metadataFilters: '',
+      },
+    ],
     settings: mergeGraphSettings(),
   }
 }

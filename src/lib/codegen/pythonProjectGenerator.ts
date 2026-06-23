@@ -1,0 +1,502 @@
+import type { Edge, Node } from '@xyflow/react'
+import type {
+  BusinessRuleDefinition,
+  CanvasSnapshot,
+  GraphDocument,
+  GuardrailDefinition,
+  PersonaDefinition,
+  RagPipelineConfig,
+  SkillDefinition,
+  StitchNodeData,
+} from '../../types/graph'
+import { slugify } from '../nodeRegistry'
+import { MAIN_GRAPH_ID } from '../subgraphCanvas'
+import { generatePythonCode } from './pythonGenerator'
+
+function pkgName(doc: GraphDocument): string {
+  return slugify(doc.name) || 'langstitch_graph'
+}
+
+function modulePath(doc: GraphDocument, sub: string, file: string): string {
+  return `src/${pkgName(doc)}/${sub}/${file}`
+}
+
+function pyModuleInit(): string {
+  return '"""LangStitch generated module."""\n'
+}
+
+export function generateLangsmithJson(doc: GraphDocument): string {
+  const obs = doc.settings?.observability
+  const pkg = pkgName(doc)
+  return JSON.stringify(
+    {
+      version: '1.0',
+      langsmith: {
+        project_name: obs?.langsmith?.projectName ?? doc.name,
+        api_key_env: obs?.langsmith?.apiKeyEnv ?? 'LANGCHAIN_API_KEY',
+        tracing_v2: obs?.langsmith?.tracingV2 ?? true,
+        endpoint: 'https://api.smith.langchain.com',
+      },
+      langstitch: {
+        schema_version: '1.1',
+        project_name: doc.name,
+        python_version: '3.13',
+        package: pkg,
+        modules: {
+          graphs: 'graphs/',
+          nodes: 'nodes/',
+          skills: 'skills/',
+          prompts: 'prompts/',
+          tools: 'tools/',
+          resources: 'resources/',
+          connections: 'connections/',
+          guardrails: 'guardrails/',
+          rules: 'rules/',
+          personas: 'personas/',
+          rag: 'rag/',
+        },
+        registries: {
+          skills: (doc.skillRegistry ?? []).map((s) => s.id),
+          guardrails: (doc.guardrailRegistry ?? []).map((g) => g.id),
+          business_rules: (doc.businessRuleRegistry ?? []).map((r) => r.id),
+          personas: (doc.personaRegistry ?? []).map((p) => p.id),
+          rag_pipelines: (doc.ragPipelines ?? []).map((r) => r.id),
+          tools: (doc.toolRegistry ?? []).map((t) => t.id),
+          agents: (doc.agentRegistry ?? []).map((a) => a.id),
+        },
+      },
+    },
+    null,
+    2,
+  )
+}
+
+function generateSkillModule(skill: SkillDefinition): string {
+  const fn = slugify(skill.id)
+  return `"""Skill: ${skill.name}"""
+
+SKILL = {
+    "id": "${skill.id}",
+    "name": ${JSON.stringify(skill.name)},
+    "description": ${JSON.stringify(skill.description)},
+    "instructions": ${JSON.stringify(skill.instructions)},
+    "tool_ids": ${JSON.stringify(skill.toolIds)},
+    "persona_id": ${JSON.stringify(skill.personaId)},
+    "prompt_template": ${JSON.stringify(skill.promptTemplate)},
+    "tags": ${JSON.stringify(skill.tags)},
+}
+
+
+def apply_skill(state: dict) -> dict:
+    """Execute skill logic against graph state."""
+    return {"skill_${fn}": SKILL["instructions"]}
+`
+}
+
+function generateGuardrailModule(g: GuardrailDefinition): string {
+  const fn = slugify(g.id)
+  return `"""Guardrail: ${g.name}"""
+
+GUARDRAIL = {
+    "id": "${g.id}",
+    "name": ${JSON.stringify(g.name)},
+    "type": "${g.type}",
+    "action": "${g.action}",
+    "severity": "${g.severity}",
+    "enabled": ${g.enabled},
+    "policy": ${JSON.stringify(g.policy)},
+}
+
+
+def check_${fn}(text: str) -> tuple[bool, str]:
+    """Return (passed, message)."""
+    if not GUARDRAIL["enabled"]:
+        return True, "skipped"
+    # Policy evaluation stub — replace with LLM or rules engine
+    if GUARDRAIL["action"] == "block" and "forbidden" in text.lower():
+        return False, GUARDRAIL["policy"]
+    return True, "ok"
+`
+}
+
+function generateRuleModule(r: BusinessRuleDefinition): string {
+  const fn = slugify(r.id)
+  return `"""Business rule: ${r.name}"""
+
+RULE = {
+    "id": "${r.id}",
+    "name": ${JSON.stringify(r.name)},
+    "condition": ${JSON.stringify(r.condition)},
+    "action": ${JSON.stringify(r.action)},
+    "priority": ${r.priority},
+    "enabled": ${r.enabled},
+}
+
+
+def evaluate_${fn}(context: dict) -> bool:
+    """Evaluate business rule against context."""
+    if not RULE["enabled"]:
+        return False
+    # Condition stub — wire to rules engine or Python eval sandbox
+    return bool(context.get("trigger_${fn}", False))
+`
+}
+
+function generatePersonaModule(p: PersonaDefinition): string {
+  return `"""Persona: ${p.name}"""
+
+PERSONA = {
+    "id": "${p.id}",
+    "name": ${JSON.stringify(p.name)},
+    "role": ${JSON.stringify(p.role)},
+    "tone": ${JSON.stringify(p.tone)},
+    "system_prompt": ${JSON.stringify(p.systemPrompt)},
+    "constraints": ${JSON.stringify(p.constraints)},
+    "vocabulary": ${JSON.stringify(p.vocabulary)},
+}
+
+
+def build_system_prompt() -> str:
+    parts = [PERSONA["system_prompt"], f"Role: {PERSONA['role']}", f"Tone: {PERSONA['tone']}"]
+    if PERSONA["constraints"]:
+        parts.append(f"Constraints: {PERSONA['constraints']}")
+    return "\\n".join(parts)
+`
+}
+
+function generateRagPipelineModule(p: RagPipelineConfig): string {
+  const fn = slugify(p.id)
+  return `"""RAG pipeline: ${p.name}"""
+
+PIPELINE = {
+    "id": "${p.id}",
+    "name": ${JSON.stringify(p.name)},
+    "chunk_strategy": "${p.chunkStrategy}",
+    "chunk_size": ${p.chunkSize},
+    "chunk_overlap": ${p.chunkOverlap},
+    "embedding_provider": "${p.embeddingProvider}",
+    "embedding_model": ${JSON.stringify(p.embeddingModel)},
+    "retrieval_mode": "${p.retrievalMode}",
+    "vector_store": "${p.vectorStore}",
+    "top_k": ${p.topK},
+    "rerank_enabled": ${p.rerankEnabled},
+    "rerank_model": ${JSON.stringify(p.rerankModel)},
+    "source_paths": ${JSON.stringify(p.sourcePaths)},
+}
+
+
+def chunk_documents(texts: list[str]) -> list[str]:
+    """Chunk source documents per pipeline config."""
+    size = PIPELINE["chunk_size"]
+    overlap = PIPELINE["chunk_overlap"]
+    chunks: list[str] = []
+    for text in texts:
+        start = 0
+        while start < len(text):
+            chunks.append(text[start : start + size])
+            start += max(size - overlap, 1)
+    return chunks
+
+
+def embed_chunks(chunks: list[str]) -> list[list[float]]:
+    """Embed chunks — vector, vectorless, or hybrid per retrieval_mode."""
+    mode = PIPELINE["retrieval_mode"]
+    if mode == "vectorless":
+        return [[float(i)] for i in range(len(chunks))]
+    # Vector / hybrid stub embeddings
+    return [[hash(c) % 1000 / 1000.0 for _ in range(8)] for c in chunks]
+
+
+def retrieve(query: str, chunks: list[str], vectors: list[list[float]]) -> list[str]:
+    """Retrieve top-k chunks by mode."""
+    k = min(PIPELINE["top_k"], len(chunks))
+    if PIPELINE["retrieval_mode"] == "vectorless":
+        return chunks[:k]
+    # Simple lexical fallback for hybrid/vector stub
+    scored = sorted(chunks, key=lambda c: query.lower() in c.lower(), reverse=True)
+    return scored[:k]
+
+
+def run_${fn}(query: str, documents: list[str] | None = None) -> dict:
+    """Run full RAG pipeline: chunk → embed → retrieve → context."""
+    docs = documents or []
+    chunks = chunk_documents(docs) if docs else []
+    vectors = embed_chunks(chunks) if chunks else []
+    context = retrieve(query, chunks, vectors)
+    return {
+        "query": query,
+        "context": context,
+        "sources": context,
+        "pipeline_id": PIPELINE["id"],
+        "mode": PIPELINE["retrieval_mode"],
+    }
+`
+}
+
+function generateNodeModules(
+  doc: GraphDocument,
+  canvasByGraph: Record<string, CanvasSnapshot>,
+): Record<string, string> {
+  const files: Record<string, string> = {}
+  const pkg = pkgName(doc)
+  const seen = new Set<string>()
+  const imports: string[] = []
+
+  for (const canvas of Object.values(canvasByGraph)) {
+    for (const node of canvas.nodes) {
+      if (node.data.kind === 'start' || node.data.kind === 'end') continue
+      const fn = slugify(node.id)
+      if (seen.has(fn)) continue
+      seen.add(fn)
+      imports.push(`from .${fn} import ${fn}`)
+
+      files[modulePath(doc, 'nodes', `${fn}.py`)] = `"""Node: ${node.data.label} (${node.data.kind})"""
+from ${pkg}.state import State
+
+
+def ${fn}(state: State) -> dict:
+    """${node.data.description ?? node.data.label}"""
+    return {}
+`
+    }
+  }
+
+  files[modulePath(doc, 'nodes', '__init__.py')] = `${pyModuleInit()}${imports.join('\n')}\n`
+  return files
+}
+
+export function generatePythonProject(
+  doc: GraphDocument,
+  projectJson: string,
+  nodes: Node<StitchNodeData>[],
+  edges: Edge[],
+  canvasByGraph?: Record<string, CanvasSnapshot>,
+): Record<string, string> {
+  const pkg = pkgName(doc)
+  const canvases = canvasByGraph ?? { [MAIN_GRAPH_ID]: { nodes, edges } }
+  const monolith = generatePythonCode(doc, nodes, edges, canvases)
+  const files: Record<string, string> = {}
+
+  files['pyproject.toml'] = `[project]
+name = "${pkg}"
+version = "0.1.0"
+description = ${JSON.stringify(doc.description ?? doc.name)}
+requires-python = ">=3.13"
+readme = "README.md"
+dependencies = [
+  "langgraph>=0.4.0",
+  "langchain-core>=0.3.0",
+  "typing-extensions>=4.12.0",
+]
+
+[project.optional-dependencies]
+rag = [
+  "langchain-text-splitters>=0.3.0",
+  "chromadb>=0.5.0",
+]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+${pkg} = "${pkg}.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+`
+
+  files['langsmith.json'] = generateLangsmithJson(doc)
+  files['langstitch.project.json'] = projectJson
+  files['README.md'] = `# ${doc.name}
+
+Generated by [LangStitch](https://github.com/vijayptiwari/LangStitch).
+
+## Requirements
+
+- Python **3.13+**
+
+## Setup
+
+\`\`\`bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+pip install -e ".[dev]"
+\`\`\`
+
+## Run
+
+\`\`\`bash
+${pkg}
+# or
+python -m ${pkg}
+\`\`\`
+
+## Test
+
+\`\`\`bash
+pytest
+\`\`\`
+
+## Project layout
+
+\`\`\`
+src/${pkg}/
+  graphs/       # StateGraph definitions
+  nodes/        # Node handlers
+  skills/       # Skill modules
+  prompts/      # Prompt templates
+  tools/        # Tool registry
+  resources/    # Static resources
+  connections/  # MCP, remote, A2A
+  guardrails/   # Input/output guardrails
+  rules/        # Business rules
+  personas/     # Agent personas
+  rag/          # RAG pipelines (chunk, embed, retrieve)
+\`\`\`
+
+Import \`langsmith.json\` in LangStitch IDE to restore project metadata.
+`
+
+  files['.gitignore'] = `.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+*.egg-info/
+.env
+`
+
+  files[`src/${pkg}/__init__.py`] = `"""${doc.name} — LangStitch generated package."""
+
+__version__ = "0.1.0"
+`
+
+  files[`src/${pkg}/__main__.py`] = `"""CLI entrypoint."""
+from ${pkg}.graphs.main import graph
+
+
+def main() -> None:
+    result = graph.invoke({"messages": []})
+    print(result)
+
+
+if __name__ == "__main__":
+    main()
+`
+
+  const stateMatch = monolith.match(/from typing[\s\S]*?class State\(TypedDict\):[\s\S]*?(?=\n\n#|\n\ndef |\nimport os)/)
+  files[`src/${pkg}/state.py`] = stateMatch
+    ? `${stateMatch[0].trim()}\n`
+    : `from typing import Annotated, TypedDict\nfrom langgraph.graph.message import add_messages\n\n\nclass State(TypedDict):\n    messages: Annotated[list, add_messages]\n`
+
+  files[`src/${pkg}/config.py`] = `"""Runtime configuration."""
+import os
+
+LANGSMITH_PROJECT = os.environ.get("LANGCHAIN_PROJECT", "${doc.settings?.observability?.langsmith?.projectName ?? doc.name}")
+LANGSMITH_TRACING = os.environ.get("LANGCHAIN_TRACING_V2", "${doc.settings?.observability?.langsmith?.tracingV2 ? 'true' : 'false'}")
+`
+
+  files[`src/${pkg}/graphs/__init__.py`] = pyModuleInit()
+  files[`src/${pkg}/graphs/main.py`] = monolith
+
+  // Skills
+  files[`src/${pkg}/skills/__init__.py`] = pyModuleInit()
+  for (const skill of doc.skillRegistry ?? []) {
+    files[`src/${pkg}/skills/${slugify(skill.id)}.py`] = generateSkillModule(skill)
+  }
+
+  // Guardrails
+  files[`src/${pkg}/guardrails/__init__.py`] = pyModuleInit()
+  for (const g of doc.guardrailRegistry ?? []) {
+    files[`src/${pkg}/guardrails/${slugify(g.id)}.py`] = generateGuardrailModule(g)
+  }
+
+  // Business rules
+  files[`src/${pkg}/rules/__init__.py`] = pyModuleInit()
+  for (const r of doc.businessRuleRegistry ?? []) {
+    files[`src/${pkg}/rules/${slugify(r.id)}.py`] = generateRuleModule(r)
+  }
+
+  // Personas
+  files[`src/${pkg}/personas/__init__.py`] = pyModuleInit()
+  for (const p of doc.personaRegistry ?? []) {
+    files[`src/${pkg}/personas/${slugify(p.id)}.py`] = generatePersonaModule(p)
+  }
+
+  // RAG
+  files[`src/${pkg}/rag/__init__.py`] = `${pyModuleInit()}from .pipeline import list_pipelines\n`
+  files[`src/${pkg}/rag/pipeline.py`] = `${(doc.ragPipelines ?? []).length ? (doc.ragPipelines ?? []).map((p) => {
+    const id = slugify(p.id)
+    return `from .${id} import run_${id}, PIPELINE as PIPELINE_${id.toUpperCase()}`
+  }).join('\n') : '# No RAG pipelines defined'}
+
+PIPELINES = {
+${(doc.ragPipelines ?? []).map((p) => `    "${p.id}": "${slugify(p.id)}",`).join('\n')}
+}
+
+
+def list_pipelines() -> list[str]:
+    return list(PIPELINES.keys())
+
+
+def run_pipeline(pipeline_id: str, query: str, documents: list[str] | None = None) -> dict:
+    from importlib import import_module
+    slug = PIPELINES.get(pipeline_id, pipeline_id)
+    mod = import_module(f".{slug}", package=__name__)
+    return getattr(mod, f"run_{slug}")(query, documents)
+`
+  for (const p of doc.ragPipelines ?? []) {
+    files[`src/${pkg}/rag/${slugify(p.id)}.py`] = generateRagPipelineModule(p)
+  }
+
+  // Prompts
+  files[`src/${pkg}/prompts/__init__.py`] = pyModuleInit()
+  files[`src/${pkg}/prompts/templates.py`] = `# Prompt templates\nPROMPTS = {}\n`
+
+  // Tools
+  files[`src/${pkg}/tools/__init__.py`] = pyModuleInit()
+  files[`src/${pkg}/tools/registry.py`] = `TOOL_REGISTRY = {
+${(doc.toolRegistry ?? []).map((t) => `    "${t.id}": {"name": ${JSON.stringify(t.name)}, "source": "${t.source}"},`).join('\n')}
+}
+`
+
+  // Resources & connections
+  files[`src/${pkg}/resources/__init__.py`] = pyModuleInit()
+  files[`src/${pkg}/connections/__init__.py`] = pyModuleInit()
+  files[`src/${pkg}/connections/mcp.py`] = `# MCP connections\nMCP_SERVERS = {}\n`
+  files[`src/${pkg}/connections/remote.py`] = `# Remote graph connections\nREMOTE_GRAPHS = {}\n`
+
+  // Node modules (per-node files)
+  Object.assign(files, generateNodeModules(doc, canvases))
+
+  // Tests
+  files['tests/test_smoke.py'] = `"""Smoke tests — verify package imports and graph invoke."""
+import pytest
+
+
+def test_import_package():
+    import ${pkg}
+    assert ${pkg}.__version__
+
+
+def test_graph_compiles():
+    from ${pkg}.graphs.main import graph
+    assert graph is not None
+
+
+def test_graph_invoke():
+    from ${pkg}.graphs.main import graph
+    result = graph.invoke({"messages": []})
+    assert isinstance(result, dict)
+`
+
+  files['tests/__init__.py'] = ''
+
+  return files
+}

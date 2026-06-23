@@ -4,106 +4,152 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LangStitch — Documentation</title>
-  <meta name="description" content="Visual LangGraph IDE — documentation, quick start, and architecture." />
+  <meta name="description" content="LangStitch documentation — visual LangGraph IDE, asset designers, export, and deployment." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
+  <nav class="nav">
+    <a class="nav-brand" href="../">LangStitch</a>
+    <div class="nav-links">
+      <a href="../#try">Try live</a>
+      <a href="../app/">Open IDE</a>
+      <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero hero-compact">
     <div class="hero-inner">
-      <p class="eyebrow">Visual LangGraph IDE</p>
-      <h1>LangStitch</h1>
-      <p class="lead">
-        Design agent workflows on a canvas, connect tools and sub-agents, export Python,
-        and deploy with the platform API.
-      </p>
+      <p class="eyebrow">Documentation</p>
+      <h1>LangStitch docs</h1>
+      <p class="lead">Visual LangGraph IDE — canvas, asset designers, Python 3.13 export, and platform deployment.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="../">Open LangStitch App</a>
-        <a class="btn btn-secondary" href="https://github.com/vijayptiwari/LangStitch">View on GitHub</a>
+        <a class="btn btn-primary" href="../app/">Open IDE</a>
+        <a class="btn btn-secondary" href="../try.html">Try page</a>
+        <a class="btn btn-secondary" href="../">Product home</a>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <section id="run">
-      <h2>Run in 1–2 steps</h2>
+    <section id="quickstart">
+      <h2>Quick start</h2>
       <div class="grid">
         <article class="card card-highlight">
-          <h3>1 step — hosted</h3>
-          <p>No install. Open the canvas in your browser.</p>
-          <a class="btn btn-primary" href="../">Open LangStitch →</a>
+          <h3>Try live (0 install)</h3>
+          <p>Product home embeds the IDE. Open full screen for the best experience.</p>
+          <a class="btn btn-primary" href="../app/">Open IDE →</a>
         </article>
         <article class="card card-highlight">
-          <h3>2 steps — Docker (full stack)</h3>
+          <h3>Docker (full stack)</h3>
           <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
 cd LangStitch
 docker compose -f docker-compose.prod.yml up</code></pre>
-          <p>Then open <strong>http://localhost:8080</strong> (UI + Platform API).</p>
+          <p>UI + Platform API at <strong>http://localhost:8080</strong></p>
         </article>
         <article class="card card-highlight">
-          <h3>1 click — Codespaces</h3>
-          <p>On GitHub: <strong>Code → Create codespace on main</strong>. LangStitch starts automatically.</p>
-        </article>
-        <article class="card card-highlight">
-          <h3>2 steps — local dev</h3>
-          <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
-cd LangStitch
-npm install && pip install -r server/requirements.txt
+          <h3>Local dev</h3>
+          <pre><code>npm install
+pip install -r server/requirements.txt
 npm start</code></pre>
-          <p>Open <strong>http://localhost:5173</strong></p>
+          <p>UI at <strong>http://localhost:5173</strong>, API at <strong>:8787</strong></p>
         </article>
       </div>
     </section>
 
-    <section id="workflows">
-      <h2>Automated publishing (GitHub Actions)</h2>
+    <section id="canvas">
+      <h2>Canvas &amp; nodes</h2>
+      <div class="grid grid-3">
+        <article class="card"><h3>LLM</h3><p>Model, prompts, temperature, bound tools/agents.</p></article>
+        <article class="card"><h3>Tool</h3><p>Inline, registry, or MCP Studio tools.</p></article>
+        <article class="card"><h3>Agent</h3><p>Sub-agent, remote, A2A, or registry delegation.</p></article>
+        <article class="card"><h3>RAG Agent</h3><p>Retrieval-augmented node bound to a RAG pipeline.</p></article>
+        <article class="card"><h3>Multi-Intent Classifier</h3><p>Special decision node — route by classified intents.</p></article>
+        <article class="card"><h3>Decision / Function / Subgraph</h3><p>Conditional edges, Python transforms, nested graphs.</p></article>
+      </div>
+    </section>
+
+    <section id="assets">
+      <h2>Asset designers</h2>
+      <p class="section-lead">Open the sidebar <strong>Assets</strong> tab to configure reusable project artifacts. All export to dedicated Python modules.</p>
       <ul class="doc-list">
-        <li><strong>Deploy GitHub Pages</strong> — every push to <code>main</code> publishes this site + the app.</li>
-        <li><strong>Publish Docker</strong> — pushes <code>ghcr.io/vijayptiwari/langstitch-web</code> and <code>langstitch-api</code>.</li>
-        <li><strong>CI</strong> — build, Playwright E2E, and agent smoke tests on every PR.</li>
-        <li><strong>Release</strong> — tagged releases with source archives.</li>
+        <li><strong>Skill Designer</strong> — instructions, tools, persona, prompt templates → <code>skills/</code></li>
+        <li><strong>Guardrails Designer</strong> — input/output policies (block, warn, redact, rewrite) → <code>guardrails/</code></li>
+        <li><strong>Business Rules Designer</strong> — conditions, actions, priority → <code>rules/</code></li>
+        <li><strong>Persona Designer</strong> — role, tone, system prompt, constraints → <code>personas/</code></li>
+        <li><strong>RAG Pipelines</strong> — chunking, embedding, vector / vectorless / hybrid retrieval → <code>rag/</code></li>
       </ul>
     </section>
 
-    <section id="features">
-      <h2>Features</h2>
-      <div class="grid">
-        <article class="card">
-          <h3>Visual canvas</h3>
-          <p>Drag-and-drop nodes: LLM, Tool, Agent, Decision, Subgraph, Function, Start/End.</p>
-        </article>
-        <article class="card">
-          <h3>Integrations</h3>
-          <p>Tool registry, agent registry, MCP Studio, remote graphs, A2A, LangSmith &amp; Langfuse.</p>
-        </article>
-        <article class="card">
-          <h3>Codegen</h3>
-          <p>Live Python <code>StateGraph</code> export with lifecycle hooks, checkpointers, and logging.</p>
-        </article>
-        <article class="card">
-          <h3>Platform</h3>
-          <p>Git sync, export/import, snapshots, Docker build, and Helm deploy via FastAPI backend.</p>
-        </article>
-      </div>
+    <section id="export">
+      <h2>Python 3.13 export</h2>
+      <p class="section-lead">Platform → Export → Python produces a buildable multi-module ZIP:</p>
+      <pre><code>src/&lt;package&gt;/
+  graphs/        # StateGraph definitions
+  nodes/         # Per-node handlers
+  skills/        # Skill modules
+  prompts/       # Prompt templates
+  tools/         # Tool registry
+  resources/     # Static resources
+  connections/   # MCP, remote, A2A
+  guardrails/    # Guardrail policies
+  rules/         # Business rules
+  personas/      # Agent personas
+  rag/           # RAG pipelines
+langsmith.json   # LangSmith + LangStitch IDE metadata
+langstitch.project.json</code></pre>
+      <pre><code>pip install -e ".[dev]"
+pytest
+python -m &lt;package&gt;</code></pre>
     </section>
 
-    <section id="agent">
-      <h2>Basic agent</h2>
-      <pre><code>npm run agent:run
+    <section id="platform">
+      <h2>Platform panel</h2>
+      <ul class="doc-list">
+        <li><strong>Git</strong> — init, connect remote, pull, commit &amp; push</li>
+        <li><strong>Export</strong> — Python 3.13 project, Spring gateway, or full bundle (+ Docker + Helm)</li>
+        <li><strong>Import</strong> — <code>.langstitch.json</code> or exported ZIP</li>
+        <li><strong>Versions</strong> — local snapshots with restore</li>
+        <li><strong>Build / Deploy</strong> — Docker build, Helm upgrade</li>
+      </ul>
+      <p class="section-lead">Workspaces: <code>~/.langstitch/workspaces/&lt;project-id&gt;/</code></p>
+    </section>
 
-curl -X POST http://127.0.0.1:8787/api/agent/run \
-  -H "Content-Type: application/json" \
-  -d "{\"project_id\":\"basic_agent_test\"}"</code></pre>
+    <section id="integrations">
+      <h2>Integrations</h2>
+      <ul class="doc-list">
+        <li>MCP Studio — stdio / SSE / streamable HTTP servers, tools, resources</li>
+        <li>Tool &amp; agent registry — reusable definitions across nodes</li>
+        <li>Remote graphs &amp; A2A agents</li>
+        <li>LangSmith &amp; Langfuse tracing, structured JSON logging</li>
+        <li>Checkpointer managers — memory, Postgres, SQLite, Redis</li>
+      </ul>
+    </section>
+
+    <section id="ci">
+      <h2>GitHub Actions</h2>
+      <ul class="doc-list">
+        <li><strong>Deploy GitHub Pages</strong> — product site + live IDE at <code>/app/</code> + docs</li>
+        <li><strong>CI</strong> — build, Playwright E2E, agent smoke tests</li>
+        <li><strong>Publish Docker</strong> — <code>ghcr.io/vijayptiwari/langstitch-web</code> &amp; <code>langstitch-api</code></li>
+        <li><strong>Release</strong> — tagged releases with source archives</li>
+      </ul>
     </section>
 
     <section id="testing">
-      <h2>E2E tests</h2>
+      <h2>Testing</h2>
       <pre><code>npx playwright install chromium
-npm run test:e2e</code></pre>
+npm run test:e2e
+npm run agent:run</code></pre>
     </section>
   </main>
 
   <footer class="footer">
-    <p>LangStitch · MIT License · <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a></p>
+    <p>
+      LangStitch · MIT ·
+      <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a> ·
+      <a href="../">Home</a> ·
+      <a href="../app/">IDE</a>
+    </p>
   </footer>
 </body>
 </html>

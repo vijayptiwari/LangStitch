@@ -20,6 +20,8 @@ import { RouterNode } from './nodes/RouterNode'
 import { FunctionNode } from './nodes/FunctionNode'
 import { SubgraphNode } from './nodes/SubgraphNode'
 import { AgentNode } from './nodes/AgentNode'
+import { RagNode } from './nodes/RagNode'
+import { IntentClassifierNode } from './nodes/IntentClassifierNode'
 
 const nodeTypes = {
   startNode: StartNode,
@@ -30,6 +32,8 @@ const nodeTypes = {
   functionNode: FunctionNode,
   subgraphNode: SubgraphNode,
   agentNode: AgentNode,
+  ragNode: RagNode,
+  intentClassifierNode: IntentClassifierNode,
 }
 
 export function GraphCanvas() {

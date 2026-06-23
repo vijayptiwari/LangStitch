@@ -54,7 +54,7 @@ jobs:
             Open **http://localhost:8080**
 
             ### Option B — Hosted (canvas, no install)
-            Open **https://vijayptiwari.github.io/LangStitch/**
+            Open **https://vijayptiwari.github.io/LangStitch/** (live try) or **https://vijayptiwari.github.io/LangStitch/app/** (full IDE)
 
             ### Option C — GitHub Codespaces
             Click **Code → Create codespace on main** — LangStitch starts automatically.

@@ -11,12 +11,17 @@ import {
 } from '@xyflow/react'
 import type {
   AgentDefinition,
+  BusinessRuleDefinition,
   CanvasSnapshot,
   GraphDocument,
   GraphSettings,
+  GuardrailDefinition,
   StitchNodeData,
   McpServerDefinition,
+  PersonaDefinition,
+  RagPipelineConfig,
   RemoteGraphRef,
+  SkillDefinition,
   StateField,
   ToolDefinition,
 } from '../types/graph'
@@ -79,7 +84,7 @@ interface GraphStore {
   edges: Edge[]
   selectedNodeId: string | null
   showCodePanel: boolean
-  designerTab: 'node' | 'graph'
+  designerTab: 'node' | 'graph' | 'assets'
 
   setNodes: (nodes: Node<StitchNodeData>[]) => void
   setEdges: (edges: Edge[]) => void
@@ -94,7 +99,7 @@ interface GraphStore {
 
   setDocumentMeta: (meta: Partial<Pick<GraphDocument, 'name' | 'description'>>) => void
   updateGraphSettings: (settings: Partial<GraphSettings>) => void
-  setDesignerTab: (tab: 'node' | 'graph') => void
+  setDesignerTab: (tab: 'node' | 'graph' | 'assets') => void
   addStateField: (field: StateField) => void
   updateStateField: (id: string, field: Partial<StateField>) => void
   removeStateField: (id: string) => void
@@ -116,6 +121,22 @@ interface GraphStore {
   addMcpServer: (server: McpServerDefinition) => void
   updateMcpServer: (id: string, server: Partial<McpServerDefinition>) => void
   removeMcpServer: (id: string) => void
+
+  addSkillDefinition: (skill: SkillDefinition) => void
+  updateSkillDefinition: (id: string, skill: Partial<SkillDefinition>) => void
+  removeSkillDefinition: (id: string) => void
+  addGuardrailDefinition: (guardrail: GuardrailDefinition) => void
+  updateGuardrailDefinition: (id: string, guardrail: Partial<GuardrailDefinition>) => void
+  removeGuardrailDefinition: (id: string) => void
+  addBusinessRuleDefinition: (rule: BusinessRuleDefinition) => void
+  updateBusinessRuleDefinition: (id: string, rule: Partial<BusinessRuleDefinition>) => void
+  removeBusinessRuleDefinition: (id: string) => void
+  addPersonaDefinition: (persona: PersonaDefinition) => void
+  updatePersonaDefinition: (id: string, persona: Partial<PersonaDefinition>) => void
+  removePersonaDefinition: (id: string) => void
+  addRagPipeline: (pipeline: RagPipelineConfig) => void
+  updateRagPipeline: (id: string, pipeline: Partial<RagPipelineConfig>) => void
+  removeRagPipeline: (id: string) => void
 
   getProjectPayload: () => {
     document: GraphDocument
@@ -538,6 +559,99 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       },
     }),
 
+  addSkillDefinition: (skill) =>
+    set({ document: { ...get().document, skillRegistry: [...(get().document.skillRegistry ?? []), skill] } }),
+  updateSkillDefinition: (id, skill) =>
+    set({
+      document: {
+        ...get().document,
+        skillRegistry: (get().document.skillRegistry ?? []).map((s) => (s.id === id ? { ...s, ...skill } : s)),
+      },
+    }),
+  removeSkillDefinition: (id) =>
+    set({
+      document: {
+        ...get().document,
+        skillRegistry: (get().document.skillRegistry ?? []).filter((s) => s.id !== id),
+      },
+    }),
+
+  addGuardrailDefinition: (guardrail) =>
+    set({ document: { ...get().document, guardrailRegistry: [...(get().document.guardrailRegistry ?? []), guardrail] } }),
+  updateGuardrailDefinition: (id, guardrail) =>
+    set({
+      document: {
+        ...get().document,
+        guardrailRegistry: (get().document.guardrailRegistry ?? []).map((g) =>
+          g.id === id ? { ...g, ...guardrail } : g,
+        ),
+      },
+    }),
+  removeGuardrailDefinition: (id) =>
+    set({
+      document: {
+        ...get().document,
+        guardrailRegistry: (get().document.guardrailRegistry ?? []).filter((g) => g.id !== id),
+      },
+    }),
+
+  addBusinessRuleDefinition: (rule) =>
+    set({ document: { ...get().document, businessRuleRegistry: [...(get().document.businessRuleRegistry ?? []), rule] } }),
+  updateBusinessRuleDefinition: (id, rule) =>
+    set({
+      document: {
+        ...get().document,
+        businessRuleRegistry: (get().document.businessRuleRegistry ?? []).map((r) =>
+          r.id === id ? { ...r, ...rule } : r,
+        ),
+      },
+    }),
+  removeBusinessRuleDefinition: (id) =>
+    set({
+      document: {
+        ...get().document,
+        businessRuleRegistry: (get().document.businessRuleRegistry ?? []).filter((r) => r.id !== id),
+      },
+    }),
+
+  addPersonaDefinition: (persona) =>
+    set({ document: { ...get().document, personaRegistry: [...(get().document.personaRegistry ?? []), persona] } }),
+  updatePersonaDefinition: (id, persona) =>
+    set({
+      document: {
+        ...get().document,
+        personaRegistry: (get().document.personaRegistry ?? []).map((p) =>
+          p.id === id ? { ...p, ...persona } : p,
+        ),
+      },
+    }),
+  removePersonaDefinition: (id) =>
+    set({
+      document: {
+        ...get().document,
+        personaRegistry: (get().document.personaRegistry ?? []).filter((p) => p.id !== id),
+      },
+    }),
+
+  addRagPipeline: (pipeline) =>
+    set({ document: { ...get().document, ragPipelines: [...(get().document.ragPipelines ?? []), pipeline] } }),
+  updateRagPipeline: (id, pipeline) =>
+    set({
+      document: {
+        ...get().document,
+        ragPipelines: (get().document.ragPipelines ?? []).map((p) =>
+          p.id === id ? { ...p, ...pipeline } : p,
+        ),
+      },
+    }),
+  removeRagPipeline: (id) =>
+    set({
+      document: {
+        ...get().document,
+        ragPipelines: (get().document.ragPipelines ?? []).filter((p) => p.id !== id),
+      },
+    }),
+
   getProjectPayload: () => {
     const state = get()
     const canvasByGraph = persistActiveCanvas(state)
@@ -583,6 +697,11 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       toolRegistry: document.toolRegistry ?? [],
       agentRegistry: document.agentRegistry ?? [],
       mcpServers: document.mcpServers ?? [],
+      skillRegistry: document.skillRegistry ?? [],
+      guardrailRegistry: document.guardrailRegistry ?? [],
+      businessRuleRegistry: document.businessRuleRegistry ?? [],
+      personaRegistry: document.personaRegistry ?? [],
+      ragPipelines: document.ragPipelines ?? [],
       subgraphs: (document.subgraphs ?? []).map((sg) => ({
         ...sg,
         parentId: sg.parentId ?? (sg.id === MAIN_GRAPH_ID ? null : MAIN_GRAPH_ID),

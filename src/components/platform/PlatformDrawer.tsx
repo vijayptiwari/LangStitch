@@ -161,8 +161,16 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   }
 
   const writeWorkspace = async (format: ExportFormat = 'full') => {
-    const { projectJson, pythonCode } = getPayload()
-    const files = buildExportBundle(graphDoc, projectJson, pythonCode, format)
+    const payload = getPayload()
+    const files = buildExportBundle(
+      graphDoc,
+      payload.projectJson,
+      payload.pythonCode,
+      format,
+      payload.nodes,
+      payload.edges,
+      payload.canvasByGraph,
+    )
     await platformApi.writeProjectFiles(projectId, format, files)
   }
 
@@ -188,8 +196,16 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const handleExport = async () => {
     setBusy(true)
     try {
-      const { projectJson, pythonCode } = getPayload()
-      const files = buildExportBundle(graphDoc, projectJson, pythonCode, exportFormat)
+      const payload = getPayload()
+      const files = buildExportBundle(
+        graphDoc,
+        payload.projectJson,
+        payload.pythonCode,
+        exportFormat,
+        payload.nodes,
+        payload.edges,
+        payload.canvasByGraph,
+      )
       const blob = await platformApi.exportBundle(projectId, exportFormat, files)
       downloadBlob(blob, `${projectId}-${exportFormat}.zip`)
       appendLog(`Exported ${exportFormat} bundle`)

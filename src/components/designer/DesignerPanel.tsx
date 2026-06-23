@@ -1,7 +1,8 @@
-import { Box, GitBranch } from 'lucide-react'
+import { Box, GitBranch, Sparkles } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import { NodeDesigner } from './NodeDesigner'
 import { GraphDesigner } from './GraphDesigner'
+import { AssetDesignersPanel } from './AssetDesignersPanel'
 
 export function DesignerPanel() {
   const designerTab = useGraphStore((s) => s.designerTab)
@@ -18,7 +19,7 @@ export function DesignerPanel() {
           onClick={() => setDesignerTab('node')}
         >
           <Box size={14} />
-          Node Designer
+          Node
           {selectedNodeId && <span className="designer-tab-dot" />}
         </button>
         <button
@@ -28,10 +29,21 @@ export function DesignerPanel() {
           onClick={() => setDesignerTab('graph')}
         >
           <GitBranch size={14} />
-          Graph Designer
+          Graph
+        </button>
+        <button
+          type="button"
+          data-testid="designer-tab-assets"
+          className={`designer-tab ${designerTab === 'assets' ? 'active' : ''}`}
+          onClick={() => setDesignerTab('assets')}
+        >
+          <Sparkles size={14} />
+          Assets
         </button>
       </nav>
-      {designerTab === 'node' ? <NodeDesigner /> : <GraphDesigner />}
+      {designerTab === 'node' && <NodeDesigner />}
+      {designerTab === 'graph' && <GraphDesigner />}
+      {designerTab === 'assets' && <AssetDesignersPanel />}
     </aside>
   )
 }

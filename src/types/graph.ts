@@ -7,6 +7,8 @@ export type NodeKind =
   | 'function'
   | 'subgraph'
   | 'agent'
+  | 'rag'
+  | 'intent_classifier'
 
 export type StateFieldType = 'str' | 'int' | 'float' | 'bool' | 'list' | 'dict' | 'messages'
 
@@ -97,6 +99,107 @@ export interface AgentNodeData extends BaseNodeData {
   delegateTools: boolean
 }
 
+export type RagRetrievalMode = 'vector' | 'vectorless' | 'hybrid'
+
+export type ChunkStrategy = 'recursive' | 'fixed' | 'semantic' | 'markdown' | 'sentence'
+
+export type EmbeddingProvider = 'openai' | 'cohere' | 'huggingface' | 'local'
+
+export type VectorStoreKind = 'chroma' | 'pinecone' | 'pgvector' | 'faiss' | 'in_memory'
+
+export interface RagPipelineConfig {
+  id: string
+  name: string
+  description: string
+  chunkStrategy: ChunkStrategy
+  chunkSize: number
+  chunkOverlap: number
+  embeddingProvider: EmbeddingProvider
+  embeddingModel: string
+  retrievalMode: RagRetrievalMode
+  vectorStore: VectorStoreKind
+  topK: number
+  rerankEnabled: boolean
+  rerankModel: string
+  sourcePaths: string
+  metadataFilters: string
+}
+
+export interface RagNodeData extends BaseNodeData {
+  kind: 'rag'
+  pipelineId: string
+  queryKey: string
+  outputKey: string
+  personaId: string
+  skillIds: string[]
+  guardrailIds: string[]
+  includeSources: boolean
+}
+
+export interface IntentDefinition {
+  id: string
+  label: string
+  description: string
+  examples: string
+}
+
+export interface IntentClassifierNodeData extends BaseNodeData {
+  kind: 'intent_classifier'
+  model: string
+  systemPrompt: string
+  confidenceThreshold: number
+  fallbackIntent: string
+  multiIntent: boolean
+  intents: IntentDefinition[]
+  classifierFn: string
+}
+
+export interface SkillDefinition {
+  id: string
+  name: string
+  description: string
+  instructions: string
+  toolIds: string[]
+  personaId: string
+  promptTemplate: string
+  tags: string
+}
+
+export type GuardrailType = 'input' | 'output' | 'both'
+
+export type GuardrailAction = 'block' | 'warn' | 'redact' | 'rewrite'
+
+export interface GuardrailDefinition {
+  id: string
+  name: string
+  description: string
+  type: GuardrailType
+  policy: string
+  action: GuardrailAction
+  severity: 'low' | 'medium' | 'high'
+  enabled: boolean
+}
+
+export interface BusinessRuleDefinition {
+  id: string
+  name: string
+  description: string
+  condition: string
+  action: string
+  priority: number
+  enabled: boolean
+}
+
+export interface PersonaDefinition {
+  id: string
+  name: string
+  role: string
+  tone: string
+  systemPrompt: string
+  constraints: string
+  vocabulary: string
+}
+
 export interface StartNodeData extends BaseNodeData {
   kind: 'start'
 }
@@ -114,6 +217,8 @@ export type StitchNodeData =
   | FunctionNodeData
   | SubgraphNodeData
   | AgentNodeData
+  | RagNodeData
+  | IntentClassifierNodeData
 
 export interface LifecycleHooks {
   onStartup: string
@@ -263,7 +368,7 @@ export interface SubgraphDefinition {
 }
 
 export interface GraphDocument {
-  version: '1.0'
+  version: '1.0' | '1.1'
   name: string
   description?: string
   stateFields: StateField[]
@@ -274,6 +379,11 @@ export interface GraphDocument {
   toolRegistry: ToolDefinition[]
   agentRegistry: AgentDefinition[]
   mcpServers: McpServerDefinition[]
+  skillRegistry: SkillDefinition[]
+  guardrailRegistry: GuardrailDefinition[]
+  businessRuleRegistry: BusinessRuleDefinition[]
+  personaRegistry: PersonaDefinition[]
+  ragPipelines: RagPipelineConfig[]
 }
 
 export interface CanvasSnapshot {

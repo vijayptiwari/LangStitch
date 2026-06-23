@@ -353,6 +353,50 @@ export function NodeDesigner() {
           </>
         )}
 
+        {data.kind === 'intent_classifier' && (
+          <>
+            <Section title="Multi-intent classification">
+              <Field label="Model">
+                <input className="input" list="model-presets" value={data.model} onChange={(e) => set({ model: e.target.value })} />
+              </Field>
+              <Field label="System prompt">
+                <textarea className="textarea designer-prompt" rows={4} value={data.systemPrompt} onChange={(e) => set({ systemPrompt: e.target.value })} />
+              </Field>
+              <SliderField label="Confidence threshold" value={data.confidenceThreshold} min={0} max={1} step={0.05} onChange={(v) => set({ confidenceThreshold: v })} />
+              <Field label="Fallback intent">
+                <input className="input" value={data.fallbackIntent} onChange={(e) => set({ fallbackIntent: e.target.value })} />
+              </Field>
+              <label className="designer-check">
+                <input type="checkbox" checked={data.multiIntent} onChange={(e) => set({ multiIntent: e.target.checked })} />
+                Allow multiple intents per message
+              </label>
+              <Field label="Classifier function (Python)" hint="Must return intent label(s)">
+                <textarea className="textarea code designer-code" rows={10} value={data.classifierFn} onChange={(e) => set({ classifierFn: e.target.value })} />
+              </Field>
+            </Section>
+            <Section title="Intents">
+              {data.intents.map((intent, idx) => (
+                <div key={intent.id} className="branch-editor">
+                  <input className="input" value={intent.label} placeholder="Intent label" onChange={(e) => {
+                    const intents = [...data.intents]
+                    intents[idx] = { ...intent, label: e.target.value }
+                    set({ intents })
+                  }} />
+                  <input className="input" value={intent.examples} placeholder="Example phrases" onChange={(e) => {
+                    const intents = [...data.intents]
+                    intents[idx] = { ...intent, examples: e.target.value }
+                    set({ intents })
+                  }} />
+                  <button type="button" className="btn-danger-sm" onClick={() => set({ intents: data.intents.filter((i) => i.id !== intent.id) })}>×</button>
+                </div>
+              ))}
+              <button type="button" className="btn-secondary-sm" onClick={() => set({ intents: [...data.intents, { id: `i_${Date.now().toString(36)}`, label: 'new_intent', description: '', examples: '' }] })}>
+                <Plus size={12} /> Add intent
+              </button>
+            </Section>
+          </>
+        )}
+
         {data.kind === 'function' && (
           <Section title="Python function">
             <Field label="Function name">
@@ -364,6 +408,43 @@ export function NodeDesigner() {
             <Field label="Output state key">
               <input className="input" value={data.outputKey} onChange={(e) => set({ outputKey: e.target.value })} />
             </Field>
+          </Section>
+        )}
+
+        {data.kind === 'rag' && (
+          <Section title="RAG Agent">
+            <Field label="RAG pipeline">
+              <select className="input" value={data.pipelineId} onChange={(e) => set({ pipelineId: e.target.value })}>
+                <option value="">Select pipeline…</option>
+                {(document.ragPipelines ?? []).map((p) => (
+                  <option key={p.id} value={p.id}>{p.name} ({p.retrievalMode})</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Query state key">
+              <input className="input" value={data.queryKey} onChange={(e) => set({ queryKey: e.target.value })} />
+            </Field>
+            <Field label="Output state key">
+              <input className="input" value={data.outputKey} onChange={(e) => set({ outputKey: e.target.value })} />
+            </Field>
+            <Field label="Persona">
+              <select className="input" value={data.personaId} onChange={(e) => set({ personaId: e.target.value })}>
+                <option value="">None</option>
+                {(document.personaRegistry ?? []).map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Skills" hint="Comma-separated skill IDs">
+              <input className="input" value={(data.skillIds ?? []).join(', ')} onChange={(e) => set({ skillIds: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
+            </Field>
+            <Field label="Guardrails" hint="Comma-separated guardrail IDs">
+              <input className="input" value={(data.guardrailIds ?? []).join(', ')} onChange={(e) => set({ guardrailIds: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
+            </Field>
+            <label className="designer-check">
+              <input type="checkbox" checked={data.includeSources ?? true} onChange={(e) => set({ includeSources: e.target.checked })} />
+              Include source citations in output
+            </label>
           </Section>
         )}
 
