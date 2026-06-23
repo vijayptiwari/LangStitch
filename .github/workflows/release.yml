@@ -29,9 +29,10 @@ jobs:
 
       - name: Package release archive
         run: |
-          tar -czf langstitch-source.tar.gz \
+          tar -czf "$RUNNER_TEMP/langstitch-source.tar.gz" \
             --exclude=node_modules --exclude=dist --exclude=.git \
-            .
+            -C "$GITHUB_WORKSPACE" .
+          cp "$RUNNER_TEMP/langstitch-source.tar.gz" "$GITHUB_WORKSPACE/langstitch-source.tar.gz"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
