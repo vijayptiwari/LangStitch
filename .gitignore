@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+.DS_Store
+__pycache__
+*.pyc
+.venv
+venv
+playwright-report/
+test-results/
+playwright/.cache/

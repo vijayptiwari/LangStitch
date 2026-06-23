@@ -1,0 +1,118 @@
+{
+  "version": "1.0",
+  "name": "basic_agent",
+  "description": "Basic LangStitch agent fixture for E2E tests",
+  "stateFields": [
+    { "id": "sf1", "name": "messages", "type": "messages", "reducer": "append" }
+  ],
+  "subgraphs": [
+    {
+      "id": "main",
+      "name": "Main Graph",
+      "parentId": null,
+      "stateFields": [],
+      "nodeIds": [],
+      "edgeIds": []
+    }
+  ],
+  "activeSubgraphId": "main",
+  "remoteGraphs": [],
+  "toolRegistry": [
+    {
+      "id": "tool_search",
+      "name": "search",
+      "description": "Search tool for the basic agent",
+      "source": "python",
+      "mcpServerId": "",
+      "mcpToolName": "",
+      "inputSchema": "{\"type\":\"object\",\"properties\":{\"query\":{\"type\":\"string\"}}}",
+      "pythonCode": "def search(query: str) -> str:\n    return f\"Results for {query}\"",
+      "httpEndpoint": "",
+      "tags": "e2e"
+    }
+  ],
+  "agentRegistry": [
+    {
+      "id": "agent_helper",
+      "name": "Helper Agent",
+      "description": "Basic helper sub-agent",
+      "kind": "subagent",
+      "subgraphId": "main",
+      "remoteUrl": "",
+      "a2aAgentCardUrl": "",
+      "model": "gpt-4o-mini",
+      "systemPrompt": "You are a helpful assistant.",
+      "toolIds": ["tool_search"],
+      "authEnvVar": ""
+    }
+  ],
+  "mcpServers": [],
+  "settings": {
+    "checkpoint": "memory",
+    "interruptBefore": "",
+    "maxSteps": 25,
+    "enableStreaming": true,
+    "tags": "e2e,basic-agent"
+  },
+  "canvasByGraph": {
+    "main": {
+      "nodes": [
+        {
+          "id": "start-1",
+          "type": "startNode",
+          "position": { "x": 40, "y": 200 },
+          "data": { "kind": "start", "label": "Start" }
+        },
+        {
+          "id": "llm-1",
+          "type": "llmNode",
+          "position": { "x": 240, "y": 180 },
+          "data": {
+            "kind": "llm",
+            "label": "Assistant",
+            "model": "gpt-4o-mini",
+            "systemPrompt": "You are a helpful assistant.",
+            "userPrompt": "User: {input}",
+            "temperature": 0.7,
+            "maxTokens": 4096,
+            "topP": 1,
+            "outputKey": "messages",
+            "boundToolIds": ["tool_search"],
+            "boundAgentIds": ["agent_helper"]
+          }
+        },
+        {
+          "id": "agent-1",
+          "type": "agentNode",
+          "position": { "x": 480, "y": 180 },
+          "data": {
+            "kind": "agent",
+            "label": "Helper",
+            "connectionType": "registry",
+            "agentRegistryId": "agent_helper",
+            "subgraphId": "",
+            "remoteAgentId": "",
+            "a2aAgentId": "",
+            "inputMapping": "{}",
+            "outputMapping": "{}",
+            "delegateTools": true
+          }
+        },
+        {
+          "id": "end-1",
+          "type": "endNode",
+          "position": { "x": 720, "y": 200 },
+          "data": { "kind": "end", "label": "End" }
+        }
+      ],
+      "edges": [
+        { "id": "e1", "source": "start-1", "target": "llm-1" },
+        { "id": "e2", "source": "llm-1", "target": "agent-1" },
+        { "id": "e3", "source": "agent-1", "target": "end-1" }
+      ]
+    }
+  },
+  "navigationPath": ["main"],
+  "nodes": [],
+  "edges": []
+}

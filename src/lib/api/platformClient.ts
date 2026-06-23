@@ -1,0 +1,165 @@
+const API_BASE = import.meta.env.VITE_PLATFORM_API ?? '/api'
+
+async function request<T>(
+  path: string,
+  options?: RequestInit,
+): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    ...options,
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(err || res.statusText)
+  }
+  const ct = res.headers.get('content-type') ?? ''
+  if (ct.includes('application/json')) return res.json() as Promise<T>
+  return res as unknown as T
+}
+
+export interface GitStatus {
+  initialized: boolean
+  branch: string | null
+  clean: boolean
+  files: string[]
+  recent_commits?: string[]
+}
+
+export interface ProjectData {
+  document: Record<string, unknown>
+  nodes: unknown[]
+  edges: unknown[]
+  canvasByGraph?: Record<string, unknown>
+  navigationPath?: string[]
+}
+
+export const platformApi = {
+  health: () => request<{ status: string }>('/health'),
+
+  saveProject: (projectId: string, payload: ProjectData) =>
+    request<{ ok: boolean; path: string }>('/project/save', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, ...payload }),
+    }),
+
+  gitConnect: (body: {
+    project_id: string
+    remote_url?: string
+    branch?: string
+    username?: string
+    token?: string
+  }) =>
+    request<{ ok: boolean; status: string }>('/git/connect', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  gitStatus: (projectId: string) =>
+    request<GitStatus>(`/git/status/${encodeURIComponent(projectId)}`),
+
+  gitSync: (projectId: string, strategy = 'pull') =>
+    request<{ ok: boolean; project: ProjectData | null }>('/git/sync', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, strategy }),
+    }),
+
+  gitCommit: (projectId: string, message: string) =>
+    request<{ ok: boolean; commit: string }>('/git/commit', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, message }),
+    }),
+
+  gitPush: (projectId: string) =>
+    request<{ ok: boolean }>('/git/push', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId }),
+    }),
+
+  writeProjectFiles: (projectId: string, format: string, files: Record<string, string>) =>
+    request<{ ok: boolean }>('/project/files', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, format, files }),
+    }),
+
+  exportBundle: async (
+    projectId: string,
+    format: string,
+    files: Record<string, string>,
+  ) => {
+    const res = await fetch(`${API_BASE}/export`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project_id: projectId, format, files }),
+    })
+    if (!res.ok) throw new Error(await res.text())
+    return res.blob()
+  },
+
+  importProject: async (projectId: string, file: File, format = 'langstitch') => {
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch(
+      `${API_BASE}/import?project_id=${encodeURIComponent(projectId)}&format=${format}`,
+      { method: 'POST', body: fd },
+    )
+    if (!res.ok) throw new Error(await res.text())
+    return res.json() as Promise<ProjectData & { ok: boolean }>
+  },
+
+  snapshotVersion: (projectId: string, label?: string) =>
+    request<{ ok: boolean; version_id: string }>('/versions/snapshot', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, label }),
+    }),
+
+  listVersions: (projectId: string) =>
+    request<{ versions: { id: string; created: string; label: string }[] }>(
+      `/versions/${encodeURIComponent(projectId)}`,
+    ),
+
+  restoreVersion: (projectId: string, versionId: string) =>
+    request<ProjectData & { ok: boolean }>(
+      `/versions/${encodeURIComponent(projectId)}/restore/${encodeURIComponent(versionId)}`,
+      { method: 'POST' },
+    ),
+
+  build: (projectId: string, target: 'python' | 'spring' | 'all') =>
+    request<{ ok: boolean; built: string[]; logs: string }>('/build', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, target }),
+    }),
+
+  deployHelm: (body: {
+    project_id: string
+    release_name?: string
+    namespace?: string
+    image_tag?: string
+    dry_run?: boolean
+  }) =>
+    request<{ ok: boolean; release: string; output: string }>('/deploy/helm', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
+  runAgent: (projectId: string, pythonCode?: string) =>
+    request<{
+      ok: boolean
+      exit_code: number
+      stdout: string
+      stderr: string
+      result: Record<string, unknown> | null
+      graph_path: string
+    }>('/agent/run', {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, python_code: pythonCode }),
+    }),
+}
+
+export function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}

@@ -1,0 +1,40 @@
+{
+  "name": "langstitch",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "LangStitch — visual drag-and-drop IDE for LangGraph development",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "python -m uvicorn server.main:app --reload --host 127.0.0.1 --port 8787",
+    "dev:all": "npm run dev:api & npm run dev",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "agent:run": "python runtime/basic_agent.py"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.6.0",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@playwright/test": "^1.52.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
+}

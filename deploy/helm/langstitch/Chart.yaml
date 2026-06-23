@@ -1,0 +1,10 @@
+apiVersion: v2
+name: langstitch
+description: Deploy LangStitch Python LangGraph runtime and Spring gateway
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - langgraph
+  - langstitch
+  - ai-agents

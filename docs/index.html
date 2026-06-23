@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LangStitch — Documentation</title>
+  <meta name="description" content="Visual LangGraph IDE — documentation, quick start, and architecture." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Visual LangGraph IDE</p>
+      <h1>LangStitch</h1>
+      <p class="lead">
+        Design agent workflows on a canvas, connect tools and sub-agents, export Python,
+        and deploy with the platform API.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="../">Open LangStitch App</a>
+        <a class="btn btn-secondary" href="https://github.com/vijayptiwari/LangStitch">View on GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="features">
+      <h2>Features</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Visual canvas</h3>
+          <p>Drag-and-drop nodes: LLM, Tool, Agent, Decision, Subgraph, Function, Start/End.</p>
+        </article>
+        <article class="card">
+          <h3>Integrations</h3>
+          <p>Tool registry, agent registry, MCP Studio, remote graphs, A2A, LangSmith &amp; Langfuse.</p>
+        </article>
+        <article class="card">
+          <h3>Codegen</h3>
+          <p>Live Python <code>StateGraph</code> export with lifecycle hooks, checkpointers, and logging.</p>
+        </article>
+        <article class="card">
+          <h3>Platform</h3>
+          <p>Git sync, export/import, snapshots, Docker build, and Helm deploy via FastAPI backend.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="quick-start">
+      <h2>Quick start</h2>
+      <pre><code># Clone &amp; install
+git clone https://github.com/vijayptiwari/LangStitch.git
+cd LangStitch
+npm install
+pip install -r server/requirements.txt
+
+# Terminal 1 — platform API
+npm run dev:api
+
+# Terminal 2 — UI
+npm run dev</code></pre>
+      <p>Open <a href="http://localhost:5173">http://localhost:5173</a> locally, or use the
+        <a href="../">hosted static app</a> (canvas only — run the API locally for Platform features).</p>
+    </section>
+
+    <section id="agent">
+      <h2>Basic agent</h2>
+      <pre><code># Run smoke-test agent
+npm run agent:run
+
+# Via API (with dev:api running)
+curl -X POST http://127.0.0.1:8787/api/agent/run \
+  -H "Content-Type: application/json" \
+  -d "{\"project_id\":\"basic_agent_test\"}"</code></pre>
+    </section>
+
+    <section id="testing">
+      <h2>E2E tests</h2>
+      <pre><code>npx playwright install chromium
+npm run test:e2e</code></pre>
+      <p>Playwright starts the API and Vite dev server, mimics building a basic agent in the UI, and runs the agent via API.</p>
+    </section>
+
+    <section id="structure">
+      <h2>Project structure</h2>
+      <pre><code>LangStitch/
+├── src/           React + React Flow UI
+├── server/        FastAPI platform API
+├── runtime/       Runnable basic_agent.py
+├── e2e/           Playwright tests
+├── docs/          This documentation site
+└── deploy/helm/   Kubernetes chart</code></pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>LangStitch · MIT License · <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a></p>
+  </footer>
+</body>
+</html>
