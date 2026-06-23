@@ -75,14 +75,14 @@ export function GraphCanvas() {
 
   const defaultEdgeOptions = useMemo(
     () => ({
-      animated: true,
-      style: { strokeWidth: 2.5 },
+      animated: false,
+      style: { strokeWidth: 2, stroke: '#6366f1' },
     }),
     [],
   )
 
   const connectionLineStyle = useMemo(
-    () => ({ stroke: '#818cf8', strokeWidth: 2.5 }),
+    () => ({ stroke: '#7c89ff', strokeWidth: 2 }),
     [],
   )
 
@@ -109,9 +109,9 @@ export function GraphCanvas() {
       >
         <Background
           variant={BackgroundVariant.Dots}
-          gap={22}
-          size={1.2}
-          color="rgba(100, 116, 139, 0.22)"
+          gap={26}
+          size={0.75}
+          color="rgba(255, 255, 255, 0.04)"
         />
         <Controls showInteractive={false} position="bottom-left" />
         <MiniMap

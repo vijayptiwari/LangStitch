@@ -14,22 +14,29 @@ import type { GraphDocument } from '../../types/graph'
 
 function LangStitchLogo() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden>
+      <circle cx="9" cy="16" r="3.25" fill="#a5b4fc" />
+      <circle cx="23" cy="9" r="3.25" fill="#818cf8" />
+      <circle cx="23" cy="23" r="3.25" fill="#6366f1" />
       <path
-        d="M4 12c3-4 6-4 8 0s5 4 8 0"
-        stroke="white"
-        strokeWidth="2"
+        d="M12.2 15.2 19.8 10.8 M12.2 16.8 19.8 21.2"
+        stroke="#e0e7ff"
+        strokeWidth="1.75"
         strokeLinecap="round"
       />
       <path
-        d="M4 16c3-4 6-4 8 0s5 4 8 0"
-        stroke="white"
-        strokeWidth="2"
+        d="M9 16 H23"
+        stroke="url(#lsGlow)"
+        strokeWidth="1"
         strokeLinecap="round"
-        opacity="0.65"
+        opacity="0.35"
       />
-      <circle cx="6" cy="8" r="2" fill="white" opacity="0.9" />
-      <circle cx="18" cy="8" r="2" fill="white" opacity="0.9" />
+      <defs>
+        <linearGradient id="lsGlow" x1="9" y1="16" x2="23" y2="16">
+          <stop stopColor="#6366f1" />
+          <stop offset="1" stopColor="#a5b4fc" />
+        </linearGradient>
+      </defs>
     </svg>
   )
 }

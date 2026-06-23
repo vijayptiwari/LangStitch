@@ -15,7 +15,7 @@
   <nav class="nav">
     <a class="nav-brand" href="./">LangStitch</a>
     <div class="nav-links">
-      <a href="#try">Try live</a>
+      <a href="#start">Get started</a>
       <a href="#features">Features</a>
       <a href="#compare">Compare</a>
       <a href="docs/">Docs</a>
@@ -32,8 +32,8 @@
         guardrails, RAG pipelines, and export a Python&nbsp;3.13 multi-module project in one click.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#try">Try it live ↓</a>
-        <a class="btn btn-secondary" href="app/">Open full IDE</a>
+        <a class="btn btn-primary" href="app/">Open IDE</a>
+        <a class="btn btn-secondary" href="#start">Get started</a>
         <a class="btn btn-secondary" href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
       </div>
       <div class="hero-badges">
@@ -46,26 +46,75 @@
     </div>
   </header>
 
-  <section id="try" class="try-section">
+  <section id="start" class="start-section">
     <div class="container-wide">
-      <div class="try-header">
-        <div>
-          <h2>Try LangStitch live</h2>
-          <p class="try-sub">No install — the canvas runs in your browser. Platform API features (Git, export, agent run) need Docker or local dev.</p>
+      <div class="start-grid">
+        <div class="start-copy">
+          <p class="eyebrow">Open the IDE</p>
+          <h2>Design on a production-grade canvas</h2>
+          <p class="start-lede">
+            Open LangStitch in a full tab for the complete experience — asset designers, export,
+            and platform tools. No embedded preview; the IDE deserves the full viewport.
+          </p>
+          <div class="start-actions">
+            <a class="btn btn-primary" href="app/">Open LangStitch IDE</a>
+            <a class="btn btn-secondary" href="docs/">Read docs</a>
+          </div>
+          <ul class="start-steps">
+            <li><strong>Browser</strong> — open the IDE link above (GitHub Pages)</li>
+            <li><strong>Docker</strong> — full stack with Platform API on port 8080</li>
+            <li><strong>Local dev</strong> — <code>npm install && npm start</code></li>
+          </ul>
+          <div class="start-cards">
+            <article class="start-card">
+              <h3>Docker</h3>
+              <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
+cd LangStitch
+docker compose -f docker-compose.prod.yml up</code></pre>
+              <p>→ <strong>http://localhost:8080</strong></p>
+            </article>
+            <article class="start-card">
+              <h3>Local dev</h3>
+              <pre><code>npm install && pip install -r server/requirements.txt
+npm start</code></pre>
+              <p>→ <strong>http://localhost:5173</strong></p>
+            </article>
+          </div>
         </div>
-        <div class="try-actions">
-          <a class="btn btn-primary" href="app/" target="_blank" rel="noopener">Open full screen</a>
-          <a class="btn btn-secondary" href="try.html">Dedicated try page</a>
+        <div class="product-preview" aria-hidden="true">
+          <div class="product-preview__chrome">
+            <span class="product-preview__dot"></span>
+            <span class="product-preview__dot"></span>
+            <span class="product-preview__dot"></span>
+            <span class="product-preview__title">LangStitch · billing-agent.langstitch</span>
+          </div>
+          <div class="product-preview__body">
+            <div class="preview-sidebar">
+              <span class="preview-sidebar__label">Nodes</span>
+              <span class="preview-pill">LLM</span>
+              <span class="preview-pill">RAG</span>
+              <span class="preview-pill">Tool</span>
+              <span class="preview-pill">Agent</span>
+            </div>
+            <div class="preview-canvas">
+              <div class="preview-node preview-node--start">Start</div>
+              <div class="preview-node preview-node--rag">RAG Agent</div>
+              <div class="preview-node preview-node--llm">LLM · Skills</div>
+              <div class="preview-node preview-node--end">End</div>
+              <svg class="preview-edges" viewBox="0 0 400 220" preserveAspectRatio="none">
+                <path d="M95 110 H155" stroke="url(#edgeGrad)" stroke-width="2" fill="none" opacity="0.7"/>
+                <path d="M245 110 H305" stroke="url(#edgeGrad)" stroke-width="2" fill="none" opacity="0.7"/>
+                <path d="M175 95 Q210 60 260 95" stroke="url(#edgeGrad)" stroke-width="2" fill="none" opacity="0.5"/>
+                <defs>
+                  <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#818cf8"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="try-frame-wrap">
-        <iframe
-          src="app/"
-          title="LangStitch IDE — live preview"
-          class="try-frame"
-          loading="lazy"
-          allow="clipboard-read; clipboard-write"
-        ></iframe>
       </div>
     </div>
   </section>
@@ -311,7 +360,7 @@
               hooks — the path from canvas to cluster without a separate toolchain.
             </li>
             <li>
-              <strong>Developer-first defaults</strong> — Browser try on GitHub Pages, Docker one-liner, Playwright
+              <strong>Developer-first defaults</strong> — Open IDE on GitHub Pages, Docker one-liner, Playwright
               E2E, agent smoke tests, and MIT license — optimized for teams who own their runtime.
             </li>
           </ol>
@@ -339,32 +388,6 @@
       </div>
     </div>
   </section>
-
-  <main class="container">
-    <section id="start">
-      <h2>Get started in 1–2 steps</h2>
-      <div class="grid">
-        <article class="card card-highlight">
-          <h3>0 steps — try now</h3>
-          <p>Use the live canvas above or open the full IDE.</p>
-          <a class="btn btn-primary" href="app/">Open IDE →</a>
-        </article>
-        <article class="card card-highlight">
-          <h3>2 steps — Docker</h3>
-          <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
-cd LangStitch
-docker compose -f docker-compose.prod.yml up</code></pre>
-          <p>Open <strong>http://localhost:8080</strong></p>
-        </article>
-        <article class="card card-highlight">
-          <h3>2 steps — local dev</h3>
-          <pre><code>npm install && pip install -r server/requirements.txt
-npm start</code></pre>
-          <p>Open <strong>http://localhost:5173</strong></p>
-        </article>
-      </div>
-    </section>
-  </main>
 
   <footer class="footer">
     <p>
