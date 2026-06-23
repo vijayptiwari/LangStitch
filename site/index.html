@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LangStitch — Visual LangGraph IDE</title>
   <meta name="description" content="Design LangGraph agent workflows visually. Skills, guardrails, RAG, multi-intent routing, and Python 3.13 export — try it live in your browser." />
-  <meta property="og:title" content="LangStitch — Visual LangGraph IDE" />
-  <meta property="og:description" content="Drag-and-drop LangGraph IDE with RAG, skills, guardrails, and production export." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://vijayptiwari.github.io/LangStitch/" />
+  <meta name="theme-color" content="#6366f1" />
+  <link rel="canonical" href="https://vijayptiwari.github.io/LangStitch/" />
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml" />
+  <script src="assets/js/seo.js" defer></script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -17,6 +17,7 @@
     <div class="nav-links">
       <a href="#try">Try live</a>
       <a href="#features">Features</a>
+      <a href="#compare">Compare</a>
       <a href="docs/">Docs</a>
       <a class="nav-cta" href="app/">Open IDE</a>
     </div>
@@ -105,7 +106,241 @@
         </article>
       </div>
     </section>
+  </main>
 
+  <section id="compare" class="compare-section">
+    <div class="container-wide">
+      <div class="compare-intro">
+        <p class="eyebrow">Market landscape</p>
+        <h2>How LangStitch compares</h2>
+        <p class="compare-lede">
+          LangStitch takes the best ideas from visual agent builders and LangGraph tooling — then centers
+          <strong>production support</strong> and <strong>developer experience</strong>. Ship real Python projects,
+          not throwaway JSON blobs.
+        </p>
+      </div>
+
+      <h3 class="compare-subhead">What most tools optimize for</h3>
+      <div class="compare-panels">
+        <article class="compare-panel">
+          <h4>LangGraph Studio &amp; LangSmith</h4>
+          <ul>
+            <li>Excellent tracing, evals, and LangGraph-native debugging</li>
+            <li>Cloud-first — assumes LangSmith account and hosted runtime</li>
+            <li>Limited first-class designers for guardrails, business rules, and personas</li>
+            <li>Export is code-oriented; less opinionated multi-module project layout</li>
+          </ul>
+        </article>
+        <article class="compare-panel">
+          <h4>Langflow &amp; Flowise</h4>
+          <ul>
+            <li>Fast visual prototyping with broad component libraries</li>
+            <li>Flow JSON is the source of truth — harder to version in Git like app code</li>
+            <li>RAG is often node-level, not a full pipeline designer with hybrid retrieval</li>
+            <li>Production deploy, Helm, and platform API are not the primary UX</li>
+          </ul>
+        </article>
+        <article class="compare-panel">
+          <h4>Dify, n8n &amp; low-code platforms</h4>
+          <ul>
+            <li>Strong no-code workflows and connector marketplaces</li>
+            <li>LangGraph semantics and checkpointing are secondary or absent</li>
+            <li>Vendor-hosted runtime — less control over K8s layout and export structure</li>
+            <li>Agent governance (RBAC tools, guardrails as assets) is lighter</li>
+          </ul>
+        </article>
+        <article class="compare-panel">
+          <h4>Hand-rolled LangGraph repos</h4>
+          <ul>
+            <li>Full control — but every team reinvents graph layout, RAG wiring, and export scripts</li>
+            <li>Design and code drift apart; onboarding new devs is slow</li>
+            <li>No visual map of skills, guardrails, and personas alongside the graph</li>
+            <li>CI and deploy pipelines are bespoke per project</li>
+          </ul>
+        </article>
+      </div>
+
+      <h3 class="compare-subhead">Side-by-side</h3>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th class="compare-highlight">LangStitch</th>
+              <th>LangGraph Studio</th>
+              <th>Langflow / Flowise</th>
+              <th>Dify / n8n</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Visual LangGraph canvas</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Native</td>
+              <td><span class="mark-yes">✓</span> Native</td>
+              <td>Partial / adapter</td>
+              <td><span class="mark-no">✗</span> Own runtime</td>
+            </tr>
+            <tr>
+              <td>Try in browser (zero install)</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> GitHub Pages embed</td>
+              <td>Cloud account</td>
+              <td>Self-host or cloud</td>
+              <td>Cloud or self-host</td>
+            </tr>
+            <tr>
+              <td>Asset designers (skills, guardrails, rules, personas)</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> First-class sidebar</td>
+              <td>Limited</td>
+              <td>Prompt / component level</td>
+              <td>App / workflow level</td>
+            </tr>
+            <tr>
+              <td>RAG pipeline designer (vector / vectorless / hybrid)</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Dedicated designer + node</td>
+              <td>Via code / templates</td>
+              <td>Node chains</td>
+              <td>Knowledge base UI</td>
+            </tr>
+            <tr>
+              <td>Multi-intent routing node</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Built-in classifier node</td>
+              <td>Manual graph edges</td>
+              <td>Router components</td>
+              <td>Branching workflows</td>
+            </tr>
+            <tr>
+              <td>Python multi-module export (Git-friendly)</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Python 3.13 ZIP + <code>langsmith.json</code></td>
+              <td>Code export</td>
+              <td>JSON / Python varies</td>
+              <td>API / limited export</td>
+            </tr>
+            <tr>
+              <td>Git sync &amp; versioning in IDE</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Platform API</td>
+              <td>LangSmith projects</td>
+              <td><span class="mark-no">✗</span> Manual</td>
+              <td>Platform history</td>
+            </tr>
+            <tr>
+              <td>Docker build &amp; Helm deploy from UI</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Platform panel</td>
+              <td><span class="mark-no">✗</span></td>
+              <td><span class="mark-no">✗</span></td>
+              <td>Managed hosting</td>
+            </tr>
+            <tr>
+              <td>MCP Studio &amp; tool registry</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Built-in</td>
+              <td>MCP via ecosystem</td>
+              <td>Plugins</td>
+              <td>Integrations catalog</td>
+            </tr>
+            <tr>
+              <td>LangSmith / Langfuse observability</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Export + hooks</td>
+              <td><span class="mark-yes">✓</span> Deep native</td>
+              <td>Plugins</td>
+              <td>Built-in logs</td>
+            </tr>
+            <tr>
+              <td>Open source &amp; self-hostable</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> MIT</td>
+              <td>Partial / cloud</td>
+              <td><span class="mark-yes">✓</span> OSS</td>
+              <td>Freemium / OSS tiers</td>
+            </tr>
+            <tr>
+              <td>Managed multi-tenant SaaS</td>
+              <td class="compare-gap"><span class="mark-gap">→</span> Roadmap</td>
+              <td><span class="mark-yes">✓</span> LangSmith Cloud</td>
+              <td><span class="mark-yes">✓</span> Cloud tiers</td>
+              <td><span class="mark-yes">✓</span> Core product</td>
+            </tr>
+            <tr>
+              <td>Real-time collaborative editing</td>
+              <td class="compare-gap"><span class="mark-gap">→</span> Planned</td>
+              <td><span class="mark-yes">✓</span> Team features</td>
+              <td>Rare</td>
+              <td><span class="mark-yes">✓</span> Shared workspaces</td>
+            </tr>
+            <tr>
+              <td>Eval datasets &amp; trace replay (LangSmith depth)</td>
+              <td class="compare-gap"><span class="mark-gap">→</span> Export today; deeper evals planned</td>
+              <td><span class="mark-yes">✓</span> Best-in-class</td>
+              <td>Basic</td>
+              <td>Moderate</td>
+            </tr>
+            <tr>
+              <td>Enterprise SSO / org RBAC</td>
+              <td class="compare-gap"><span class="mark-gap">→</span> Platform RBAC first</td>
+              <td><span class="mark-yes">✓</span> Enterprise</td>
+              <td>Varies</td>
+              <td><span class="mark-yes">✓</span> Enterprise tiers</td>
+            </tr>
+            <tr>
+              <td>Connector / template marketplace</td>
+              <td class="compare-gap"><span class="mark-gap">→</span> Growing</td>
+              <td>LangChain hub</td>
+              <td><span class="mark-yes">✓</span> Large libraries</td>
+              <td><span class="mark-yes">✓</span> Very large</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="compare-columns">
+        <article class="compare-edge">
+          <h3>LangStitch edge — production &amp; DX</h3>
+          <ol>
+            <li>
+              <strong>Code is the contract</strong> — Export a buildable Python&nbsp;3.13 project with
+              <code>graphs/</code>, <code>skills/</code>, <code>guardrails/</code>, and
+              <code>langsmith.json</code> for round-trip IDE import. Review in PRs like any backend service.
+            </li>
+            <li>
+              <strong>Governance as assets</strong> — Skills, guardrails, business rules, and personas are
+              designed once, versioned, and wired on the canvas — not buried in prompt strings.
+            </li>
+            <li>
+              <strong>RAG you can operate</strong> — Chunking, embedding, vector / vectorless / hybrid retrieval
+              in a pipeline designer — bound to a RAG Agent node, not a one-off chain.
+            </li>
+            <li>
+              <strong>Platform panel for ops</strong> — Git sync, Docker build, Helm deploy, and structured logging
+              hooks — the path from canvas to cluster without a separate toolchain.
+            </li>
+            <li>
+              <strong>Developer-first defaults</strong> — Browser try on GitHub Pages, Docker one-liner, Playwright
+              E2E, agent smoke tests, and MIT license — optimized for teams who own their runtime.
+            </li>
+          </ol>
+        </article>
+        <article class="compare-gaps">
+          <h3>Honest gaps — building toward parity + more</h3>
+          <ul>
+            <li><strong>Managed cloud</strong> — No one-click multi-tenant SaaS yet; self-host and Docker first.</li>
+            <li><strong>Deep evals</strong> — LangSmith-native dataset runs and trace replay are export hooks today, not full in-IDE eval suites.</li>
+            <li><strong>Live collaboration</strong> — Single-editor canvas; no real-time multi-user cursors yet.</li>
+            <li><strong>Enterprise identity</strong> — Tool RBAC and guardrails exist; org-wide SSO/SAML is on the roadmap.</li>
+            <li><strong>Marketplace scale</strong> — Smaller pre-built template library vs mature low-code catalogs.</li>
+          </ul>
+          <p class="compare-gaps-note">
+            Goal: match the table stakes everyone expects, then win on export quality, governance assets,
+            K8s-native deploy, and the Agent Engineering discipline — not on being another locked SaaS canvas.
+          </p>
+        </article>
+      </div>
+
+      <div class="compare-callout">
+        <strong>Summary:</strong> LangStitch is for teams shipping LangGraph to production — visual design when you
+        need speed, real Python when you need control. Use LangSmith for traces; use LangStitch to design, export,
+        and deploy the graph your SREs can support.
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
     <section id="start">
       <h2>Get started in 1–2 steps</h2>
       <div class="grid">
