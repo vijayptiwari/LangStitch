@@ -31,9 +31,7 @@ jobs:
         run: npm ci
 
       - name: Build LangStitch app
-        env:
-          GITHUB_PAGES: 'true'
-        run: npm run build
+        run: npm run build -- --mode pages
 
       - name: Copy documentation site
         run: cp -r docs dist/docs

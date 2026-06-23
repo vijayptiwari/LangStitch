@@ -1,10 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const isGitHubPages = process.env.GITHUB_PAGES === 'true'
-
-export default defineConfig({
-  base: isGitHubPages ? '/LangStitch/' : '/',
+export default defineConfig(({ mode }) => ({
+  base: mode === 'pages' ? '/LangStitch/' : '/',
   plugins: [react()],
   server: {
     proxy: {
@@ -14,4 +12,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))
