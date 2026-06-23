@@ -1,4 +1,4 @@
-import type { NodeKind, LGNodeData, PaletteItem } from '../types/graph'
+import type { NodeKind, StitchNodeData, PaletteItem } from '../types/graph'
 import { MCP_TOOL_TEMPLATE } from './designerConstants'
 
 export const nodeTypes: Record<NodeKind, string> = {
@@ -129,10 +129,10 @@ export const paletteItems: PaletteItem[] = [
   },
 ]
 
-export function createNodeData(kind: NodeKind, label?: string): LGNodeData {
+export function createNodeData(kind: NodeKind, label?: string): StitchNodeData {
   const item = paletteItems.find((p) => p.kind === kind)
   if (!item) throw new Error(`Unknown node kind: ${kind}`)
-  return { ...item.defaultData, label: label ?? item.defaultData.label ?? kind } as LGNodeData
+  return { ...item.defaultData, label: label ?? item.defaultData.label ?? kind } as StitchNodeData
 }
 
 export function slugify(name: string): string {

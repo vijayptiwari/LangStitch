@@ -1,11 +1,11 @@
 import { Handle, Position } from '@xyflow/react'
 import type { NodeKind } from '../../../types/graph'
 import { getNodeTheme } from '../../../lib/nodeTheme'
-import type { LGNodeData } from '../../../types/graph'
+import type { StitchNodeData } from '../../../types/graph'
 
-export type LGNodeProps = {
+export type StitchShellProps = {
   id: string
-  data: LGNodeData
+  data: StitchNodeData
   selected?: boolean
 }
 

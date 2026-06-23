@@ -14,7 +14,7 @@ import type {
   CanvasSnapshot,
   GraphDocument,
   GraphSettings,
-  LGNodeData,
+  StitchNodeData,
   McpServerDefinition,
   RemoteGraphRef,
   StateField,
@@ -33,7 +33,7 @@ function styledEdge(
   id: string,
   source: string,
   target: string,
-  sourceKind: LGNodeData['kind'],
+  sourceKind: StitchNodeData['kind'],
   sourceHandle?: string,
 ): Edge {
   const color = getNodeTheme(sourceKind).edgeColor
@@ -64,7 +64,7 @@ function buildPathToGraph(
 function persistActiveCanvas(state: {
   canvasByGraph: Record<string, CanvasSnapshot>
   document: GraphDocument
-  nodes: Node<LGNodeData>[]
+  nodes: Node<StitchNodeData>[]
   edges: Edge[]
 }) {
   const id = state.document.activeSubgraphId
@@ -75,19 +75,19 @@ interface GraphStore {
   document: GraphDocument
   canvasByGraph: Record<string, CanvasSnapshot>
   navigationPath: string[]
-  nodes: Node<LGNodeData>[]
+  nodes: Node<StitchNodeData>[]
   edges: Edge[]
   selectedNodeId: string | null
   showCodePanel: boolean
   designerTab: 'node' | 'graph'
 
-  setNodes: (nodes: Node<LGNodeData>[]) => void
+  setNodes: (nodes: Node<StitchNodeData>[]) => void
   setEdges: (edges: Edge[]) => void
-  onNodesChange: (changes: NodeChange<Node<LGNodeData>>[]) => void
+  onNodesChange: (changes: NodeChange<Node<StitchNodeData>>[]) => void
   onEdgesChange: (changes: EdgeChange[]) => void
   onConnect: (connection: Connection) => void
-  addNode: (node: Node<LGNodeData>) => void
-  updateNodeData: (nodeId: string, data: Partial<LGNodeData>) => void
+  addNode: (node: Node<StitchNodeData>) => void
+  updateNodeData: (nodeId: string, data: Partial<StitchNodeData>) => void
   removeNode: (nodeId: string) => void
   selectNode: (nodeId: string | null) => void
   toggleCodePanel: () => void
@@ -121,13 +121,13 @@ interface GraphStore {
     document: GraphDocument
     canvasByGraph: Record<string, CanvasSnapshot>
     navigationPath: string[]
-    nodes: Node<LGNodeData>[]
+    nodes: Node<StitchNodeData>[]
     edges: Edge[]
   }
 
   loadProject: (payload: {
     document: GraphDocument
-    nodes?: Node<LGNodeData>[]
+    nodes?: Node<StitchNodeData>[]
     edges?: Edge[]
     canvasByGraph?: Record<string, CanvasSnapshot>
     navigationPath?: string[]
@@ -135,7 +135,7 @@ interface GraphStore {
   resetProject: () => void
 }
 
-const initialNodes: Node<LGNodeData>[] = [
+const initialNodes: Node<StitchNodeData>[] = [
   {
     id: 'start-1',
     type: 'startNode',
@@ -230,7 +230,7 @@ const initialCanvasByGraph: Record<string, CanvasSnapshot> = {
 function applyCanvasUpdate(
   get: () => GraphStore,
   set: (partial: Partial<GraphStore>) => void,
-  nodes: Node<LGNodeData>[],
+  nodes: Node<StitchNodeData>[],
   edges: Edge[],
 ) {
   const state = get()
@@ -287,7 +287,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       get,
       set,
       get().nodes.map((n) =>
-        n.id === nodeId ? { ...n, data: { ...n.data, ...data } as LGNodeData } : n,
+        n.id === nodeId ? { ...n, data: { ...n.data, ...data } as StitchNodeData } : n,
       ),
       get().edges,
     ),

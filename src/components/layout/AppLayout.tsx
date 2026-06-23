@@ -18,8 +18,7 @@ export function AppLayout() {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault()
-      const kind = (event.dataTransfer.getData(DRAG_MIME) ||
-        event.dataTransfer.getData('application/lgcanvas-node')) as NodeKind
+      const kind = event.dataTransfer.getData(DRAG_MIME) as NodeKind
       if (!kind) return
 
       const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect()

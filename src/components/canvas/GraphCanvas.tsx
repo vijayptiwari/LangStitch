@@ -9,7 +9,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useGraphStore } from '../../store/graphStore'
-import type { LGNodeData } from '../../types/graph'
+import type { StitchNodeData } from '../../types/graph'
 import { getNodeColor } from '../../lib/nodeTheme'
 import { CanvasToolbar } from './CanvasToolbar'
 import { StartNode } from './nodes/StartNode'
@@ -43,12 +43,12 @@ export function GraphCanvas() {
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
 
   const onNodeClick = useCallback(
-    (_: React.MouseEvent, node: Node<LGNodeData>) => selectNode(node.id),
+    (_: React.MouseEvent, node: Node<StitchNodeData>) => selectNode(node.id),
     [selectNode],
   )
 
   const onNodeDoubleClick = useCallback(
-    (_: React.MouseEvent, node: Node<LGNodeData>) => {
+    (_: React.MouseEvent, node: Node<StitchNodeData>) => {
       if (node.data.kind === 'subgraph') {
         const targetId =
           node.data.connectionType === 'local' ? node.data.subgraphId : null

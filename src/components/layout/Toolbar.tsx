@@ -156,7 +156,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".langstitch.json,.lgcanvas.json,application/json"
+          accept=".langstitch.json,application/json"
           hidden
           onChange={(e) => {
             const file = e.target.files?.[0]

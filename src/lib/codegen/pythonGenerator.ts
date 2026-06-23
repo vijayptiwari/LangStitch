@@ -3,7 +3,7 @@ import type {
   AgentDefinition,
   CanvasSnapshot,
   GraphDocument,
-  LGNodeData,
+  StitchNodeData,
   McpServerDefinition,
   RemoteGraphRef,
   RouterBranch,
@@ -325,7 +325,7 @@ function generateRemoteGraphRefs(remoteGraphs: RemoteGraphRef[]): string {
 }
 
 function generateNodeFunction(
-  node: Node<LGNodeData>,
+  node: Node<StitchNodeData>,
   remoteGraphs: RemoteGraphRef[],
   toolRegistry: ToolDefinition[],
   agentRegistry: AgentDefinition[],
@@ -385,12 +385,12 @@ function generateNodeFunction(
   }
 }
 
-function getNodeName(node: Node<LGNodeData>): string {
+function getNodeName(node: Node<StitchNodeData>): string {
   return slugify(node.id)
 }
 
 function generateGraphBuilder(
-  nodes: Node<LGNodeData>[],
+  nodes: Node<StitchNodeData>[],
   edges: Edge[],
   graphName = 'main',
   settings = DEFAULT_GRAPH_SETTINGS,
@@ -471,7 +471,7 @@ function generateGraphBuilder(
 
 export function generatePythonCode(
   doc: GraphDocument,
-  nodes: Node<LGNodeData>[],
+  nodes: Node<StitchNodeData>[],
   edges: Edge[],
   canvasByGraph?: Record<string, CanvasSnapshot>,
 ): string {
@@ -541,7 +541,7 @@ if __name__ == "__main__":
 
 export function exportGraphDocument(
   doc: GraphDocument,
-  nodes: Node<LGNodeData>[],
+  nodes: Node<StitchNodeData>[],
   edges: Edge[],
   canvasByGraph?: Record<string, CanvasSnapshot>,
   navigationPath?: string[],

@@ -1,5 +1,5 @@
 import { useGraphStore } from '../../store/graphStore'
-import type { LGNodeData, RouterBranch } from '../../types/graph'
+import type { StitchNodeData, RouterBranch } from '../../types/graph'
 import { getNodeTheme } from '../../lib/nodeTheme'
 import {
   LLM_MODEL_PRESETS,
@@ -78,7 +78,7 @@ export function NodeDesigner() {
 
   const data = node.data
   const theme = getNodeTheme(data.kind)
-  const set = (patch: Partial<LGNodeData>) => updateNodeData(node.id, patch)
+  const set = (patch: Partial<StitchNodeData>) => updateNodeData(node.id, patch)
 
   return (
     <div className="designer-panel">

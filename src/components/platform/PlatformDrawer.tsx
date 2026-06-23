@@ -18,7 +18,7 @@ import {
   type ExportFormat,
 } from '../../lib/codegen/bundleGenerator'
 import { platformApi, downloadBlob } from '../../lib/api/platformClient'
-import type { GraphDocument, LGNodeData } from '../../types/graph'
+import type { GraphDocument, StitchNodeData } from '../../types/graph'
 import type { Edge, Node } from '@xyflow/react'
 
 type Tab = 'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy'
@@ -143,9 +143,9 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
       if (r.project) {
         loadProject({
           document: r.project.document as unknown as GraphDocument,
-          nodes: r.project.nodes as Node<LGNodeData>[] | undefined,
+          nodes: r.project.nodes as Node<StitchNodeData>[] | undefined,
           edges: r.project.edges as Edge[] | undefined,
-          canvasByGraph: r.project.canvasByGraph as Record<string, { nodes: Node<LGNodeData>[]; edges: Edge[] }> | undefined,
+          canvasByGraph: r.project.canvasByGraph as Record<string, { nodes: Node<StitchNodeData>[]; edges: Edge[] }> | undefined,
           navigationPath: r.project.navigationPath as string[] | undefined,
         })
         appendLog('Synced from git — canvas updated')
@@ -207,9 +207,9 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
       const r = await platformApi.importProject(projectId, file, fmt)
       loadProject({
         document: r.document as unknown as GraphDocument,
-        nodes: r.nodes as Node<LGNodeData>[] | undefined,
+        nodes: r.nodes as Node<StitchNodeData>[] | undefined,
         edges: r.edges as Edge[] | undefined,
-        canvasByGraph: r.canvasByGraph as Record<string, { nodes: Node<LGNodeData>[]; edges: Edge[] }> | undefined,
+        canvasByGraph: r.canvasByGraph as Record<string, { nodes: Node<StitchNodeData>[]; edges: Edge[] }> | undefined,
         navigationPath: r.navigationPath as string[] | undefined,
       })
       appendLog(`Imported ${file.name}`)
@@ -241,9 +241,9 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
       const r = await platformApi.restoreVersion(projectId, versionId)
       loadProject({
         document: r.document as unknown as GraphDocument,
-        nodes: r.nodes as Node<LGNodeData>[] | undefined,
+        nodes: r.nodes as Node<StitchNodeData>[] | undefined,
         edges: r.edges as Edge[] | undefined,
-        canvasByGraph: r.canvasByGraph as Record<string, { nodes: Node<LGNodeData>[]; edges: Edge[] }> | undefined,
+        canvasByGraph: r.canvasByGraph as Record<string, { nodes: Node<StitchNodeData>[]; edges: Edge[] }> | undefined,
         navigationPath: r.navigationPath as string[] | undefined,
       })
       appendLog(`Restored ${versionId}`)

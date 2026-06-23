@@ -1,4 +1,4 @@
 import type { Node, NodeProps } from '@xyflow/react'
-import type { LGNodeData } from '../../../types/graph'
+import type { StitchNodeData } from '../../../types/graph'
 
-export type StitchNodeProps = NodeProps<Node<LGNodeData>>
+export type StitchNodeProps = NodeProps<Node<StitchNodeData>>

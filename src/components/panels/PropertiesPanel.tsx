@@ -1,5 +1,5 @@
 import { useGraphStore } from '../../store/graphStore'
-import type { LGNodeData, StateFieldType } from '../../types/graph'
+import type { StitchNodeData, StateFieldType } from '../../types/graph'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -30,7 +30,7 @@ export function PropertiesPanel() {
 
   const data = node.data
 
-  const set = (patch: Partial<LGNodeData>) => updateNodeData(node.id, patch)
+  const set = (patch: Partial<StitchNodeData>) => updateNodeData(node.id, patch)
 
   return (
     <div className="panel">

@@ -10,7 +10,6 @@ export function NodePalette() {
 
   const onDragStart = useCallback((event: React.DragEvent, kind: NodeKind) => {
     event.dataTransfer.setData(DRAG_MIME, kind)
-    event.dataTransfer.setData('application/lgcanvas-node', kind)
     event.dataTransfer.effectAllowed = 'move'
   }, [])
 

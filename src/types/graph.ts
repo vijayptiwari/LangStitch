@@ -105,7 +105,7 @@ export interface EndNodeData extends BaseNodeData {
   kind: 'end'
 }
 
-export type LGNodeData =
+export type StitchNodeData =
   | StartNodeData
   | EndNodeData
   | LLMNodeData
@@ -277,7 +277,7 @@ export interface GraphDocument {
 }
 
 export interface CanvasSnapshot {
-  nodes: import('@xyflow/react').Node<LGNodeData>[]
+  nodes: import('@xyflow/react').Node<StitchNodeData>[]
   edges: import('@xyflow/react').Edge[]
 }
 
@@ -286,5 +286,5 @@ export interface PaletteItem {
   label: string
   description: string
   icon: string
-  defaultData: Partial<LGNodeData>
+  defaultData: Partial<StitchNodeData>
 }
