@@ -1,0 +1,21 @@
+{
+  "name": "LangStitch",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    }
+  },
+  "forwardPorts": [5173, 8787],
+  "portsAttributes": {
+    "5173": { "label": "LangStitch UI", "onAutoForward": "openBrowser" },
+    "8787": { "label": "Platform API" }
+  },
+  "postCreateCommand": "npm install && pip install -r server/requirements.txt && npx playwright install chromium",
+  "postAttachCommand": "npm start",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "ms-playwright.playwright"]
+    }
+  }
+}

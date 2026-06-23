@@ -24,6 +24,46 @@
   </header>
 
   <main class="container">
+    <section id="run">
+      <h2>Run in 1–2 steps</h2>
+      <div class="grid">
+        <article class="card card-highlight">
+          <h3>1 step — hosted</h3>
+          <p>No install. Open the canvas in your browser.</p>
+          <a class="btn btn-primary" href="../">Open LangStitch →</a>
+        </article>
+        <article class="card card-highlight">
+          <h3>2 steps — Docker (full stack)</h3>
+          <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
+cd LangStitch
+docker compose -f docker-compose.prod.yml up</code></pre>
+          <p>Then open <strong>http://localhost:8080</strong> (UI + Platform API).</p>
+        </article>
+        <article class="card card-highlight">
+          <h3>1 click — Codespaces</h3>
+          <p>On GitHub: <strong>Code → Create codespace on main</strong>. LangStitch starts automatically.</p>
+        </article>
+        <article class="card card-highlight">
+          <h3>2 steps — local dev</h3>
+          <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
+cd LangStitch
+npm install && pip install -r server/requirements.txt
+npm start</code></pre>
+          <p>Open <strong>http://localhost:5173</strong></p>
+        </article>
+      </div>
+    </section>
+
+    <section id="workflows">
+      <h2>Automated publishing (GitHub Actions)</h2>
+      <ul class="doc-list">
+        <li><strong>Deploy GitHub Pages</strong> — every push to <code>main</code> publishes this site + the app.</li>
+        <li><strong>Publish Docker</strong> — pushes <code>ghcr.io/vijayptiwari/langstitch-web</code> and <code>langstitch-api</code>.</li>
+        <li><strong>CI</strong> — build, Playwright E2E, and agent smoke tests on every PR.</li>
+        <li><strong>Release</strong> — tagged releases with source archives.</li>
+      </ul>
+    </section>
+
     <section id="features">
       <h2>Features</h2>
       <div class="grid">
@@ -46,29 +86,10 @@
       </div>
     </section>
 
-    <section id="quick-start">
-      <h2>Quick start</h2>
-      <pre><code># Clone &amp; install
-git clone https://github.com/vijayptiwari/LangStitch.git
-cd LangStitch
-npm install
-pip install -r server/requirements.txt
-
-# Terminal 1 — platform API
-npm run dev:api
-
-# Terminal 2 — UI
-npm run dev</code></pre>
-      <p>Open <a href="http://localhost:5173">http://localhost:5173</a> locally, or use the
-        <a href="../">hosted static app</a> (canvas only — run the API locally for Platform features).</p>
-    </section>
-
     <section id="agent">
       <h2>Basic agent</h2>
-      <pre><code># Run smoke-test agent
-npm run agent:run
+      <pre><code>npm run agent:run
 
-# Via API (with dev:api running)
 curl -X POST http://127.0.0.1:8787/api/agent/run \
   -H "Content-Type: application/json" \
   -d "{\"project_id\":\"basic_agent_test\"}"</code></pre>
@@ -78,18 +99,6 @@ curl -X POST http://127.0.0.1:8787/api/agent/run \
       <h2>E2E tests</h2>
       <pre><code>npx playwright install chromium
 npm run test:e2e</code></pre>
-      <p>Playwright starts the API and Vite dev server, mimics building a basic agent in the UI, and runs the agent via API.</p>
-    </section>
-
-    <section id="structure">
-      <h2>Project structure</h2>
-      <pre><code>LangStitch/
-├── src/           React + React Flow UI
-├── server/        FastAPI platform API
-├── runtime/       Runnable basic_agent.py
-├── e2e/           Playwright tests
-├── docs/          This documentation site
-└── deploy/helm/   Kubernetes chart</code></pre>
     </section>
   </main>
 

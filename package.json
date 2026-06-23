@@ -6,6 +6,7 @@
   "description": "LangStitch — visual drag-and-drop IDE for LangGraph development",
   "scripts": {
     "dev": "vite",
+    "start": "concurrently -k -n api,web -c blue,green \"npm run dev:api\" \"npm run dev\"",
     "dev:api": "python -m uvicorn server.main:app --reload --host 127.0.0.1 --port 8787",
     "dev:all": "npm run dev:api & npm run dev",
     "build": "tsc -b && vite build",
@@ -29,6 +30,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "concurrently": "^9.2.3",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",

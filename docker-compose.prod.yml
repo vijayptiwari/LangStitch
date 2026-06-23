@@ -1,0 +1,24 @@
+# LangStitch — run published images from GitHub Container Registry
+# Step 1: git clone https://github.com/vijayptiwari/LangStitch.git && cd LangStitch
+# Step 2: docker compose -f docker-compose.prod.yml up
+# Open: http://localhost:8080
+
+services:
+  api:
+    image: ghcr.io/vijayptiwari/langstitch-api:latest
+    environment:
+      LANGSTITCH_WORKSPACE: /data/workspaces
+    volumes:
+      - langstitch-workspaces:/data/workspaces
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/vijayptiwari/langstitch-web:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  langstitch-workspaces:

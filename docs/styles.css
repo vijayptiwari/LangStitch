@@ -103,6 +103,35 @@ h2 {
 .card h3 { margin: 0 0 0.5rem; font-size: 1rem; color: #c4b5fd; }
 .card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
+.card-highlight {
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.card-highlight pre {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.doc-list {
+  color: var(--muted);
+  line-height: 1.8;
+  padding-left: 1.25rem;
+}
+
+.doc-list code {
+  background: rgba(99, 102, 241, 0.15);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.card-highlight .btn {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
 pre {
   background: var(--surface);
   border: 1px solid var(--border);

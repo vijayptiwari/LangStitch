@@ -1,0 +1,29 @@
+# LangStitch — full stack (UI + Platform API)
+# Usage: docker compose up --build
+# Open: http://localhost:8080
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: langstitch-api:local
+    environment:
+      LANGSTITCH_WORKSPACE: /data/workspaces
+    volumes:
+      - langstitch-workspaces:/data/workspaces
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+    image: langstitch-web:local
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  langstitch-workspaces:
