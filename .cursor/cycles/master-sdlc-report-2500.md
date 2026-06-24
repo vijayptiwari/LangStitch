@@ -43,8 +43,18 @@
 | 48 | Collapsible Eval section | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
 | 49 | Guardrail search filter | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 50 | Edge label truncation tooltip | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 51 | Export manifest eval-dataset | APPROVED | VALIDATED | PASSED | 91 | 1 | yes | COMPLETE |
+| 52 | OpenAPI /api/export docs | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 53 | Eval history last-53 runs | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 54 | Eval finished live region | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 55 | Ctrl+K platform toggle | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 56 | Dirty flag clears on import | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 57 | Help docs link for core | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 58 | Open-shortcuts E2E flow | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 59 | Persist redo last-used | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 60 | Platform Git output copy | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 
-**Progress: 50 / 2500**
+**Progress: 60 / 2500**
 
 ## Batch log
 
@@ -55,12 +65,14 @@
 | 2 | 21–30 | 67c0e5c | green | COMPLETE |
 | 3 | 31–40 | 80ceb35 | green | COMPLETE |
 | 4 | 41–50 | 41c4cd9 | green | COMPLETE |
+| 5 | 51–60 | PENDING | green | COMPLETE |
 
 ## Summary
-- Completed: 50 / 2500 cycles
+- Completed: 60 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
 - Batch 3 avg UAT: 90.3
 - Batch 4 avg UAT: 89.9
-- Next: Batch 5 (cycles 51–60)
+- Batch 5 avg UAT: 90.2
+- Next: Batch 6 (cycles 61–70)

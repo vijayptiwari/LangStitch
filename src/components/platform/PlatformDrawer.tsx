@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Cloud,
   Download,
@@ -16,6 +16,7 @@ import {
 } from '../../lib/codegen/pythonGenerator'
 import {
   buildExportBundle,
+  generateExportManifest,
   type ExportFormat,
 } from '../../lib/codegen/bundleGenerator'
 import { platformApi, downloadBlob } from '../../lib/api/platformClient'
@@ -33,6 +34,36 @@ interface PlatformDrawerProps {
 
 function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
+}
+
+const EVAL_HISTORY_LIMIT = 53
+const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
+
+interface EvalHistoryEntry {
+  at: string
+  datasetName: string
+  datasetId: string
+  dryRun: boolean
+  message: string
+  latencyMs?: number
+}
+
+function loadEvalHistory(projectId: string): EvalHistoryEntry[] {
+  try {
+    const raw = sessionStorage.getItem(EVAL_HISTORY_KEY(projectId))
+    if (!raw) return []
+    const parsed = JSON.parse(raw) as EvalHistoryEntry[]
+    return Array.isArray(parsed) ? parsed.slice(0, EVAL_HISTORY_LIMIT) : []
+  } catch {
+    return []
+  }
+}
+
+function saveEvalHistory(projectId: string, entries: EvalHistoryEntry[]) {
+  sessionStorage.setItem(
+    EVAL_HISTORY_KEY(projectId),
+    JSON.stringify(entries.slice(0, EVAL_HISTORY_LIMIT)),
+  )
 }
 
 export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProps) {
@@ -68,6 +99,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   const [exportError, setExportError] = useState<string | null>(null)
   const [evalSectionExpanded, setEvalSectionExpanded] = useState(true)
   const [langsmithApiKeyConfigured, setLangsmithApiKeyConfigured] = useState<boolean | null>(null)
+  const [evalHistory, setEvalHistory] = useState<EvalHistoryEntry[]>(() => loadEvalHistory(projectIdFromDoc(graphDoc)))
+  const [evalFinishedAnnouncement, setEvalFinishedAnnouncement] = useState('')
+  const [copyFeedback, setCopyFeedback] = useState('')
 
   const projectId = projectIdFromDoc(graphDoc)
   const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
@@ -79,6 +113,10 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   useEffect(() => {
     sessionStorage.setItem(`langstitch-export-format-${projectId}`, exportFormat)
   }, [projectId, exportFormat])
+
+  useEffect(() => {
+    setEvalHistory(loadEvalHistory(projectId))
+  }, [projectId])
 
   const appendLog = (msg: string) => setLog((l) => `${l}\n${msg}`.trim())
 
@@ -107,6 +145,20 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
       pythonCode,
     }
   }, [getProjectPayload])
+
+  const exportManifestPreview = useMemo(() => {
+    const payload = getPayload()
+    const files = buildExportBundle(
+      graphDoc,
+      payload.projectJson,
+      payload.pythonCode,
+      exportFormat,
+      payload.nodes,
+      payload.edges,
+      payload.canvasByGraph,
+    )
+    return generateExportManifest(graphDoc, Object.keys(files))
+  }, [graphDoc, exportFormat, getPayload])
 
   const refreshGitStatus = useCallback(async () => {
     try {
@@ -361,6 +413,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
     setEvalResult('')
     setEvalResultUrl(null)
     setEvalLatencyMs(null)
+    setEvalFinishedAnnouncement('')
     try {
       const payload = getPayload()
       await platformApi.saveProject(projectId, {
@@ -390,12 +443,38 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
       setEvalResultUrl(res.url ?? null)
       setEvalLatencyMs(res.latency_ms ?? null)
       appendLog(dryRun ? `Eval dry-run: ${msg}` : `Eval: ${msg}`)
+      const entry: EvalHistoryEntry = {
+        at: new Date().toISOString(),
+        datasetName: evalConfig?.datasetName ?? '',
+        datasetId: evalConfig?.datasetId ?? '',
+        dryRun,
+        message: msg,
+        latencyMs: res.latency_ms,
+      }
+      const nextHistory = [entry, ...evalHistory].slice(0, EVAL_HISTORY_LIMIT)
+      setEvalHistory(nextHistory)
+      saveEvalHistory(projectId, nextHistory)
+      setEvalFinishedAnnouncement(
+        dryRun ? `Eval validation finished: ${msg}` : `Eval run finished: ${msg}`,
+      )
     } catch (e) {
       const err = String(e)
       setEvalResult(err)
       appendLog(err)
+      setEvalFinishedAnnouncement(`Eval run failed: ${err}`)
     } finally {
       setBusy(false)
+    }
+  }
+
+  const handleCopyLog = async () => {
+    if (!log) return
+    try {
+      await navigator.clipboard.writeText(log)
+      setCopyFeedback('Copied')
+      setTimeout(() => setCopyFeedback(''), 2000)
+    } catch {
+      setCopyFeedback('Copy failed')
     }
   }
 
@@ -510,6 +589,12 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
                 <Download size={14} /> Download ZIP
               </button>
+              <details className="export-manifest-details">
+                <summary>Export manifest preview</summary>
+                <pre className="export-manifest-preview" data-testid="export-manifest-preview">
+                  {exportManifestPreview}
+                </pre>
+              </details>
             </div>
           )}
 
@@ -672,6 +757,26 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       )}
                     </p>
                   )}
+                  <div
+                    aria-live="polite"
+                    aria-atomic="true"
+                    className="sr-only"
+                    data-testid="eval-finished-live-region"
+                  >
+                    {evalFinishedAnnouncement}
+                  </div>
+                  {evalHistory.length > 0 && (
+                    <ul className="eval-history-list" data-testid="eval-history-list">
+                      {evalHistory.map((entry, i) => (
+                        <li key={`${entry.at}-${i}`} data-testid={`eval-history-item-${i}`}>
+                          <span>{entry.at}</span>
+                          <span>{entry.dryRun ? 'dry-run' : 'run'}</span>
+                          <span>{entry.datasetName || entry.datasetId || '—'}</span>
+                          <span>{entry.message}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </>
               )}
             </div>
@@ -734,7 +839,20 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
           )}
 
           {log && (
-            <pre className="platform-log">{log}</pre>
+            <div className="platform-log-wrap">
+              <div className="platform-log-actions">
+                <button
+                  className="btn-secondary-sm"
+                  type="button"
+                  data-testid="git-output-copy"
+                  onClick={handleCopyLog}
+                >
+                  Copy output
+                </button>
+                {copyFeedback && <span className="platform-copy-feedback">{copyFeedback}</span>}
+              </div>
+              <pre className="platform-log" data-testid="platform-log">{log}</pre>
+            </div>
           )}
         </div>
       </div>

@@ -243,6 +243,71 @@ def health():
     }
 
 
+@app.get("/api/openapi.json")
+def openapi_description():
+    """OpenAPI-style schema describing platform export endpoints."""
+    return {
+        "openapi": "3.0.3",
+        "info": {
+            "title": "LangStitch Platform API",
+            "version": app.version,
+            "description": "Git sync, export/import, build, deploy, and eval for LangStitch projects.",
+        },
+        "paths": {
+            "/api/export": {
+                "post": {
+                    "summary": "Export project as ZIP bundle",
+                    "description": (
+                        "Writes project files to workspace, copies Helm chart, and returns "
+                        "a ZIP archive including export-manifest.json with eval-dataset metadata when configured."
+                    ),
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": ["project_id", "files"],
+                                    "properties": {
+                                        "project_id": {"type": "string"},
+                                        "format": {
+                                            "type": "string",
+                                            "enum": ["python", "spring", "full"],
+                                            "default": "full",
+                                        },
+                                        "files": {
+                                            "type": "object",
+                                            "additionalProperties": {"type": "string"},
+                                            "description": "Relative path → file contents",
+                                        },
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "ZIP export bundle",
+                            "content": {"application/zip": {"schema": {"type": "string", "format": "binary"}}},
+                        },
+                        "429": {
+                            "description": "Rate limit exceeded",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {"detail": {"type": "string"}},
+                                    }
+                                }
+                            },
+                        },
+                    },
+                }
+            }
+        },
+    }
+
+
 # ─── Project ───
 
 

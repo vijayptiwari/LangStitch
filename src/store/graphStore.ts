@@ -88,6 +88,7 @@ interface GraphStore {
   selectedNodeId: string | null
   showCodePanel: boolean
   designerTab: 'node' | 'graph' | 'assets'
+  isDirty: boolean
 
   /** Replace all nodes on the active canvas. */
   setNodes: (nodes: Node<StitchNodeData>[]) => void
@@ -319,6 +320,7 @@ function applyCanvasUpdate(
   set: (partial: Partial<GraphStore>) => void,
   nodes: Node<StitchNodeData>[],
   edges: Edge[],
+  markDirty = true,
 ) {
   const state = get()
   const id = state.document.activeSubgraphId
@@ -326,6 +328,7 @@ function applyCanvasUpdate(
     nodes,
     edges,
     canvasByGraph: syncCanvas(state.canvasByGraph, id, nodes, edges),
+    ...(markDirty ? { isDirty: true } : {}),
   })
 }
 
@@ -339,6 +342,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   showCodePanel: true,
   designerTab: 'graph',
   undoDepthLimitNotice: false,
+  isDirty: false,
 
   setNodes: (nodes) => applyCanvasUpdate(get, set, nodes, get().edges),
   setEdges: (edges) => applyCanvasUpdate(get, set, get().nodes, edges),
@@ -415,7 +419,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   setDesignerTab: (tab) => set({ designerTab: tab }),
 
   setDocumentMeta: (meta) =>
-    set({ document: { ...get().document, ...meta } }),
+    set({ document: { ...get().document, ...meta }, isDirty: true }),
 
   updateGraphSettings: (settings) => {
     const current = get().document.settings ?? DEFAULT_GRAPH_SETTINGS
@@ -438,6 +442,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
           a2a: { ...current.a2a, ...settings.a2a },
         },
       },
+      isDirty: true,
     })
   },
 
@@ -818,6 +823,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       edges: active.edges,
       selectedNodeId: null,
       designerTab: 'graph',
+      isDirty: false,
     })
   },
 
@@ -839,6 +845,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       edges: initialEdges,
       selectedNodeId: null,
       designerTab: 'graph',
+      isDirty: false,
     })
   },
 

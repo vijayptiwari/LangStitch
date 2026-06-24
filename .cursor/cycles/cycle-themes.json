@@ -536,7 +536,7 @@
       "feature": "Zip manifest lists eval-dataset in export bundle",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 52,
@@ -544,7 +544,7 @@
       "feature": "OpenAPI-style description for /api/export",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 53,
@@ -552,7 +552,7 @@
       "feature": "Eval history last-53 runs in session",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 54,
@@ -560,7 +560,7 @@
       "feature": "Screen-reader live region for eval finished",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 55,
@@ -568,7 +568,7 @@
       "feature": "Keyboard shortcut Ctrl+K for toggle platform",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 56,
@@ -576,7 +576,7 @@
       "feature": "Dirty flag clears after successful import",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 57,
@@ -584,7 +584,7 @@
       "feature": "Help tooltip links to docs for core",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 58,
@@ -592,7 +592,7 @@
       "feature": "E2E test: open-shortcuts user flow",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 59,
@@ -600,7 +600,7 @@
       "feature": "Persist toolbar redo last-used option",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 60,
@@ -608,7 +608,7 @@
       "feature": "Copy-to-clipboard for Platform Git output",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 61,

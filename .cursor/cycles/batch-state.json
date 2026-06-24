@@ -1,17 +1,17 @@
 {
   "program": "langstitch-sdlc-2500",
   "totalCycles": 2500,
-  "completedCycles": 50,
-  "currentBatch": 5,
+  "completedCycles": 60,
+  "currentBatch": 6,
   "batchSize": 10,
-  "nextCycleStart": 51,
-  "nextCycleEnd": 60,
+  "nextCycleStart": 61,
+  "nextCycleEnd": 70,
   "autoApprove": true,
   "autoPush": true,
   "uatThreshold": 85,
-  "status": "RUNNING",
-  "lastCompletedBatch": 4,
-  "lastCommit": "41c4cd9",
+  "status": "IDLE",
+  "lastCompletedBatch": 5,
+  "lastCommit": "PENDING",
   "startedAt": "2026-06-24T00:00:00Z",
-  "notes": "Batch 4 complete (cycles 41-50). Next: Batch 5 (cycles 51-60)."
+  "notes": "Batch 5 complete (cycles 51-60). Next: Batch 6 (cycles 61-70)."
 }

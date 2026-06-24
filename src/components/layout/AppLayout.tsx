@@ -24,6 +24,10 @@ export function AppLayout() {
         e.preventDefault()
         setPlatformOpen((open) => !open)
       }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setPlatformOpen((open) => !open)
+      }
       if (e.altKey && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault()
         setPlatformInitialTab('eval')

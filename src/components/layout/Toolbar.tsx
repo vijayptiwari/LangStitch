@@ -44,9 +44,13 @@ function LangStitchLogo() {
   )
 }
 
+const REDO_LAST_USED_KEY = 'langstitch-toolbar-redo-last-used'
+const DOCS_URL = 'https://vijayptiwari.github.io/LangStitch/docs/'
+
 export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const graphDoc = useGraphStore((s) => s.document)
   const nodes = useGraphStore((s) => s.nodes)
+  const isDirty = useGraphStore((s) => s.isDirty)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
   const loadProject = useGraphStore((s) => s.loadProject)
   const resetProject = useGraphStore((s) => s.resetProject)
@@ -66,6 +70,16 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [redoAvailable, setRedoAvailable] = useState(false)
+  const [redoLastUsed, setRedoLastUsed] = useState<string | null>(() => {
+    try {
+      const raw = localStorage.getItem(REDO_LAST_USED_KEY)
+      if (!raw) return null
+      const parsed = JSON.parse(raw) as { at?: string; graphName?: string }
+      return parsed.at ?? null
+    } catch {
+      return null
+    }
+  })
 
   useFocusTrap(shortcutsPanelRef, showShortcuts)
 
@@ -151,7 +165,19 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         </div>
         <div>
           <div className="brand-title" data-testid="brand-title">LangStitch</div>
-          <div className="brand-subtitle">Visual LangGraph IDE</div>
+          <div className="brand-subtitle">
+            Visual LangGraph IDE
+            <a
+              href={DOCS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="help-docs-link"
+              data-testid="help-docs-link-core"
+              title="Open LangStitch documentation"
+            >
+              Docs
+            </a>
+          </div>
         </div>
       </div>
 
@@ -165,6 +191,11 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           aria-label="Graph name"
           placeholder="My workflow…"
         />
+        {isDirty && (
+          <span className="toolbar-dirty-indicator" data-testid="graph-dirty-indicator" title="Unsaved changes">
+            ●
+          </span>
+        )}
         <div className="subgraph-tabs">
           <Layers size={14} />
           {graphDoc.subgraphs.map((sg) => (
@@ -203,11 +234,30 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           data-testid="toolbar-redo"
           title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset'}
           disabled={redoDisabled}
-          onClick={() => { redoProject(); setRedoAvailable(canRedo()) }}
+          onClick={() => {
+            redoProject()
+            setRedoAvailable(canRedo())
+            const at = new Date().toISOString()
+            localStorage.setItem(
+              REDO_LAST_USED_KEY,
+              JSON.stringify({ at, graphName: graphDoc.name }),
+            )
+            setRedoLastUsed(at)
+          }}
           type="button"
         >
           <RotateCw size={16} /> Redo
         </button>
+        {redoLastUsed && (
+          <span
+            className="toolbar-redo-persisted"
+            data-testid="toolbar-redo-persisted"
+            title={`Last redo: ${redoLastUsed}`}
+            aria-hidden
+          >
+            {redoLastUsed}
+          </span>
+        )}
         {undoDepthLimitNotice && (
           <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
             Undo history limit reached ({nodes.length > 0 ? 'oldest changes dropped' : ''}).
@@ -265,6 +315,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
             <ul>
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
+              <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
               <li><kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab</li>
               <li><kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)</li>
               <li><kbd>?</kbd> — Toggle this help</li>

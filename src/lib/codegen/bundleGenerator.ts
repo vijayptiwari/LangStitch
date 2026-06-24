@@ -252,6 +252,40 @@ export function generateDockerCompose(doc: GraphDocument): string {
 
 export type ExportFormat = 'python' | 'spring' | 'full'
 
+export function generateExportManifest(
+  doc: GraphDocument,
+  fileKeys: string[],
+): string {
+  const ev = doc.settings?.eval
+  const hasEvalDataset =
+    ev?.enabled && Boolean(ev.datasetName?.trim() || ev.datasetId?.trim())
+  const pkg = slugify(doc.name) || 'langstitch_graph'
+  const evalBundleFiles = hasEvalDataset
+    ? ['langsmith.json', `src/${pkg}/eval_runner.py`].filter((f) => fileKeys.includes(f))
+    : []
+
+  return JSON.stringify(
+    {
+      version: '1.0',
+      generated_at: new Date().toISOString(),
+      project: doc.name,
+      files: [...fileKeys].sort(),
+      ...(hasEvalDataset
+        ? {
+            'eval-dataset': {
+              enabled: true,
+              dataset_name: ev?.datasetName ?? '',
+              dataset_id: ev?.datasetId ?? '',
+              bundle_files: evalBundleFiles,
+            },
+          }
+        : {}),
+    },
+    null,
+    2,
+  )
+}
+
 export function buildExportBundle(
   doc: GraphDocument,
   projectJson: string,
@@ -278,6 +312,10 @@ export function buildExportBundle(
   if (format === 'full') {
     files['docker-compose.yml'] = generateDockerCompose(doc)
   }
+
+  const fileKeys = Object.keys(files)
+  fileKeys.push('export-manifest.json')
+  files['export-manifest.json'] = generateExportManifest(doc, fileKeys)
 
   return files
 }
