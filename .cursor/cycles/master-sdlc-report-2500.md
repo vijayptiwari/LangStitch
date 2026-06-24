@@ -21,7 +21,7 @@
 | Batch | Cycles | Commit | CI | Status |
 |-------|--------|--------|-----|--------|
 | Pilot | 1–10 | d6be517 | green | COMPLETE |
-| 1 | 11–20 | pending | green | COMPLETE |
+| 1 | 11–20 | 86953d1 | green | COMPLETE |
 
 ## Summary
 - Completed: 20 / 2500 cycles
