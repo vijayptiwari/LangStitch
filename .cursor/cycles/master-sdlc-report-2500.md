@@ -23,8 +23,18 @@
 | 28 | API X-Request-ID header | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 | 29 | Eval regression preset | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 30 | Skip link to canvas | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 31 | Shortcuts focus search | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 32 | Undo stack depth notice | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 33 | CHANGELOG entry template | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 34 | toolbar-save visibility E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 35 | Disable redo on empty graph | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 36 | Export retry on API error | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 37 | Guardrail description char count | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 38 | Ctrl+D node duplicate | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 39 | Export eval-dataset warning | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 40 | Export rate-limit 429 message | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 
-**Progress: 30 / 2500**
+**Progress: 40 / 2500**
 
 ## Batch log
 
@@ -33,10 +43,12 @@
 | Pilot | 1–10 | d6be517 | green | COMPLETE |
 | 1 | 11–20 | 86953d1 | green | COMPLETE |
 | 2 | 21–30 | 67c0e5c | green | COMPLETE |
+| 3 | 31–40 | pending | green | COMPLETE |
 
 ## Summary
-- Completed: 30 / 2500 cycles
+- Completed: 40 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
-- Next: Batch 3 (cycles 31–40)
+- Batch 3 avg UAT: 90.3
+- Next: Batch 4 (cycles 41–50)

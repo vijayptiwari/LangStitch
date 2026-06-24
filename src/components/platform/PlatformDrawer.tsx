@@ -64,9 +64,12 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const [evalResult, setEvalResult] = useState('')
   const [evalResultUrl, setEvalResultUrl] = useState<string | null>(null)
   const [evalLatencyMs, setEvalLatencyMs] = useState<number | null>(null)
+  const [exportError, setExportError] = useState<string | null>(null)
 
   const projectId = projectIdFromDoc(graphDoc)
   const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
+  const exportEvalDatasetWarning =
+    evalConfig.enabled && !evalConfig.datasetName.trim() && !evalConfig.datasetId.trim()
   const langsmithEnabled = graphDoc.settings?.observability?.langsmith?.enabled ?? false
   const observabilityEnabled = graphDoc.settings?.observability?.enabled ?? false
 
@@ -218,6 +221,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
 
   const handleExport = async () => {
     setBusy(true)
+    setExportError(null)
     try {
       const payload = getPayload()
       const files = buildExportBundle(
@@ -233,7 +237,9 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
       downloadBlob(blob, `${projectId}-${exportFormat}.zip`)
       appendLog(`Exported ${exportFormat} bundle`)
     } catch (e) {
-      appendLog(String(e))
+      const msg = e instanceof Error ? e.message : String(e)
+      setExportError(msg)
+      appendLog(msg)
     } finally {
       setBusy(false)
     }
@@ -467,6 +473,11 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
           {tab === 'export' && (
             <div className="platform-section">
               <p className="platform-hint">Export as Python LangGraph, Spring Boot gateway, or full bundle with Helm chart.</p>
+              {exportEvalDatasetWarning && (
+                <p className="platform-hint warn" data-testid="export-eval-dataset-warning">
+                  Eval is enabled but no dataset name or ID is configured. Export will omit eval-dataset metadata.
+                </p>
+              )}
               <Field label="Format">
                 <select className="input" value={exportFormat} onChange={(e) => setExportFormat(e.target.value as ExportFormat)}>
                   <option value="python">Python (LangGraph + FastAPI)</option>
@@ -474,6 +485,20 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
                   <option value="full">Full (Python + Spring + Docker + Helm)</option>
                 </select>
               </Field>
+              {exportError && (
+                <div className="platform-export-error" data-testid="export-error">
+                  <p>{exportError}</p>
+                  <button
+                    className="btn-secondary"
+                    type="button"
+                    data-testid="export-retry"
+                    disabled={busy}
+                    onClick={handleExport}
+                  >
+                    Retry export
+                  </button>
+                </div>
+              )}
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
                 <Download size={14} /> Download ZIP
               </button>

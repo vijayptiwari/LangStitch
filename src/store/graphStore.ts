@@ -26,7 +26,7 @@ import type {
   ToolDefinition,
 } from '../types/graph'
 import { createDefaultDocument, createSubgraph } from '../lib/codegen/pythonGenerator'
-import { DEFAULT_GRAPH_SETTINGS, mergeGraphSettings } from '../lib/designerConstants'
+import { DEFAULT_GRAPH_SETTINGS, MAX_UNDO_STACK_DEPTH, mergeGraphSettings } from '../lib/designerConstants'
 import { getNodeTheme } from '../lib/nodeTheme'
 import {
   createEmptySubgraphCanvas,
@@ -157,6 +157,12 @@ interface GraphStore {
   resetProject: () => void
   redoProject: () => void
   canRedo: () => boolean
+  undoProject: () => void
+  canUndo: () => boolean
+  undoDepthLimitNotice: boolean
+  clearUndoDepthNotice: () => void
+  duplicateSelectedNode: () => void
+  isGraphEmpty: () => boolean
   updateViewport: (viewport: { x: number; y: number; zoom: number }) => void
 }
 
@@ -262,6 +268,34 @@ interface RedoSnapshot {
 
 let redoSnapshot: RedoSnapshot | null = null
 
+type HistorySnapshot = RedoSnapshot
+let undoStack: HistorySnapshot[] = []
+
+function captureHistorySnapshot(state: GraphStore): HistorySnapshot {
+  return {
+    document: state.document,
+    canvasByGraph: persistActiveCanvas(state),
+    navigationPath: state.navigationPath,
+    nodes: state.nodes,
+    edges: state.edges,
+  }
+}
+
+function pushUndoHistory(
+  state: GraphStore,
+  set: (partial: Partial<GraphStore>) => void,
+) {
+  undoStack.push(captureHistorySnapshot(state))
+  let notice = false
+  if (undoStack.length > MAX_UNDO_STACK_DEPTH) {
+    undoStack.shift()
+    notice = true
+  }
+  if (notice) {
+    set({ undoDepthLimitNotice: true })
+  }
+}
+
 function applyCanvasUpdate(
   get: () => GraphStore,
   set: (partial: Partial<GraphStore>) => void,
@@ -286,6 +320,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   selectedNodeId: null,
   showCodePanel: true,
   designerTab: 'graph',
+  undoDepthLimitNotice: false,
 
   setNodes: (nodes) => applyCanvasUpdate(get, set, nodes, get().edges),
   setEdges: (edges) => applyCanvasUpdate(get, set, get().nodes, edges),
@@ -297,6 +332,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     applyCanvasUpdate(get, set, get().nodes, applyEdgeChanges(changes, get().edges)),
 
   onConnect: (connection) => {
+    pushUndoHistory(get(), set)
     const sourceNode = get().nodes.find((n) => n.id === connection.source)
     const kind = sourceNode?.data.kind ?? 'llm'
     const color = getNodeTheme(kind).edgeColor
@@ -315,9 +351,13 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     )
   },
 
-  addNode: (node) => applyCanvasUpdate(get, set, [...get().nodes, node], get().edges),
+  addNode: (node) => {
+    pushUndoHistory(get(), set)
+    applyCanvasUpdate(get, set, [...get().nodes, node], get().edges)
+  },
 
-  updateNodeData: (nodeId, data) =>
+  updateNodeData: (nodeId, data) => {
+    pushUndoHistory(get(), set)
     applyCanvasUpdate(
       get,
       set,
@@ -325,11 +365,13 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
         n.id === nodeId ? { ...n, data: { ...n.data, ...data } as StitchNodeData } : n,
       ),
       get().edges,
-    ),
+    )
+  },
 
   removeNode: (nodeId) => {
     const node = get().nodes.find((n) => n.id === nodeId)
     if (node?.data.kind === 'start' || node?.data.kind === 'end') return
+    pushUndoHistory(get(), set)
     applyCanvasUpdate(
       get,
       set,
@@ -751,6 +793,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       nodes: state.nodes,
       edges: state.edges,
     }
+    undoStack = []
     set({
       document: createDefaultDocument(),
       canvasByGraph: initialCanvasByGraph,
@@ -779,6 +822,45 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   canRedo: () => redoSnapshot !== null,
 
+  undoProject: () => {
+    const snap = undoStack.pop()
+    if (!snap) return
+    set({
+      document: snap.document,
+      canvasByGraph: snap.canvasByGraph,
+      navigationPath: snap.navigationPath,
+      nodes: snap.nodes,
+      edges: snap.edges,
+      selectedNodeId: null,
+      designerTab: 'graph',
+    })
+  },
+
+  canUndo: () => undoStack.length > 0,
+
+  clearUndoDepthNotice: () => set({ undoDepthLimitNotice: false }),
+
+  duplicateSelectedNode: () => {
+    const selectedId = get().selectedNodeId
+    if (!selectedId) return
+    const node = get().nodes.find((n) => n.id === selectedId)
+    if (!node || node.data.kind === 'start' || node.data.kind === 'end') return
+    pushUndoHistory(get(), set)
+    const newId = `${node.data.kind}-${Date.now().toString(36)}`
+    const duplicate: Node<StitchNodeData> = {
+      ...node,
+      id: newId,
+      position: { x: node.position.x + 40, y: node.position.y + 40 },
+      selected: true,
+      data: { ...node.data },
+    }
+    applyCanvasUpdate(get, set, [...get().nodes, duplicate], get().edges)
+    set({ selectedNodeId: newId, designerTab: 'node' })
+  },
+
+  isGraphEmpty: () =>
+    get().nodes.filter((n) => n.data?.kind !== 'start' && n.data?.kind !== 'end').length === 0,
+
   updateViewport: (viewport) => {
     const state = get()
     const id = state.document.activeSubgraphId
@@ -789,5 +871,9 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     set({ canvasByGraph })
   },
 }))
+
+if (import.meta.env.DEV) {
+  ;(window as unknown as { __graphStore?: typeof useGraphStore }).__graphStore = useGraphStore
+}
 
 export { MAIN_GRAPH_ID }

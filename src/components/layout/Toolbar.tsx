@@ -46,17 +46,22 @@ function LangStitchLogo() {
 
 export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const graphDoc = useGraphStore((s) => s.document)
+  const nodes = useGraphStore((s) => s.nodes)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
   const loadProject = useGraphStore((s) => s.loadProject)
   const resetProject = useGraphStore((s) => s.resetProject)
   const redoProject = useGraphStore((s) => s.redoProject)
   const canRedo = useGraphStore((s) => s.canRedo)
+  const isGraphEmpty = useGraphStore((s) => s.isGraphEmpty)
+  const undoDepthLimitNotice = useGraphStore((s) => s.undoDepthLimitNotice)
+  const clearUndoDepthNotice = useGraphStore((s) => s.clearUndoDepthNotice)
   const addSubgraph = useGraphStore((s) => s.addSubgraph)
   const navigateToGraph = useGraphStore((s) => s.navigateToGraph)
   const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const toggleCodePanel = useGraphStore((s) => s.toggleCodePanel)
   const setDocumentMeta = useGraphStore((s) => s.setDocumentMeta)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const graphNameInputRef = useRef<HTMLInputElement>(null)
   const shortcutsPanelRef = useRef<HTMLDivElement>(null)
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [showShortcuts, setShowShortcuts] = useState(false)
@@ -93,6 +98,11 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         e.preventDefault()
         saveProject()
       }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+        e.preventDefault()
+        graphNameInputRef.current?.focus()
+        graphNameInputRef.current?.select()
+      }
       if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
         setShowShortcuts((v) => !v)
       }
@@ -100,6 +110,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [saveProject])
+
+  const graphEmpty = isGraphEmpty()
+  const redoDisabled = !redoAvailable || graphEmpty
 
   const openProject = (file: File) => {
     const reader = new FileReader()
@@ -144,6 +157,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
 
       <div className="toolbar-center">
         <input
+          ref={graphNameInputRef}
           className="input graph-name-input"
           data-testid="graph-name-input"
           value={graphDoc.name}
@@ -187,13 +201,21 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         <button
           className="btn-secondary"
           data-testid="toolbar-redo"
-          title="Redo last reset"
-          disabled={!redoAvailable}
+          title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset'}
+          disabled={redoDisabled}
           onClick={() => { redoProject(); setRedoAvailable(canRedo()) }}
           type="button"
         >
           <RotateCw size={16} /> Redo
         </button>
+        {undoDepthLimitNotice && (
+          <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
+            Undo history limit reached ({nodes.length > 0 ? 'oldest changes dropped' : ''}).
+            <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
+              ×
+            </button>
+          </span>
+        )}
         <button
           className="btn-secondary"
           data-testid="toolbar-platform"
@@ -242,6 +264,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
             <ul>
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
+              <li><kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>

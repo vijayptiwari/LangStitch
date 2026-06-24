@@ -78,6 +78,12 @@ export const DEFAULT_EVAL: EvalConfig = {
   description: '',
 }
 
+/** Cycle 32 — max undo history depth before oldest entries are dropped */
+export const MAX_UNDO_STACK_DEPTH = 50
+
+/** Cycle 37 — guardrail description field limit */
+export const GUARDRAIL_DESCRIPTION_MAX = 500
+
 /** Cycle 29 — regression eval preset applied from Platform → Eval */
 export const EVAL_PRESET_REGRESSION: EvalConfig = {
   enabled: true,

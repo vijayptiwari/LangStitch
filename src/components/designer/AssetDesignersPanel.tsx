@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { GUARDRAIL_DESCRIPTION_MAX } from '../../lib/designerConstants'
 import { Plus, Trash2 } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import type {
@@ -187,6 +188,19 @@ export function AssetDesignersPanel() {
                     value={g.name}
                     onChange={(e) => updateGuardrailDefinition(g.id, { name: e.target.value })}
                   />
+                </Field>
+                <Field label="Description">
+                  <textarea
+                    className="textarea"
+                    rows={2}
+                    data-testid={`guardrail-description-${g.id}`}
+                    value={g.description}
+                    maxLength={GUARDRAIL_DESCRIPTION_MAX}
+                    onChange={(e) => updateGuardrailDefinition(g.id, { description: e.target.value })}
+                  />
+                  <span className="field-char-count" data-testid={`guardrail-description-count-${g.id}`}>
+                    {g.description.length}/{GUARDRAIL_DESCRIPTION_MAX}
+                  </span>
                 </Field>
                 <Field label="Type">
                   <select className="input" value={g.type} onChange={(e) => updateGuardrailDefinition(g.id, { type: e.target.value as GuardrailDefinition['type'] })}>

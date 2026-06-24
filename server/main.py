@@ -8,8 +8,10 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import uuid
 import zipfile
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -25,6 +27,22 @@ from starlette.responses import Response
 from .eval_service import EvalConfigInput, run_eval_job
 
 BUILD_TIME = datetime.now(timezone.utc).isoformat()
+
+EXPORT_RATE_LIMIT = 5
+EXPORT_RATE_WINDOW_SEC = 60
+_export_timestamps: dict[str, list[float]] = defaultdict(list)
+
+
+def check_export_rate_limit(project_id: str) -> None:
+    now = time.time()
+    window = _export_timestamps[project_id]
+    _export_timestamps[project_id] = [t for t in window if now - t < EXPORT_RATE_WINDOW_SEC]
+    if len(_export_timestamps[project_id]) >= EXPORT_RATE_LIMIT:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many export requests. Please wait a moment and try again.",
+        )
+    _export_timestamps[project_id].append(now)
 
 app = FastAPI(title="LangStitch Platform API", version="0.2.0")
 
@@ -433,6 +451,7 @@ def write_project_files_endpoint(req: ExportRequest):
 
 @app.post("/api/export")
 def export_project(req: ExportRequest):
+    check_export_rate_limit(req.project_id)
     base = project_dir(req.project_id)
     write_project_files(base, req.files)
     copy_helm_chart(base)

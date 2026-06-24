@@ -10,7 +10,16 @@ async function request<T>(
   })
   if (!res.ok) {
     const err = await res.text()
-    throw new Error(err || res.statusText)
+    let message = err || res.statusText
+    if (res.status === 429) {
+      try {
+        const parsed = JSON.parse(err) as { detail?: string }
+        message = parsed.detail ?? message
+      } catch {
+        /* use raw text */
+      }
+    }
+    throw new Error(message)
   }
   const ct = res.headers.get('content-type') ?? ''
   if (ct.includes('application/json')) return res.json() as Promise<T>
@@ -91,7 +100,19 @@ export const platformApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ project_id: projectId, format, files }),
     })
-    if (!res.ok) throw new Error(await res.text())
+    if (!res.ok) {
+      const err = await res.text()
+      let message = err || res.statusText
+      if (res.status === 429) {
+        try {
+          const parsed = JSON.parse(err) as { detail?: string }
+          message = parsed.detail ?? message
+        } catch {
+          /* use raw text */
+        }
+      }
+      throw new Error(message)
+    }
     return res.blob()
   },
 

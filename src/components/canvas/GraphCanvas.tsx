@@ -67,6 +67,8 @@ export function GraphCanvas() {
   const onEdgesChange = useGraphStore((s) => s.onEdgesChange)
   const onConnect = useGraphStore((s) => s.onConnect)
   const selectNode = useGraphStore((s) => s.selectNode)
+  const duplicateSelectedNode = useGraphStore((s) => s.duplicateSelectedNode)
+  const selectedNodeId = useGraphStore((s) => s.selectedNodeId)
   const setDesignerTab = useGraphStore((s) => s.setDesignerTab)
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
   const updateViewport = useGraphStore((s) => s.updateViewport)
@@ -98,6 +100,17 @@ export function GraphCanvas() {
   )
 
   const onPaneClick = useCallback(() => selectNode(null), [selectNode])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && selectedNodeId) {
+        e.preventDefault()
+        duplicateSelectedNode()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectedNodeId, duplicateSelectedNode])
 
   const onMoveEnd = useCallback(
     (_: unknown, viewport: Viewport) => {
