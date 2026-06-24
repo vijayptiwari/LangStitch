@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   FolderOpen,
   Layers,
@@ -7,6 +7,7 @@ import {
   Save,
   Server,
   Terminal,
+  HelpCircle,
 } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import { exportGraphDocument } from '../../lib/codegen/pythonGenerator'
@@ -52,8 +53,10 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const toggleCodePanel = useGraphStore((s) => s.toggleCodePanel)
   const setDocumentMeta = useGraphStore((s) => s.setDocumentMeta)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [savedAt, setSavedAt] = useState<string | null>(null)
+  const [showShortcuts, setShowShortcuts] = useState(false)
 
-  const saveProject = () => {
+  const saveProject = useCallback(() => {
     const payload = getProjectPayload()
     const json = exportGraphDocument(
       payload.document,
@@ -69,7 +72,22 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
     a.download = `${graphDoc.name || 'graph'}.langstitch.json`
     a.click()
     URL.revokeObjectURL(url)
-  }
+    setSavedAt(new Date().toLocaleTimeString())
+  }, [getProjectPayload, graphDoc.name])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault()
+        saveProject()
+      }
+      if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+        setShowShortcuts((v) => !v)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [saveProject])
 
   const openProject = (file: File) => {
     const reader = new FileReader()
@@ -145,6 +163,11 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         </button>
         <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
           <Save size={16} /> Save
+          {savedAt && (
+            <span className="toolbar-saved-at" data-testid="toolbar-saved-at">
+              {savedAt}
+            </span>
+          )}
         </button>
         <button className="btn-secondary" onClick={resetProject} type="button">
           <RotateCcw size={16} /> Reset
@@ -160,6 +183,15 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         >
           <Terminal size={16} /> Code
         </button>
+        <button
+          className="btn-secondary"
+          data-testid="toolbar-shortcuts"
+          onClick={() => setShowShortcuts(true)}
+          type="button"
+          title="Keyboard shortcuts"
+        >
+          <HelpCircle size={16} />
+        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -172,6 +204,18 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           }}
         />
       </div>
+      {showShortcuts && (
+        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" onClick={() => setShowShortcuts(false)}>
+          <div className="shortcuts-panel" onClick={(e) => e.stopPropagation()}>
+            <h3>Keyboard shortcuts</h3>
+            <ul>
+              <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
+              <li><kbd>?</kbd> — Toggle this help</li>
+            </ul>
+            <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
