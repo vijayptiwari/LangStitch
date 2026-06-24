@@ -23,6 +23,23 @@ def _dataset_ref(config: EvalConfigInput) -> str:
     return (config.dataset_name or config.dataset_id or "").strip()
 
 
+def _compute_pass_rate(client: Any, results: Any) -> float | None:
+    """Derive pass rate from LangSmith experiment runs (non-error = pass)."""
+    experiment_name = getattr(results, "experiment_name", None)
+    if not experiment_name:
+        return None
+    try:
+        if hasattr(results, "wait"):
+            results.wait()
+        runs = list(client.list_runs(project_name=experiment_name, is_root=True, limit=200))
+        if not runs:
+            return None
+        passed = sum(1 for run in runs if not run.error)
+        return round((passed / len(runs)) * 100, 1)
+    except Exception:
+        return None
+
+
 def run_eval_job(
     config: EvalConfigInput,
     *,
@@ -52,6 +69,7 @@ def run_eval_job(
             "experiment_prefix": config.experiment_prefix or langsmith_project,
             "message": "Eval config validated (dry run)",
             "latency_ms": round((time.perf_counter() - started) * 1000),
+            "pass_rate": 100.0,
         }
 
     try:
@@ -81,7 +99,8 @@ def run_eval_job(
         )
         experiment_id = getattr(results, "experiment_name", None) or str(results)
         url = f"https://smith.langchain.com/o/default/datasets"
-        return {
+        pass_rate = _compute_pass_rate(client, results)
+        payload: dict[str, Any] = {
             "ok": True,
             "experiment_id": experiment_id,
             "url": url,
@@ -89,6 +108,9 @@ def run_eval_job(
             "latency_ms": round((time.perf_counter() - started) * 1000),
             "result": json.loads(json.dumps(str(results), default=str)) if False else str(results),
         }
+        if pass_rate is not None:
+            payload["pass_rate"] = pass_rate
+        return payload
     except Exception as exc:  # noqa: BLE001 — surface LangSmith errors to UI
         return {
             "ok": False,

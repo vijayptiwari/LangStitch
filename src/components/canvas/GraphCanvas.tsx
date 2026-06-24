@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Background,
   BackgroundVariant,
@@ -73,7 +73,11 @@ export function GraphCanvas() {
   const onConnect = useGraphStore((s) => s.onConnect)
   const selectNode = useGraphStore((s) => s.selectNode)
   const duplicateSelectedNode = useGraphStore((s) => s.duplicateSelectedNode)
+  const removeNode = useGraphStore((s) => s.removeNode)
   const selectedNodeId = useGraphStore((s) => s.selectedNodeId)
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId: string } | null>(
+    null,
+  )
   const setDesignerTab = useGraphStore((s) => s.setDesignerTab)
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
   const updateViewport = useGraphStore((s) => s.updateViewport)
@@ -119,7 +123,22 @@ export function GraphCanvas() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && selectedNodeId) {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'd' &&
+        selectedNodeId &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        duplicateSelectedNode()
+      }
+      if (
+        e.altKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key.toLowerCase() === 'd' &&
+        selectedNodeId
+      ) {
         e.preventDefault()
         duplicateSelectedNode()
       }
@@ -133,6 +152,34 @@ export function GraphCanvas() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [selectedNodeId, duplicateSelectedNode])
+
+  useEffect(() => {
+    if (!contextMenu) return
+    const close = () => setContextMenu(null)
+    window.addEventListener('click', close)
+    window.addEventListener('scroll', close, true)
+    return () => {
+      window.removeEventListener('click', close)
+      window.removeEventListener('scroll', close, true)
+    }
+  }, [contextMenu])
+
+  const onNodeContextMenu = useCallback(
+    (e: React.MouseEvent, node: Node<StitchNodeData>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (node.data?.kind === 'start' || node.data?.kind === 'end') return
+      selectNode(node.id)
+      setContextMenu({ x: e.clientX, y: e.clientY, nodeId: node.id })
+    },
+    [selectNode],
+  )
+
+  const handleContextDelete = useCallback(() => {
+    if (!contextMenu) return
+    removeNode(contextMenu.nodeId)
+    setContextMenu(null)
+  }, [contextMenu, removeNode])
 
   const onMoveEnd = useCallback(
     (_: unknown, viewport: Viewport) => {
@@ -191,6 +238,7 @@ export function GraphCanvas() {
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeContextMenu={onNodeContextMenu}
         onPaneClick={onPaneClick}
         onMoveEnd={onMoveEnd}
         onBeforeDelete={onBeforeDelete}
@@ -228,6 +276,23 @@ export function GraphCanvas() {
           />
         )}
       </ReactFlow>
+      {contextMenu && (
+        <div
+          className="canvas-context-menu"
+          data-testid="canvas-context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="canvas-context-menu-item"
+            data-testid="canvas-context-delete"
+            onClick={handleContextDelete}
+          >
+            Delete node
+          </button>
+        </div>
+      )}
     </div>
   )
 }

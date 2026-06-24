@@ -203,6 +203,7 @@ export const platformApi = {
       url?: string
       message?: string
       latency_ms?: number
+      pass_rate?: number
     }>('/eval/run', {
       method: 'POST',
       body: JSON.stringify(body),

@@ -96,12 +96,14 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   const [evalResult, setEvalResult] = useState('')
   const [evalResultUrl, setEvalResultUrl] = useState<string | null>(null)
   const [evalLatencyMs, setEvalLatencyMs] = useState<number | null>(null)
+  const [evalPassRate, setEvalPassRate] = useState<number | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
   const [evalSectionExpanded, setEvalSectionExpanded] = useState(true)
   const [langsmithApiKeyConfigured, setLangsmithApiKeyConfigured] = useState<boolean | null>(null)
   const [evalHistory, setEvalHistory] = useState<EvalHistoryEntry[]>(() => loadEvalHistory(projectIdFromDoc(graphDoc)))
   const [evalFinishedAnnouncement, setEvalFinishedAnnouncement] = useState('')
   const [copyFeedback, setCopyFeedback] = useState('')
+  const [deployTabLoading, setDeployTabLoading] = useState(false)
 
   const projectId = projectIdFromDoc(graphDoc)
   const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
@@ -117,6 +119,13 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   useEffect(() => {
     setEvalHistory(loadEvalHistory(projectId))
   }, [projectId])
+
+  useEffect(() => {
+    if (tab !== 'deploy') return
+    setDeployTabLoading(true)
+    const timer = window.setTimeout(() => setDeployTabLoading(false), 350)
+    return () => window.clearTimeout(timer)
+  }, [tab])
 
   const appendLog = (msg: string) => setLog((l) => `${l}\n${msg}`.trim())
 
@@ -413,6 +422,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
     setEvalResult('')
     setEvalResultUrl(null)
     setEvalLatencyMs(null)
+    setEvalPassRate(null)
     setEvalFinishedAnnouncement('')
     try {
       const payload = getPayload()
@@ -442,6 +452,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
       setEvalResult(msg)
       setEvalResultUrl(res.url ?? null)
       setEvalLatencyMs(res.latency_ms ?? null)
+      setEvalPassRate(res.pass_rate ?? null)
       appendLog(dryRun ? `Eval dry-run: ${msg}` : `Eval: ${msg}`)
       const entry: EvalHistoryEntry = {
         at: new Date().toISOString(),
@@ -762,6 +773,12 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                           <span data-testid="eval-result-latency">({evalLatencyMs} ms)</span>
                         </>
                       )}
+                      {evalPassRate != null && (
+                        <>
+                          {' '}
+                          <span data-testid="eval-result-pass-rate">Pass rate: {evalPassRate}%</span>
+                        </>
+                      )}
                       {evalResultUrl && (
                         <>
                           {' '}
@@ -831,7 +848,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
 
           {tab === 'deploy' && (
             <div className="platform-section" data-testid="deploy-panel">
-              {busy && (
+              {(busy || deployTabLoading) && (
                 <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
                   <div className="skeleton-line" />
                   <div className="skeleton-line short" />

@@ -231,6 +231,26 @@ def load_project_json(base: Path) -> dict[str, Any]:
 # ─── Health ───
 
 
+def count_workspace_nodes() -> int:
+    total = 0
+    if not WORKSPACE_ROOT.exists():
+        return 0
+    for entry in WORKSPACE_ROOT.iterdir():
+        if not entry.is_dir():
+            continue
+        for name in ("langstitch.project.json", "project.langstitch.json"):
+            project_file = entry / name
+            if not project_file.exists():
+                continue
+            try:
+                data = json.loads(project_file.read_text(encoding="utf-8"))
+                total += len(data.get("nodes", []))
+            except (json.JSONDecodeError, OSError):
+                pass
+            break
+    return total
+
+
 @app.get("/api/health")
 def health():
     return {
@@ -240,6 +260,7 @@ def health():
         "python": sys.version.split()[0],
         "build_time": BUILD_TIME,
         "langsmith_api_key_configured": bool(os.environ.get("LANGCHAIN_API_KEY")),
+        "node-count": count_workspace_nodes(),
     }
 
 

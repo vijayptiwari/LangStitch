@@ -49,7 +49,6 @@ const DOCS_URL = 'https://vijayptiwari.github.io/LangStitch/docs/'
 
 export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const graphDoc = useGraphStore((s) => s.document)
-  const nodes = useGraphStore((s) => s.nodes)
   const isDirty = useGraphStore((s) => s.isDirty)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
   const loadProject = useGraphStore((s) => s.loadProject)
@@ -259,26 +258,39 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           </span>
         )}
         {undoDepthLimitNotice && (
-          <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
-            Undo history limit reached ({nodes.length > 0 ? 'oldest changes dropped' : ''}).
-            <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
-              ×
-            </button>
+          <span data-testid="cycle-80-undo-depth-notice">
+            <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
+              Undo history limit reached — oldest changes dropped.
+              <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
+                ×
+              </button>
+            </span>
           </span>
         )}
-        <button
-          className="btn-secondary"
-          data-testid="toolbar-platform"
-          title="Platform (Ctrl+E)"
-          aria-label="Open Platform drawer"
-          onClick={onOpenPlatform}
-          type="button"
-        >
-          <Server size={16} /> Platform
-          <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd">
-            Ctrl+E
-          </kbd>
-        </button>
+        <span className="toolbar-btn-wrap">
+          <button
+            className="btn-secondary"
+            data-testid="toolbar-platform"
+            title="Platform (Ctrl+E)"
+            aria-label="Open Platform drawer"
+            aria-describedby="toolbar-platform-tooltip"
+            onClick={onOpenPlatform}
+            type="button"
+          >
+            <Server size={16} /> Platform
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd">
+              Ctrl+E
+            </kbd>
+          </button>
+          <span
+            id="toolbar-platform-tooltip"
+            className="toolbar-btn-tooltip"
+            data-testid="toolbar-platform-tooltip"
+            role="tooltip"
+          >
+            Open Platform — export, deploy, eval (Ctrl+E)
+          </span>
+        </span>
         <button
           className={`btn-secondary ${showCodePanel ? 'active' : ''}`}
           data-testid="toolbar-code"
@@ -310,13 +322,19 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
       </div>
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" onClick={() => setShowShortcuts(false)}>
-          <div className="shortcuts-panel" ref={shortcutsPanelRef} onClick={(e) => e.stopPropagation()}>
+          <div
+            className="shortcuts-panel"
+            ref={shortcutsPanelRef}
+            data-testid="cycle-78-focus-trap"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3>Keyboard shortcuts</h3>
             <ul>
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
               <li><kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab</li>
+              <li><kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node</li>
               <li><kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)</li>
               <li><kbd>Ctrl</kbd>+<kbd>M</kbd> — Toggle minimap</li>
               <li><kbd>?</kbd> — Toggle this help</li>

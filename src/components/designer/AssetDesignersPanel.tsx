@@ -196,6 +196,13 @@ export function AssetDesignersPanel() {
             >
               <Plus size={12} /> Add guardrail
             </button>
+            {guardrails.length === 0 && (
+              <div className="designer-empty" data-testid="guardrails-empty-hint">
+                <div className="designer-empty-icon">🛡</div>
+                <h3>No guardrails yet</h3>
+                <p>Add input/output guardrails here. They export to the guardrails/ module in your Python project.</p>
+              </div>
+            )}
             {filteredGuardrails.length === 0 && guardrails.length > 0 && (
               <p className="designer-empty" data-testid="guardrail-filter-empty">
                 No guardrails match your search.

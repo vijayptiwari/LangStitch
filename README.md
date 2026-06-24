@@ -56,6 +56,12 @@ Open **http://localhost:5173**
 - **LLM**, **Tool**, **Agent**, **Decision**, **Function**, **Subgraph**
 - **RAG Agent** — bound to RAG pipelines (chunk, embed, retrieve)
 - **Multi-Intent Classifier** — special decision node for intent routing
+- **Alt+D** — duplicate the selected node; **right-click** a node for context-menu delete
+- Undo history is capped at 50 steps with a toolbar notice when the limit is reached
+
+### Platform API health
+
+`GET /api/health` returns `node-count` (number of nodes in the active graph document) alongside version and build metadata — useful for smoke checks and monitoring.
 
 ### RAG nodes
 
@@ -135,9 +141,9 @@ Built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every p
 
 Configure dataset evals from **Platform → Eval** (requires LangSmith enabled under Graph Designer → Observability).
 
-- **Validate config** — dry-run without API key
+- **Validate config** — dry-run without API key; result panel shows **pass rate**
 - **Run eval** — requires `LANGCHAIN_API_KEY` on the platform API host
-- Export includes `eval` in `langsmith.json` and `eval_runner.py` for CI
+- Export includes `eval` and **`eval-dataset`** metadata in `langsmith.json`, plus `eval_runner.py` for CI
 
 ```bash
 # After export

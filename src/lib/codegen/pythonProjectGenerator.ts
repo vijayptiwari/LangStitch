@@ -31,6 +31,8 @@ export function generateLangsmithJson(doc: GraphDocument): string {
   const obs = doc.settings?.observability
   const ev = doc.settings?.eval
   const pkg = pkgName(doc)
+  const hasEvalDataset =
+    ev?.enabled && Boolean(ev.datasetName?.trim() || ev.datasetId?.trim())
   return JSON.stringify(
     {
       version: '1.0',
@@ -48,6 +50,15 @@ export function generateLangsmithJson(doc: GraphDocument): string {
         max_concurrency: ev?.maxConcurrency ?? 2,
         description: ev?.description ?? '',
       },
+      ...(hasEvalDataset
+        ? {
+            'eval-dataset': {
+              enabled: true,
+              dataset_name: ev?.datasetName ?? '',
+              dataset_id: ev?.datasetId ?? '',
+            },
+          }
+        : {}),
       langstitch: {
         schema_version: '1.1',
         generator_version: LANGSTITCH_GENERATOR_VERSION,
