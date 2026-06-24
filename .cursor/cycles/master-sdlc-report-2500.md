@@ -32,7 +32,7 @@
 |-------|--------|--------|-----|--------|
 | Pilot | 1–10 | d6be517 | green | COMPLETE |
 | 1 | 11–20 | 86953d1 | green | COMPLETE |
-| 2 | 21–30 | 4de7e6a | green | COMPLETE |
+| 2 | 21–30 | 67c0e5c | green | COMPLETE |
 
 ## Summary
 - Completed: 30 / 2500 cycles
