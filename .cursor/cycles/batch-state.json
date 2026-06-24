@@ -1,0 +1,17 @@
+{
+  "program": "langstitch-sdlc-2500",
+  "totalCycles": 2500,
+  "completedCycles": 10,
+  "currentBatch": 1,
+  "batchSize": 10,
+  "nextCycleStart": 11,
+  "nextCycleEnd": 20,
+  "autoApprove": true,
+  "autoPush": true,
+  "uatThreshold": 85,
+  "status": "RUNNING",
+  "lastCompletedBatch": 0,
+  "lastCommit": "7a11203",
+  "startedAt": "2026-06-24T00:00:00Z",
+  "notes": "Batch 1: cycles 11-20. Read cycle-themes.json for themes."
+}
