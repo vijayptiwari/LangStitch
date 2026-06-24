@@ -746,7 +746,7 @@
       "feature": "Add 71 tooltip to toolbar platform button",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 72,
@@ -754,7 +754,7 @@
       "feature": "Add loading skeleton to Platform Deploy tab",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 73,
@@ -762,7 +762,7 @@
       "feature": "Add empty-state hint in Guardrail designer",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 74,
@@ -770,7 +770,7 @@
       "feature": "Canvas context menu item: delete",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 75,
@@ -778,7 +778,7 @@
       "feature": "Include eval-dataset in langsmith.json export metadata",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 76,
@@ -786,7 +786,7 @@
       "feature": "Extend GET /api/health with node-count",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 77,
@@ -794,7 +794,7 @@
       "feature": "Eval runner shows pass-rate in result panel",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 78,
@@ -802,7 +802,7 @@
       "feature": "Focus trap in modal cycle 78",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 79,
@@ -810,7 +810,7 @@
       "feature": "Chord shortcut Alt+D for duplicate node",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 80,
@@ -818,7 +818,7 @@
       "feature": "Undo stack depth limit with user notice",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 81,

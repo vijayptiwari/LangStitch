@@ -63,8 +63,18 @@
 | 68 | Viewport localStorage persist | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 69 | README RAG nodes section | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 | 70 | toolbar-save visibility E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 71 | Toolbar platform tooltip | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 72 | Deploy tab loading skeleton | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 73 | Guardrail empty-state hint | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 74 | Canvas context menu delete | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 75 | langsmith.json eval-dataset | APPROVED | VALIDATED | PASSED | 92 | 1 | yes | COMPLETE |
+| 76 | Health API node-count | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 77 | Eval pass-rate in panel | APPROVED | N/A | PASSED | 90 | 2 | yes | COMPLETE |
+| 78 | Modal focus trap | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 79 | Alt+D duplicate node | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 80 | Undo stack depth notice | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
 
-**Progress: 70 / 2500**
+**Progress: 80 / 2500**
 
 ## Batch log
 
@@ -77,9 +87,10 @@
 | 4 | 41–50 | 41c4cd9 | green | COMPLETE |
 | 5 | 51–60 | 0d084c0 | green | COMPLETE |
 | 6 | 61–70 | 17ffaaf | green | COMPLETE |
+| 7 | 71–80 | c3e119e | green | COMPLETE |
 
 ## Summary
-- Completed: 70 / 2500 cycles
+- Completed: 80 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
@@ -87,4 +98,5 @@
 - Batch 4 avg UAT: 89.9
 - Batch 5 avg UAT: 90.2
 - Batch 6 avg UAT: 90.5
-- Next: Batch 7 (cycles 71–80)
+- Batch 7 avg UAT: 91.0
+- Next: Batch 8 (cycles 81–90)
