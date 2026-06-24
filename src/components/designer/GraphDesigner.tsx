@@ -49,6 +49,7 @@ export function GraphDesigner() {
   const lifecycle = settings.lifecycle
   const checkpointer = settings.checkpointer
   const observability = settings.observability
+  const evalConfig = settings.eval
   const a2a = settings.a2a
   const remoteGraphs = document.remoteGraphs ?? []
 
@@ -467,6 +468,17 @@ export function GraphDesigner() {
                 Log per-node execution timing
               </label>
             </>
+          )}
+        </Section>
+
+        <Section title="Eval configuration (LangSmith)">
+          <p className="designer-hint" data-testid="eval-designer-summary">
+            {evalConfig?.enabled && (evalConfig.datasetName || evalConfig.datasetId)
+              ? `Dataset: ${evalConfig.datasetName || evalConfig.datasetId}${evalConfig.experimentPrefix ? ` · prefix: ${evalConfig.experimentPrefix}` : ''}`
+              : 'No eval dataset configured — use Platform → Eval tab.'}
+          </p>
+          {evalConfig?.enabled && evalConfig.description && (
+            <p className="designer-hint muted">{evalConfig.description}</p>
           )}
         </Section>
 
