@@ -76,7 +76,7 @@
 | 3 | 31–40 | 80ceb35 | green | COMPLETE |
 | 4 | 41–50 | 41c4cd9 | green | COMPLETE |
 | 5 | 51–60 | 0d084c0 | green | COMPLETE |
-| 6 | 61–70 | TBD | green | COMPLETE |
+| 6 | 61–70 | 17ffaaf | green | COMPLETE |
 
 ## Summary
 - Completed: 70 / 2500 cycles

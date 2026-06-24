@@ -11,7 +11,7 @@
   "uatThreshold": 85,
   "status": "IDLE",
   "lastCompletedBatch": 6,
-  "lastCommit": "",
+  "lastCommit": "17ffaaf",
   "startedAt": "2026-06-24T00:00:00Z",
   "notes": "Batch 6 complete (cycles 61-70). Next: Batch 7 (cycles 71-80)."
 }
