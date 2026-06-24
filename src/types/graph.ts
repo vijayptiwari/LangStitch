@@ -291,6 +291,7 @@ export interface GraphSettings {
   interruptBefore: string
   maxSteps: number
   enableStreaming: boolean
+  snapToGrid: boolean
   tags: string
   lifecycle: LifecycleHooks
   checkpointer: CheckpointerConfig
@@ -396,9 +397,16 @@ export interface GraphDocument {
   ragPipelines: RagPipelineConfig[]
 }
 
+export interface CanvasViewport {
+  x: number
+  y: number
+  zoom: number
+}
+
 export interface CanvasSnapshot {
   nodes: import('@xyflow/react').Node<StitchNodeData>[]
   edges: import('@xyflow/react').Edge[]
+  viewport?: CanvasViewport
 }
 
 export interface PaletteItem {

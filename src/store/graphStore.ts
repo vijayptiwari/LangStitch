@@ -33,6 +33,7 @@ import {
   MAIN_GRAPH_ID,
   syncCanvas,
 } from '../lib/subgraphCanvas'
+import { saveViewport } from '../lib/viewportStorage'
 
 function styledEdge(
   id: string,
@@ -154,6 +155,9 @@ interface GraphStore {
     navigationPath?: string[]
   }) => void
   resetProject: () => void
+  redoProject: () => void
+  canRedo: () => boolean
+  updateViewport: (viewport: { x: number; y: number; zoom: number }) => void
 }
 
 const initialNodes: Node<StitchNodeData>[] = [
@@ -247,6 +251,16 @@ const initialEdges: Edge[] = [
 const initialCanvasByGraph: Record<string, CanvasSnapshot> = {
   [MAIN_GRAPH_ID]: { nodes: initialNodes, edges: initialEdges },
 }
+
+interface RedoSnapshot {
+  document: GraphDocument
+  canvasByGraph: Record<string, CanvasSnapshot>
+  navigationPath: string[]
+  nodes: Node<StitchNodeData>[]
+  edges: Edge[]
+}
+
+let redoSnapshot: RedoSnapshot | null = null
 
 function applyCanvasUpdate(
   get: () => GraphStore,
@@ -728,7 +742,15 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     })
   },
 
-  resetProject: () =>
+  resetProject: () => {
+    const state = get()
+    redoSnapshot = {
+      document: state.document,
+      canvasByGraph: persistActiveCanvas(state),
+      navigationPath: state.navigationPath,
+      nodes: state.nodes,
+      edges: state.edges,
+    }
     set({
       document: createDefaultDocument(),
       canvasByGraph: initialCanvasByGraph,
@@ -737,7 +759,35 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       edges: initialEdges,
       selectedNodeId: null,
       designerTab: 'graph',
-    }),
+    })
+  },
+
+  redoProject: () => {
+    if (!redoSnapshot) return
+    const snap = redoSnapshot
+    redoSnapshot = null
+    set({
+      document: snap.document,
+      canvasByGraph: snap.canvasByGraph,
+      navigationPath: snap.navigationPath,
+      nodes: snap.nodes,
+      edges: snap.edges,
+      selectedNodeId: null,
+      designerTab: 'graph',
+    })
+  },
+
+  canRedo: () => redoSnapshot !== null,
+
+  updateViewport: (viewport) => {
+    const state = get()
+    const id = state.document.activeSubgraphId
+    const canvasByGraph = persistActiveCanvas(state)
+    const current = canvasByGraph[id] ?? { nodes: state.nodes, edges: state.edges }
+    canvasByGraph[id] = { ...current, viewport }
+    saveViewport(state.document.name, viewport)
+    set({ canvasByGraph })
+  },
 }))
 
 export { MAIN_GRAPH_ID }

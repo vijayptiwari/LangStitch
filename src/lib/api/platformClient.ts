@@ -34,7 +34,7 @@ export interface ProjectData {
 }
 
 export const platformApi = {
-  health: () => request<{ status: string; version?: string; python?: string }>('/health'),
+  health: () => request<{ status: string; version?: string; python?: string; build_time?: string }>('/health'),
 
   saveProject: (projectId: string, payload: ProjectData) =>
     request<{ ok: boolean; path: string }>('/project/save', {
@@ -174,6 +174,7 @@ export const platformApi = {
       experiment_id?: string
       url?: string
       message?: string
+      latency_ms?: number
     }>('/eval/run', {
       method: 'POST',
       body: JSON.stringify(body),

@@ -1,16 +1,20 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import {
   Background,
   BackgroundVariant,
   Controls,
   MiniMap,
   ReactFlow,
+  useReactFlow,
   type Node,
+  type Viewport,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { useGraphStore } from '../../store/graphStore'
 import type { StitchNodeData } from '../../types/graph'
+import { DEFAULT_GRAPH_SETTINGS } from '../../lib/designerConstants'
 import { getNodeColor } from '../../lib/nodeTheme'
+import { loadViewport } from '../../lib/viewportStorage'
 import { CanvasToolbar } from './CanvasToolbar'
 import { StartNode } from './nodes/StartNode'
 import { EndNode } from './nodes/EndNode'
@@ -36,15 +40,36 @@ const nodeTypes = {
   intentClassifierNode: IntentClassifierNode,
 }
 
+function ViewportRestore() {
+  const { setViewport } = useReactFlow()
+  const projectName = useGraphStore((s) => s.document.name)
+  const activeSubgraphId = useGraphStore((s) => s.document.activeSubgraphId)
+  const canvasByGraph = useGraphStore((s) => s.canvasByGraph)
+
+  useEffect(() => {
+    const fromCanvas = canvasByGraph[activeSubgraphId]?.viewport
+    const fromStorage = loadViewport(projectName)
+    const viewport = fromCanvas ?? fromStorage
+    if (viewport) {
+      setViewport(viewport, { duration: 0 })
+    }
+  }, [projectName, activeSubgraphId, setViewport])
+
+  return null
+}
+
 export function GraphCanvas() {
   const nodes = useGraphStore((s) => s.nodes)
   const edges = useGraphStore((s) => s.edges)
+  const document = useGraphStore((s) => s.document)
   const onNodesChange = useGraphStore((s) => s.onNodesChange)
   const onEdgesChange = useGraphStore((s) => s.onEdgesChange)
   const onConnect = useGraphStore((s) => s.onConnect)
   const selectNode = useGraphStore((s) => s.selectNode)
   const setDesignerTab = useGraphStore((s) => s.setDesignerTab)
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
+  const updateViewport = useGraphStore((s) => s.updateViewport)
+  const snapToGrid = document.settings?.snapToGrid ?? DEFAULT_GRAPH_SETTINGS.snapToGrid
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node<StitchNodeData>) => selectNode(node.id),
@@ -73,6 +98,13 @@ export function GraphCanvas() {
 
   const onPaneClick = useCallback(() => selectNode(null), [selectNode])
 
+  const onMoveEnd = useCallback(
+    (_: unknown, viewport: Viewport) => {
+      updateViewport(viewport)
+    },
+    [updateViewport],
+  )
+
   const defaultEdgeOptions = useMemo(
     () => ({
       animated: false,
@@ -98,15 +130,19 @@ export function GraphCanvas() {
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
         onPaneClick={onPaneClick}
+        onMoveEnd={onMoveEnd}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         connectionLineStyle={connectionLineStyle}
+        snapToGrid={snapToGrid}
+        snapGrid={[20, 20]}
         fitView
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.25}
         maxZoom={1.75}
         proOptions={{ hideAttribution: true }}
       >
+        <ViewportRestore />
         <Background
           variant={BackgroundVariant.Dots}
           gap={26}

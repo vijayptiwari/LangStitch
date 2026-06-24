@@ -1,10 +1,10 @@
 import type { Edge, Node } from '@xyflow/react'
-import type { StitchNodeData } from '../types/graph'
+import type { CanvasSnapshot, StitchNodeData } from '../types/graph'
 import { getNodeTheme } from './nodeTheme'
 
 export const MAIN_GRAPH_ID = 'main'
 
-export function createEmptySubgraphCanvas(): { nodes: Node<StitchNodeData>[]; edges: Edge[] } {
+export function createEmptySubgraphCanvas(): CanvasSnapshot {
   const startId = `start-${Date.now().toString(36)}`
   const endId = `end-${Date.now().toString(36)}`
   const color = getNodeTheme('start').edgeColor
@@ -38,10 +38,11 @@ export function createEmptySubgraphCanvas(): { nodes: Node<StitchNodeData>[]; ed
 }
 
 export function syncCanvas(
-  canvasByGraph: Record<string, { nodes: Node<StitchNodeData>[]; edges: Edge[] }>,
+  canvasByGraph: Record<string, CanvasSnapshot>,
   graphId: string,
   nodes: Node<StitchNodeData>[],
   edges: Edge[],
 ) {
-  return { ...canvasByGraph, [graphId]: { nodes, edges } }
+  const existing = canvasByGraph[graphId]
+  return { ...canvasByGraph, [graphId]: { nodes, edges, viewport: existing?.viewport } }
 }

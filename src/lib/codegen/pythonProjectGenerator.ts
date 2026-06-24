@@ -13,6 +13,8 @@ import { slugify } from '../nodeRegistry'
 import { MAIN_GRAPH_ID } from '../subgraphCanvas'
 import { generatePythonCode } from './pythonGenerator'
 
+const LANGSTITCH_GENERATOR_VERSION = '0.1.0'
+
 function pkgName(doc: GraphDocument): string {
   return slugify(doc.name) || 'langstitch_graph'
 }
@@ -48,6 +50,7 @@ export function generateLangsmithJson(doc: GraphDocument): string {
       },
       langstitch: {
         schema_version: '1.1',
+        generator_version: LANGSTITCH_GENERATOR_VERSION,
         project_name: doc.name,
         python_version: '3.13',
         package: pkg,

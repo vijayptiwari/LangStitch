@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -30,15 +31,17 @@ def run_eval_job(
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """Run or validate a LangSmith eval job."""
+    started = time.perf_counter()
     dataset = _dataset_ref(config)
     if not dataset:
-        return {"ok": False, "message": "dataset_name or dataset_id is required"}
+        return {"ok": False, "message": "dataset_name or dataset_id is required", "latency_ms": 0}
 
     api_key = os.environ.get(api_key_env)
     if not api_key and not dry_run:
         return {
             "ok": False,
             "message": f"Missing API key — set {api_key_env} in the platform API environment",
+            "latency_ms": round((time.perf_counter() - started) * 1000),
         }
 
     if dry_run:
@@ -48,6 +51,7 @@ def run_eval_job(
             "dataset": dataset,
             "experiment_prefix": config.experiment_prefix or langsmith_project,
             "message": "Eval config validated (dry run)",
+            "latency_ms": round((time.perf_counter() - started) * 1000),
         }
 
     try:
@@ -58,6 +62,7 @@ def run_eval_job(
             "ok": False,
             "message": "langsmith package not installed on platform API host",
             "detail": str(exc),
+            "latency_ms": round((time.perf_counter() - started) * 1000),
         }
 
     def target(inputs: dict[str, Any]) -> dict[str, Any]:
@@ -81,7 +86,12 @@ def run_eval_job(
             "experiment_id": experiment_id,
             "url": url,
             "message": f"Eval started for dataset {dataset}",
+            "latency_ms": round((time.perf_counter() - started) * 1000),
             "result": json.loads(json.dumps(str(results), default=str)) if False else str(results),
         }
     except Exception as exc:  # noqa: BLE001 — surface LangSmith errors to UI
-        return {"ok": False, "message": str(exc)}
+        return {
+            "ok": False,
+            "message": str(exc),
+            "latency_ms": round((time.perf_counter() - started) * 1000),
+        }

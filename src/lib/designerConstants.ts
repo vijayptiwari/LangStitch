@@ -83,6 +83,7 @@ export const DEFAULT_GRAPH_SETTINGS: GraphSettings = {
   interruptBefore: '',
   maxSteps: 25,
   enableStreaming: true,
+  snapToGrid: false,
   tags: '',
   lifecycle: { ...DEFAULT_LIFECYCLE },
   checkpointer: { ...DEFAULT_CHECKPOINTER },

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
 import { GraphCanvas } from '../canvas/GraphCanvas'
 import { Toolbar } from './Toolbar'
@@ -14,6 +14,17 @@ export function AppLayout() {
   const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const addNode = useGraphStore((s) => s.addNode)
   const [platformOpen, setPlatformOpen] = useState(false)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+        e.preventDefault()
+        setPlatformOpen((open) => !open)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {

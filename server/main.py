@@ -20,6 +20,8 @@ from pydantic import BaseModel
 
 from .eval_service import EvalConfigInput, run_eval_job
 
+BUILD_TIME = datetime.now(timezone.utc).isoformat()
+
 app = FastAPI(title="LangStitch Platform API", version="0.2.0")
 
 app.add_middleware(
@@ -204,6 +206,7 @@ def health():
         "service": "langstitch-platform",
         "version": app.version,
         "python": sys.version.split()[0],
+        "build_time": BUILD_TIME,
     }
 
 

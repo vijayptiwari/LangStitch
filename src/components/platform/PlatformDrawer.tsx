@@ -62,6 +62,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const [versions, setVersions] = useState<{ id: string; label: string; created: string }[]>([])
   const [evalResult, setEvalResult] = useState('')
   const [evalResultUrl, setEvalResultUrl] = useState<string | null>(null)
+  const [evalLatencyMs, setEvalLatencyMs] = useState<number | null>(null)
 
   const projectId = projectIdFromDoc(graphDoc)
   const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
@@ -338,6 +339,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
     setBusy(true)
     setEvalResult('')
     setEvalResultUrl(null)
+    setEvalLatencyMs(null)
     try {
       const payload = getPayload()
       await platformApi.saveProject(projectId, {
@@ -365,6 +367,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
       const msg = res.message ?? (dryRun ? 'Config validated' : 'Eval complete')
       setEvalResult(msg)
       setEvalResultUrl(res.url ?? null)
+      setEvalLatencyMs(res.latency_ms ?? null)
       appendLog(dryRun ? `Eval dry-run: ${msg}` : `Eval: ${msg}`)
     } catch (e) {
       const err = String(e)
@@ -384,12 +387,12 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
     { id: 'eval', label: 'Eval', icon: TestTube2, testId: 'platform-tab-eval' },
     { id: 'versions', label: 'Versions', icon: History },
     { id: 'build', label: 'Build', icon: Hammer },
-    { id: 'deploy', label: 'Deploy', icon: Cloud },
+    { id: 'deploy', label: 'Deploy', icon: Cloud, testId: 'platform-tab-deploy' },
   ]
 
   return (
     <div className="platform-overlay" onClick={onClose} role="presentation">
-      <div className="platform-drawer" onClick={(e) => e.stopPropagation()} role="dialog">
+      <div className="platform-drawer" data-testid="platform-drawer" onClick={(e) => e.stopPropagation()} role="dialog">
         <header className="platform-header">
           <div>
             <h2>Platform</h2>
@@ -565,6 +568,12 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
                   {evalResult && (
                     <p className="platform-status" data-testid="eval-result">
                       {evalResult}
+                      {evalLatencyMs != null && (
+                        <>
+                          {' '}
+                          <span data-testid="eval-result-latency">({evalLatencyMs} ms)</span>
+                        </>
+                      )}
                       {evalResultUrl && (
                         <>
                           {' '}
@@ -613,7 +622,15 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
           )}
 
           {tab === 'deploy' && (
-            <div className="platform-section">
+            <div className="platform-section" data-testid="deploy-panel">
+              {busy && (
+                <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
+                  <div className="skeleton-line" />
+                  <div className="skeleton-line short" />
+                  <div className="skeleton-line" />
+                  <div className="skeleton-block" />
+                </div>
+              )}
               <p className="platform-hint">Deploy to Kubernetes cluster via Helm (requires helm + kubectl configured on API host).</p>
               <Field label="Release name">
                 <input className="input" value={deployRelease} onChange={(e) => setDeployRelease(e.target.value)} placeholder={projectId} />

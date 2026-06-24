@@ -108,6 +108,13 @@ export function AssetDesignersPanel() {
             >
               <Plus size={12} /> Add skill
             </button>
+            {skills.length === 0 && (
+              <div className="designer-empty" data-testid="skills-empty-hint">
+                <div className="designer-empty-icon">✦</div>
+                <h3>No skills yet</h3>
+                <p>Add reusable skill definitions here. They export to the skills/ module in your Python project.</p>
+              </div>
+            )}
             {skills.map((skill) => (
               <Section key={skill.id} title={skill.name}>
                 <Field label="Name">

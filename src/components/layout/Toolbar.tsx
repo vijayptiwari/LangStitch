@@ -4,12 +4,14 @@ import {
   Layers,
   Plus,
   RotateCcw,
+  RotateCw,
   Save,
   Server,
   Terminal,
   HelpCircle,
 } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
+import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { exportGraphDocument } from '../../lib/codegen/pythonGenerator'
 import type { GraphDocument } from '../../types/graph'
 
@@ -47,14 +49,24 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
   const loadProject = useGraphStore((s) => s.loadProject)
   const resetProject = useGraphStore((s) => s.resetProject)
+  const redoProject = useGraphStore((s) => s.redoProject)
+  const canRedo = useGraphStore((s) => s.canRedo)
   const addSubgraph = useGraphStore((s) => s.addSubgraph)
   const navigateToGraph = useGraphStore((s) => s.navigateToGraph)
   const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const toggleCodePanel = useGraphStore((s) => s.toggleCodePanel)
   const setDocumentMeta = useGraphStore((s) => s.setDocumentMeta)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const shortcutsPanelRef = useRef<HTMLDivElement>(null)
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const [redoAvailable, setRedoAvailable] = useState(false)
+
+  useFocusTrap(shortcutsPanelRef, showShortcuts)
+
+  useEffect(() => {
+    setRedoAvailable(canRedo())
+  }, [canRedo, graphDoc.name])
 
   const saveProject = useCallback(() => {
     const payload = getProjectPayload()
@@ -169,8 +181,18 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
             </span>
           )}
         </button>
-        <button className="btn-secondary" onClick={resetProject} type="button">
+        <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
+        </button>
+        <button
+          className="btn-secondary"
+          data-testid="toolbar-redo"
+          title="Redo last reset"
+          disabled={!redoAvailable}
+          onClick={() => { redoProject(); setRedoAvailable(canRedo()) }}
+          type="button"
+        >
+          <RotateCw size={16} /> Redo
         </button>
         <button className="btn-secondary" data-testid="toolbar-platform" onClick={onOpenPlatform} type="button">
           <Server size={16} /> Platform
@@ -206,10 +228,11 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
       </div>
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" onClick={() => setShowShortcuts(false)}>
-          <div className="shortcuts-panel" onClick={(e) => e.stopPropagation()}>
+          <div className="shortcuts-panel" ref={shortcutsPanelRef} onClick={(e) => e.stopPropagation()}>
             <h3>Keyboard shortcuts</h3>
             <ul>
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
+              <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
