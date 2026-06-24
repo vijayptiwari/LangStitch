@@ -6,8 +6,8 @@
 | Cycle theme | **LangSmith eval & trace integration MVP** |
 | UAT threshold | ≥ **85 / 100** |
 | Max develop-loop iterations | 5 |
-| Auto-approve BRD/LLD | **yes** (compact mode) — feature: LangSmith Eval Runner MVP |
-| Auto-push after UAT | **no** — confirm before push |
+| Auto-approve BRD/LLD | **yes** (user pre-approved) |
+| Auto-push after UAT | **yes** (user pre-approved) |
 | Repos | LangStitch (`lg-canvas`) |
 | Skill | `langstitch-sdlc-cycle` |
 
