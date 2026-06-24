@@ -220,6 +220,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           className="btn-secondary"
           data-testid="toolbar-platform"
           title="Platform (Ctrl+E)"
+          aria-label="Open Platform drawer"
           onClick={onOpenPlatform}
           type="button"
         >
@@ -264,6 +265,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
             <ul>
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
+              <li><kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab</li>
               <li><kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>

@@ -17,6 +17,7 @@ import { DEFAULT_GRAPH_SETTINGS } from '../../lib/designerConstants'
 import { getNodeColor } from '../../lib/nodeTheme'
 import { loadViewport } from '../../lib/viewportStorage'
 import { CanvasToolbar } from './CanvasToolbar'
+import { TruncatedEdge } from './TruncatedEdge'
 import { StartNode } from './nodes/StartNode'
 import { EndNode } from './nodes/EndNode'
 import { LLMNode } from './nodes/LLMNode'
@@ -39,6 +40,10 @@ const nodeTypes = {
   agentNode: AgentNode,
   ragNode: RagNode,
   intentClassifierNode: IntentClassifierNode,
+}
+
+const edgeTypes = {
+  truncated: TruncatedEdge,
 }
 
 function ViewportRestore() {
@@ -137,10 +142,20 @@ export function GraphCanvas() {
 
   const defaultEdgeOptions = useMemo(
     () => ({
+      type: 'truncated',
       animated: false,
       style: { strokeWidth: 2, stroke: '#6366f1' },
     }),
     [],
+  )
+
+  const displayEdges = useMemo(
+    () =>
+      edges.map((edge) => ({
+        ...edge,
+        type: edge.label ? 'truncated' : edge.type,
+      })),
+    [edges],
   )
 
   const connectionLineStyle = useMemo(
@@ -153,7 +168,7 @@ export function GraphCanvas() {
       <CanvasToolbar />
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={displayEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -165,6 +180,7 @@ export function GraphCanvas() {
         deleteKeyCode={['Backspace', 'Delete']}
         multiSelectionKeyCode="Shift"
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         connectionLineStyle={connectionLineStyle}
         snapToGrid={snapToGrid}

@@ -14,12 +14,20 @@ export function AppLayout() {
   const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const addNode = useGraphStore((s) => s.addNode)
   const [platformOpen, setPlatformOpen] = useState(false)
+  const [platformInitialTab, setPlatformInitialTab] = useState<
+    'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy' | 'eval' | undefined
+  >()
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
         setPlatformOpen((open) => !open)
+      }
+      if (e.altKey && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        setPlatformInitialTab('eval')
+        setPlatformOpen(true)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -78,7 +86,14 @@ export function AppLayout() {
         <DesignerPanel />
       </div>
       {showCodePanel && <CodePanel />}
-      <PlatformDrawer open={platformOpen} onClose={() => setPlatformOpen(false)} />
+      <PlatformDrawer
+        open={platformOpen}
+        onClose={() => {
+          setPlatformOpen(false)
+          setPlatformInitialTab(undefined)
+        }}
+        initialTab={platformInitialTab}
+      />
     </div>
   )
 }

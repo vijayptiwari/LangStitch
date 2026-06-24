@@ -276,6 +276,13 @@ body {
   cursor: grabbing;
 }
 
+.palette-item:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 1px #0f172a, 0 0 12px rgba(251, 191, 36, 0.45);
+}
+
 .palette-item-icon {
   width: 36px;
   height: 36px;
@@ -850,6 +857,37 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.platform-section-toggle {
+  align-self: flex-start;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(12, 16, 28, 0.6);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.platform-section-toggle:hover {
+  border-color: var(--accent);
+}
+
+.edge-label-truncated {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #e0e7ff;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  max-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-hint {

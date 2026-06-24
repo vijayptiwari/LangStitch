@@ -456,7 +456,7 @@
       "feature": "Eval dry-run badge when API key missing",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 42,
@@ -464,7 +464,7 @@
       "feature": "High-contrast focus ring on node palette",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 43,
@@ -472,7 +472,7 @@
       "feature": "Chord shortcut Alt+G for open eval tab",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 44,
@@ -480,7 +480,7 @@
       "feature": "Merge imported viewport on project load",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 45,
@@ -488,7 +488,7 @@
       "feature": "Inline JSDoc on graphStore public API",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 46,
@@ -496,7 +496,7 @@
       "feature": "E2E regression for health metadata after reload",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 47,
@@ -504,7 +504,7 @@
       "feature": "Add aria-label to toolbar platform",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 48,
@@ -512,7 +512,7 @@
       "feature": "Collapse/expand Platform Eval section",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 49,
@@ -520,7 +520,7 @@
       "feature": "Add search/filter to Guardrail list",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 50,
@@ -528,7 +528,7 @@
       "feature": "Edge label truncation with tooltip cycle 50",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 51,

@@ -43,7 +43,14 @@ export interface ProjectData {
 }
 
 export const platformApi = {
-  health: () => request<{ status: string; version?: string; python?: string; build_time?: string }>('/health'),
+  health: () =>
+    request<{
+      status: string
+      version?: string
+      python?: string
+      build_time?: string
+      langsmith_api_key_configured?: boolean
+    }>('/health'),
 
   saveProject: (projectId: string, payload: ProjectData) =>
     request<{ ok: boolean; path: string }>('/project/save', {

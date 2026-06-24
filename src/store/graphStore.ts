@@ -33,7 +33,7 @@ import {
   MAIN_GRAPH_ID,
   syncCanvas,
 } from '../lib/subgraphCanvas'
-import { saveViewport } from '../lib/viewportStorage'
+import { saveViewport, loadViewport } from '../lib/viewportStorage'
 
 function styledEdge(
   id: string,
@@ -41,6 +41,7 @@ function styledEdge(
   target: string,
   sourceKind: StitchNodeData['kind'],
   sourceHandle?: string,
+  label?: string,
 ): Edge {
   const color = getNodeTheme(sourceKind).edgeColor
   return {
@@ -48,6 +49,7 @@ function styledEdge(
     source,
     target,
     sourceHandle,
+    label,
     animated: true,
     style: { stroke: color, strokeWidth: 2.5 },
   }
@@ -87,15 +89,25 @@ interface GraphStore {
   showCodePanel: boolean
   designerTab: 'node' | 'graph' | 'assets'
 
+  /** Replace all nodes on the active canvas. */
   setNodes: (nodes: Node<StitchNodeData>[]) => void
+  /** Replace all edges on the active canvas. */
   setEdges: (edges: Edge[]) => void
+  /** Apply React Flow node change events (drag, select, remove). */
   onNodesChange: (changes: NodeChange<Node<StitchNodeData>>[]) => void
+  /** Apply React Flow edge change events. */
   onEdgesChange: (changes: EdgeChange[]) => void
+  /** Connect two nodes; router branches inherit branch labels on the edge. */
   onConnect: (connection: Connection) => void
+  /** Add a node and push undo history. */
   addNode: (node: Node<StitchNodeData>) => void
+  /** Patch node data by id. */
   updateNodeData: (nodeId: string, data: Partial<StitchNodeData>) => void
+  /** Remove a node (start/end nodes are protected). */
   removeNode: (nodeId: string) => void
+  /** Select a node or clear selection. */
   selectNode: (nodeId: string | null) => void
+  /** Toggle generated Python code panel visibility. */
   toggleCodePanel: () => void
 
   setDocumentMeta: (meta: Partial<Pick<GraphDocument, 'name' | 'description'>>) => void
@@ -139,6 +151,7 @@ interface GraphStore {
   updateRagPipeline: (id: string, pipeline: Partial<RagPipelineConfig>) => void
   removeRagPipeline: (id: string) => void
 
+  /** Serialize document, canvas snapshots, and navigation for save/export. */
   getProjectPayload: () => {
     document: GraphDocument
     canvasByGraph: Record<string, CanvasSnapshot>
@@ -147,6 +160,10 @@ interface GraphStore {
     edges: Edge[]
   }
 
+  /**
+   * Load a project from disk or import.
+   * Merges imported viewport with localStorage when the import omits viewport data.
+   */
   loadProject: (payload: {
     document: GraphDocument
     nodes?: Node<StitchNodeData>[]
@@ -163,6 +180,7 @@ interface GraphStore {
   clearUndoDepthNotice: () => void
   duplicateSelectedNode: () => void
   isGraphEmpty: () => boolean
+  /** Persist pan/zoom for the active subgraph (also writes localStorage). */
   updateViewport: (viewport: { x: number; y: number; zoom: number }) => void
 }
 
@@ -248,8 +266,8 @@ const initialNodes: Node<StitchNodeData>[] = [
 const initialEdges: Edge[] = [
   styledEdge('e-start-llm', 'start-1', 'llm-1', 'start'),
   styledEdge('e-llm-decision', 'llm-1', 'decision-1', 'llm'),
-  styledEdge('e-decision-tool', 'decision-1', 'tool-1', 'router', 'b1'),
-  styledEdge('e-decision-fn', 'decision-1', 'fn-1', 'router', 'b2'),
+  styledEdge('e-decision-tool', 'decision-1', 'tool-1', 'router', 'b1', 'use_tool'),
+  styledEdge('e-decision-fn', 'decision-1', 'fn-1', 'router', 'b2', 'direct'),
   styledEdge('e-tool-end', 'tool-1', 'end-1', 'tool'),
   styledEdge('e-fn-end', 'fn-1', 'end-1', 'function'),
 ]
@@ -336,6 +354,11 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     const sourceNode = get().nodes.find((n) => n.id === connection.source)
     const kind = sourceNode?.data.kind ?? 'llm'
     const color = getNodeTheme(kind).edgeColor
+    let label: string | undefined
+    if (sourceNode?.data.kind === 'router' && connection.sourceHandle) {
+      const branch = sourceNode.data.branches?.find((b) => b.id === connection.sourceHandle)
+      label = branch?.label
+    }
     applyCanvasUpdate(
       get,
       set,
@@ -343,6 +366,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       addEdge(
         {
           ...connection,
+          label,
           animated: true,
           style: { stroke: color, strokeWidth: 2.5 },
         },
@@ -770,7 +794,20 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     }
     canvasByGraph = canvasByGraph ?? { [MAIN_GRAPH_ID]: createEmptySubgraphCanvas() }
 
+    const projectName = doc.name || 'My Workflow Graph'
     const activeId = doc.activeSubgraphId || MAIN_GRAPH_ID
+    const storedViewport = loadViewport(projectName)
+    const mergedCanvas = { ...canvasByGraph }
+    for (const graphId of Object.keys(mergedCanvas)) {
+      const snap = mergedCanvas[graphId]
+      if (snap.viewport) {
+        if (graphId === activeId) saveViewport(projectName, snap.viewport)
+      } else if (storedViewport && graphId === activeId) {
+        mergedCanvas[graphId] = { ...snap, viewport: storedViewport }
+      }
+    }
+    canvasByGraph = mergedCanvas
+
     const active = canvasByGraph[activeId] ?? canvasByGraph[MAIN_GRAPH_ID]
 
     set({

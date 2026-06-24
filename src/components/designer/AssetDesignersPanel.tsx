@@ -48,6 +48,7 @@ function guardrailValidationError(g: GuardrailDefinition): string | null {
 
 export function AssetDesignersPanel() {
   const [tab, setTab] = useState<AssetTab>('skills')
+  const [guardrailFilter, setGuardrailFilter] = useState('')
   const document = useGraphStore((s) => s.document)
   const {
     addSkillDefinition,
@@ -69,6 +70,15 @@ export function AssetDesignersPanel() {
 
   const skills = document.skillRegistry ?? []
   const guardrails = document.guardrailRegistry ?? []
+  const filteredGuardrails = guardrails.filter((g) => {
+    const q = guardrailFilter.trim().toLowerCase()
+    if (!q) return true
+    return (
+      g.name.toLowerCase().includes(q) ||
+      g.description.toLowerCase().includes(q) ||
+      g.policy.toLowerCase().includes(q)
+    )
+  })
   const rules = document.businessRuleRegistry ?? []
   const personas = document.personaRegistry ?? []
   const pipelines = document.ragPipelines ?? []
@@ -158,6 +168,15 @@ export function AssetDesignersPanel() {
 
         {tab === 'guardrails' && (
           <>
+            <input
+              className="input"
+              type="search"
+              data-testid="guardrail-search"
+              placeholder="Search guardrails…"
+              value={guardrailFilter}
+              onChange={(e) => setGuardrailFilter(e.target.value)}
+              aria-label="Filter guardrails"
+            />
             <button
               type="button"
               className="btn-secondary-sm"
@@ -177,7 +196,12 @@ export function AssetDesignersPanel() {
             >
               <Plus size={12} /> Add guardrail
             </button>
-            {guardrails.map((g) => {
+            {filteredGuardrails.length === 0 && guardrails.length > 0 && (
+              <p className="designer-empty" data-testid="guardrail-filter-empty">
+                No guardrails match your search.
+              </p>
+            )}
+            {filteredGuardrails.map((g) => {
               const validationError = guardrailValidationError(g)
               return (
               <Section key={g.id} title={g.name || 'Untitled guardrail'}>

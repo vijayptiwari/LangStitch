@@ -28,13 +28,14 @@ type Tab = 'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy' | 'eval
 interface PlatformDrawerProps {
   open: boolean
   onClose: () => void
+  initialTab?: Tab
 }
 
 function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
+export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProps) {
   const graphDoc = useGraphStore((s) => s.document)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
   const loadProject = useGraphStore((s) => s.loadProject)
@@ -65,6 +66,8 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const [evalResultUrl, setEvalResultUrl] = useState<string | null>(null)
   const [evalLatencyMs, setEvalLatencyMs] = useState<number | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
+  const [evalSectionExpanded, setEvalSectionExpanded] = useState(true)
+  const [langsmithApiKeyConfigured, setLangsmithApiKeyConfigured] = useState<boolean | null>(null)
 
   const projectId = projectIdFromDoc(graphDoc)
   const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
@@ -120,15 +123,20 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
 
   useEffect(() => {
     if (!open) return
+    if (initialTab) setTab(initialTab)
     platformApi
       .health()
-      .then(() => {
+      .then((h) => {
         setApiOnline(true)
         setLastHealthSync(new Date().toLocaleTimeString())
+        setLangsmithApiKeyConfigured(h.langsmith_api_key_configured ?? null)
       })
-      .catch(() => setApiOnline(false))
+      .catch(() => {
+        setApiOnline(false)
+        setLangsmithApiKeyConfigured(null)
+      })
     refreshGitStatus()
-  }, [open, refreshGitStatus])
+  }, [open, initialTab, refreshGitStatus])
 
   const saveToWorkspace = async () => {
     const payload = getPayload()
@@ -530,12 +538,28 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
               <p className="platform-hint">
                 Run LangSmith dataset evals against this graph. Evaluators stay in LangSmith UI; config exports with your project.
               </p>
+              {langsmithApiKeyConfigured === false && (
+                <span className="platform-badge warn" data-testid="eval-dry-run-badge">
+                  Dry-run only — LANGCHAIN_API_KEY not configured on platform API
+                </span>
+              )}
               {!observabilityEnabled || !langsmithEnabled ? (
                 <p className="platform-hint warn" data-testid="eval-disabled-hint">
                   Enable LangSmith under Graph Designer → Observability before running evals.
                 </p>
               ) : (
                 <>
+                  <button
+                    type="button"
+                    className="platform-section-toggle"
+                    data-testid="eval-section-toggle"
+                    aria-expanded={evalSectionExpanded}
+                    onClick={() => setEvalSectionExpanded((v) => !v)}
+                  >
+                    {evalSectionExpanded ? '▼' : '▶'} Eval configuration
+                  </button>
+                  {evalSectionExpanded && (
+                  <>
                   <div className="platform-actions">
                     <button
                       className="btn-secondary-sm"
@@ -622,6 +646,8 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
                       <TestTube2 size={14} /> Run eval
                     </button>
                   </div>
+                  </>
+                  )}
                   {evalResult && (
                     <p className="platform-status" data-testid="eval-result">
                       {evalResult}

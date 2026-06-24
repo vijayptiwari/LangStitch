@@ -33,8 +33,18 @@
 | 38 | Ctrl+D node duplicate | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 | 39 | Export eval-dataset warning | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 40 | Export rate-limit 429 message | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 41 | Eval dry-run badge | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 42 | Palette focus ring | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 43 | Alt+G eval tab shortcut | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 44 | Merge viewport on import | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 45 | graphStore JSDoc | APPROVED | N/A | PASSED | 88 | 1 | yes | COMPLETE |
+| 46 | Health metadata E2E reload | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 47 | Toolbar platform aria-label | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 48 | Collapsible Eval section | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 49 | Guardrail search filter | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 50 | Edge label truncation tooltip | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 
-**Progress: 40 / 2500**
+**Progress: 50 / 2500**
 
 ## Batch log
 
@@ -44,11 +54,13 @@
 | 1 | 11–20 | 86953d1 | green | COMPLETE |
 | 2 | 21–30 | 67c0e5c | green | COMPLETE |
 | 3 | 31–40 | 80ceb35 | green | COMPLETE |
+| 4 | 41–50 | TBD | green | COMPLETE |
 
 ## Summary
-- Completed: 40 / 2500 cycles
+- Completed: 50 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
 - Batch 3 avg UAT: 90.3
-- Next: Batch 4 (cycles 41–50)
+- Batch 4 avg UAT: 89.9
+- Next: Batch 5 (cycles 51–60)

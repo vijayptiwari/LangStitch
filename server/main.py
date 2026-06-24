@@ -239,6 +239,7 @@ def health():
         "version": app.version,
         "python": sys.version.split()[0],
         "build_time": BUILD_TIME,
+        "langsmith_api_key_configured": bool(os.environ.get("LANGCHAIN_API_KEY")),
     }
 
 
