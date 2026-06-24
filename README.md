@@ -107,6 +107,21 @@ Built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every p
 
 ---
 
+## LangSmith Eval Runner
+
+Configure dataset evals from **Platform → Eval** (requires LangSmith enabled under Graph Designer → Observability).
+
+- **Validate config** — dry-run without API key
+- **Run eval** — requires `LANGCHAIN_API_KEY` on the platform API host
+- Export includes `eval` in `langsmith.json` and `eval_runner.py` for CI
+
+```bash
+# After export
+python src/<package>/eval_runner.py --dry-run
+```
+
+---
+
 ## Testing
 
 ```bash

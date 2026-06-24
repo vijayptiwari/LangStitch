@@ -354,6 +354,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
             langfuse: { ...current.observability.langfuse, ...settings.observability?.langfuse },
             logging: { ...current.observability.logging, ...settings.observability?.logging },
           },
+          eval: { ...current.eval, ...settings.eval },
           a2a: { ...current.a2a, ...settings.a2a },
         },
       },

@@ -18,6 +18,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from .eval_service import EvalConfigInput, run_eval_job
+
 app = FastAPI(title="LangStitch Platform API", version="0.2.0")
 
 app.add_middleware(
@@ -81,6 +83,23 @@ class ProjectPayload(BaseModel):
 class AgentRunRequest(BaseModel):
     project_id: str = "basic_agent_test"
     python_code: str | None = None
+
+
+class EvalConfigPayload(BaseModel):
+    enabled: bool = True
+    dataset_name: str = ""
+    dataset_id: str = ""
+    experiment_prefix: str = ""
+    max_concurrency: int = 2
+    description: str = ""
+
+
+class EvalRunRequest(BaseModel):
+    project_id: str
+    eval_config: EvalConfigPayload
+    langsmith_project: str = "langstitch-graph"
+    api_key_env: str = "LANGCHAIN_API_KEY"
+    dry_run: bool = False
 
 
 class ExportRequest(BaseModel):
@@ -245,6 +264,29 @@ def run_agent(req: AgentRunRequest):
         "result": parsed,
         "graph_path": str(graph_path),
     }
+
+
+@app.post("/api/eval/run")
+def run_eval(req: EvalRunRequest):
+    """Run or dry-run LangSmith eval for a project."""
+    config = EvalConfigInput(
+        dataset_name=req.eval_config.dataset_name,
+        dataset_id=req.eval_config.dataset_id,
+        experiment_prefix=req.eval_config.experiment_prefix,
+        max_concurrency=req.eval_config.max_concurrency,
+        description=req.eval_config.description,
+        enabled=req.eval_config.enabled,
+    )
+    result = run_eval_job(
+        config,
+        langsmith_project=req.langsmith_project,
+        api_key_env=req.api_key_env,
+        dry_run=req.dry_run,
+    )
+    if not result.get("ok"):
+        status = 401 if "API key" in result.get("message", "") else 400
+        raise HTTPException(status_code=status, detail=result)
+    return result
 
 
 @app.get("/api/project/{project_id}")

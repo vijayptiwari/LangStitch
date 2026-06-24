@@ -1,4 +1,4 @@
-import type { A2aConfig, GraphSettings, LangfuseConfig, LangSmithConfig, LoggingConfig } from '../types/graph'
+import type { A2aConfig, EvalConfig, GraphSettings, LangfuseConfig, LangSmithConfig, LoggingConfig } from '../types/graph'
 
 export const DEFAULT_LIFECYCLE = {
   onStartup: `# Called once when the graph runtime starts
@@ -69,6 +69,15 @@ export const DEFAULT_A2A: A2aConfig = {
   protocolVersion: '0.2',
 }
 
+export const DEFAULT_EVAL: EvalConfig = {
+  enabled: false,
+  datasetName: '',
+  datasetId: '',
+  experimentPrefix: '',
+  maxConcurrency: 2,
+  description: '',
+}
+
 export const DEFAULT_GRAPH_SETTINGS: GraphSettings = {
   checkpoint: 'memory',
   interruptBefore: '',
@@ -78,6 +87,7 @@ export const DEFAULT_GRAPH_SETTINGS: GraphSettings = {
   lifecycle: { ...DEFAULT_LIFECYCLE },
   checkpointer: { ...DEFAULT_CHECKPOINTER },
   observability: { ...DEFAULT_OBSERVABILITY },
+  eval: { ...DEFAULT_EVAL },
   a2a: { ...DEFAULT_A2A },
 }
 
@@ -176,6 +186,7 @@ export function mergeGraphSettings(partial?: Partial<GraphSettings>): GraphSetti
       langfuse: { ...DEFAULT_LANGFUSE, ...obs?.langfuse },
       logging: { ...DEFAULT_LOGGING, ...obs?.logging },
     },
+    eval: { ...DEFAULT_EVAL, ...partial?.eval },
     a2a: { ...DEFAULT_A2A, ...partial?.a2a },
   }
 }

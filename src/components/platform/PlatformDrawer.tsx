@@ -5,6 +5,7 @@ import {
   GitBranch,
   Hammer,
   History,
+  TestTube2,
   Upload,
   X,
 } from 'lucide-react'
@@ -18,10 +19,11 @@ import {
   type ExportFormat,
 } from '../../lib/codegen/bundleGenerator'
 import { platformApi, downloadBlob } from '../../lib/api/platformClient'
+import { DEFAULT_EVAL } from '../../lib/designerConstants'
 import type { GraphDocument, StitchNodeData } from '../../types/graph'
 import type { Edge, Node } from '@xyflow/react'
 
-type Tab = 'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy'
+type Tab = 'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy' | 'eval'
 
 interface PlatformDrawerProps {
   open: boolean
@@ -36,6 +38,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const graphDoc = useGraphStore((s) => s.document)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
   const loadProject = useGraphStore((s) => s.loadProject)
+  const updateGraphSettings = useGraphStore((s) => s.updateGraphSettings)
 
   const [tab, setTab] = useState<Tab>('git')
   const [log, setLog] = useState('')
@@ -54,8 +57,12 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const [deployRelease, setDeployRelease] = useState('')
   const [imageTag, setImageTag] = useState('latest')
   const [versions, setVersions] = useState<{ id: string; label: string; created: string }[]>([])
+  const [evalResult, setEvalResult] = useState('')
 
   const projectId = projectIdFromDoc(graphDoc)
+  const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
+  const langsmithEnabled = graphDoc.settings?.observability?.langsmith?.enabled ?? false
+  const observabilityEnabled = graphDoc.settings?.observability?.enabled ?? false
 
   const appendLog = (msg: string) => setLog((l) => `${l}\n${msg}`.trim())
 
@@ -313,12 +320,58 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
     }
   }
 
+  const patchEval = (patch: Partial<typeof evalConfig>) => {
+    updateGraphSettings({
+      eval: { ...evalConfig, ...patch, enabled: true },
+    })
+  }
+
+  const handleRunEval = async (dryRun = false) => {
+    setBusy(true)
+    setEvalResult('')
+    try {
+      const payload = getPayload()
+      await platformApi.saveProject(projectId, {
+        document: payload.document as unknown as Record<string, unknown>,
+        nodes: payload.nodes,
+        edges: payload.edges,
+        canvasByGraph: payload.canvasByGraph,
+        navigationPath: payload.navigationPath,
+      })
+      const obs = graphDoc.settings?.observability
+      const res = await platformApi.runEval({
+        project_id: projectId,
+        eval_config: {
+          enabled: true,
+          dataset_name: evalConfig?.datasetName ?? '',
+          dataset_id: evalConfig?.datasetId ?? '',
+          experiment_prefix: evalConfig?.experimentPrefix ?? graphDoc.name,
+          max_concurrency: evalConfig?.maxConcurrency ?? 2,
+          description: evalConfig?.description ?? '',
+        },
+        langsmith_project: obs?.langsmith?.projectName ?? graphDoc.name,
+        api_key_env: obs?.langsmith?.apiKeyEnv ?? 'LANGCHAIN_API_KEY',
+        dry_run: dryRun,
+      })
+      const msg = res.message ?? (dryRun ? 'Config validated' : 'Eval complete')
+      setEvalResult(res.url ? `${msg} — ${res.url}` : msg)
+      appendLog(dryRun ? `Eval dry-run: ${msg}` : `Eval: ${msg}`)
+    } catch (e) {
+      const err = String(e)
+      setEvalResult(err)
+      appendLog(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   if (!open) return null
 
-  const tabs: { id: Tab; label: string; icon: typeof GitBranch }[] = [
+  const tabs: { id: Tab; label: string; icon: typeof GitBranch; testId?: string }[] = [
     { id: 'git', label: 'Git', icon: GitBranch },
     { id: 'export', label: 'Export', icon: Download },
     { id: 'import', label: 'Import', icon: Upload },
+    { id: 'eval', label: 'Eval', icon: TestTube2, testId: 'platform-tab-eval' },
     { id: 'versions', label: 'Versions', icon: History },
     { id: 'build', label: 'Build', icon: Hammer },
     { id: 'deploy', label: 'Deploy', icon: Cloud },
@@ -342,10 +395,11 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
         </header>
 
         <nav className="platform-tabs">
-          {tabs.map(({ id, label, icon: Icon }) => (
+          {tabs.map(({ id, label, icon: Icon, testId }) => (
             <button
               key={id}
               type="button"
+              data-testid={testId}
               className={`platform-tab ${tab === id ? 'active' : ''}`}
               onClick={() => {
                 setTab(id)
@@ -418,6 +472,93 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
                   }}
                 />
               </label>
+            </div>
+          )}
+
+          {tab === 'eval' && (
+            <div className="platform-section" data-testid="eval-panel">
+              <p className="platform-hint">
+                Run LangSmith dataset evals against this graph. Evaluators stay in LangSmith UI; config exports with your project.
+              </p>
+              {!observabilityEnabled || !langsmithEnabled ? (
+                <p className="platform-hint warn" data-testid="eval-disabled-hint">
+                  Enable LangSmith under Graph Designer → Observability before running evals.
+                </p>
+              ) : (
+                <>
+                  <Field label="Dataset name">
+                    <input
+                      className="input"
+                      data-testid="eval-dataset-name"
+                      value={evalConfig?.datasetName ?? ''}
+                      onChange={(e) => patchEval({ datasetName: e.target.value })}
+                      placeholder="my-regression-dataset"
+                    />
+                  </Field>
+                  <Field label="Dataset ID (optional)">
+                    <input
+                      className="input"
+                      data-testid="eval-dataset-id"
+                      value={evalConfig?.datasetId ?? ''}
+                      onChange={(e) => patchEval({ datasetId: e.target.value })}
+                      placeholder="uuid-from-langsmith"
+                    />
+                  </Field>
+                  <Field label="Experiment prefix">
+                    <input
+                      className="input"
+                      data-testid="eval-experiment-prefix"
+                      value={evalConfig?.experimentPrefix ?? ''}
+                      onChange={(e) => patchEval({ experimentPrefix: e.target.value })}
+                      placeholder={graphDoc.name}
+                    />
+                  </Field>
+                  <Field label="Max concurrency">
+                    <input
+                      className="input"
+                      type="number"
+                      min={1}
+                      max={8}
+                      value={evalConfig?.maxConcurrency ?? 2}
+                      onChange={(e) =>
+                        patchEval({ maxConcurrency: Math.min(8, Math.max(1, Number(e.target.value) || 2)) })
+                      }
+                    />
+                  </Field>
+                  <Field label="Description">
+                    <input
+                      className="input"
+                      value={evalConfig?.description ?? ''}
+                      onChange={(e) => patchEval({ description: e.target.value })}
+                      placeholder="Optional experiment note"
+                    />
+                  </Field>
+                  <div className="platform-actions">
+                    <button
+                      className="btn-secondary"
+                      disabled={busy}
+                      onClick={() => handleRunEval(true)}
+                      type="button"
+                    >
+                      Validate config
+                    </button>
+                    <button
+                      className="btn-primary"
+                      data-testid="eval-run-button"
+                      disabled={busy || !(evalConfig?.datasetName || evalConfig?.datasetId)}
+                      onClick={() => handleRunEval(false)}
+                      type="button"
+                    >
+                      <TestTube2 size={14} /> Run eval
+                    </button>
+                  </div>
+                  {evalResult && (
+                    <p className="platform-status" data-testid="eval-result">
+                      {evalResult}
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           )}
 

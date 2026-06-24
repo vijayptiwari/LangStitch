@@ -153,6 +153,31 @@ export const platformApi = {
       method: 'POST',
       body: JSON.stringify({ project_id: projectId, python_code: pythonCode }),
     }),
+
+  runEval: (body: {
+    project_id: string
+    eval_config: {
+      enabled: boolean
+      dataset_name: string
+      dataset_id: string
+      experiment_prefix: string
+      max_concurrency: number
+      description: string
+    }
+    langsmith_project: string
+    api_key_env: string
+    dry_run?: boolean
+  }) =>
+    request<{
+      ok: boolean
+      dry_run?: boolean
+      experiment_id?: string
+      url?: string
+      message?: string
+    }>('/eval/run', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 }
 
 export function downloadBlob(blob: Blob, filename: string) {

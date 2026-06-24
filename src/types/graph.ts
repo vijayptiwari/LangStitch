@@ -232,6 +232,15 @@ export interface CheckpointerConfig {
   ttlSeconds: number
 }
 
+export interface EvalConfig {
+  enabled: boolean
+  datasetName: string
+  datasetId: string
+  experimentPrefix: string
+  maxConcurrency: number
+  description: string
+}
+
 export interface LangSmithConfig {
   enabled: boolean
   projectName: string
@@ -286,6 +295,7 @@ export interface GraphSettings {
   lifecycle: LifecycleHooks
   checkpointer: CheckpointerConfig
   observability: ObservabilityConfig
+  eval: EvalConfig
   a2a: A2aConfig
 }
 
