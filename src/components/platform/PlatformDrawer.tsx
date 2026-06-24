@@ -52,17 +52,25 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const [commitMsg, setCommitMsg] = useState('Update LangStitch graph')
   const [gitStatus, setGitStatus] = useState<string>('')
 
-  const [exportFormat, setExportFormat] = useState<ExportFormat>('full')
+  const [exportFormat, setExportFormat] = useState<ExportFormat>(() => {
+    const saved = sessionStorage.getItem(`langstitch-export-format-${projectIdFromDoc(graphDoc)}`)
+    return (saved as ExportFormat) || 'full'
+  })
   const [deployNs, setDeployNs] = useState('langstitch')
   const [deployRelease, setDeployRelease] = useState('')
   const [imageTag, setImageTag] = useState('latest')
   const [versions, setVersions] = useState<{ id: string; label: string; created: string }[]>([])
   const [evalResult, setEvalResult] = useState('')
+  const [evalResultUrl, setEvalResultUrl] = useState<string | null>(null)
 
   const projectId = projectIdFromDoc(graphDoc)
   const evalConfig = graphDoc.settings?.eval ?? DEFAULT_EVAL
   const langsmithEnabled = graphDoc.settings?.observability?.langsmith?.enabled ?? false
   const observabilityEnabled = graphDoc.settings?.observability?.enabled ?? false
+
+  useEffect(() => {
+    sessionStorage.setItem(`langstitch-export-format-${projectId}`, exportFormat)
+  }, [projectId, exportFormat])
 
   const appendLog = (msg: string) => setLog((l) => `${l}\n${msg}`.trim())
 
@@ -329,6 +337,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const handleRunEval = async (dryRun = false) => {
     setBusy(true)
     setEvalResult('')
+    setEvalResultUrl(null)
     try {
       const payload = getPayload()
       await platformApi.saveProject(projectId, {
@@ -354,7 +363,8 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
         dry_run: dryRun,
       })
       const msg = res.message ?? (dryRun ? 'Config validated' : 'Eval complete')
-      setEvalResult(res.url ? `${msg} — ${res.url}` : msg)
+      setEvalResult(msg)
+      setEvalResultUrl(res.url ?? null)
       appendLog(dryRun ? `Eval dry-run: ${msg}` : `Eval: ${msg}`)
     } catch (e) {
       const err = String(e)
@@ -555,6 +565,19 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
                   {evalResult && (
                     <p className="platform-status" data-testid="eval-result">
                       {evalResult}
+                      {evalResultUrl && (
+                        <>
+                          {' '}
+                          <a
+                            href={evalResultUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            data-testid="eval-result-link"
+                          >
+                            Open LangSmith
+                          </a>
+                        </>
+                      )}
                     </p>
                   )}
                 </>
