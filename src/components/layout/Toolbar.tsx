@@ -116,13 +116,26 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         graphNameInputRef.current?.focus()
         graphNameInputRef.current?.select()
       }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault()
+        if (canRedo() && !isGraphEmpty()) {
+          redoProject()
+          setRedoAvailable(canRedo())
+          const at = new Date().toISOString()
+          localStorage.setItem(
+            REDO_LAST_USED_KEY,
+            JSON.stringify({ at, graphName: graphDoc.name }),
+          )
+          setRedoLastUsed(at)
+        }
+      }
       if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
         setShowShortcuts((v) => !v)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [saveProject])
+  }, [saveProject, canRedo, graphDoc.name, isGraphEmpty, redoProject])
 
   const graphEmpty = isGraphEmpty()
   const redoDisabled = !redoAvailable || graphEmpty
@@ -231,7 +244,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         <button
           className="btn-secondary"
           data-testid="toolbar-redo"
-          title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset'}
+          title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
           disabled={redoDisabled}
           onClick={() => {
             redoProject()
@@ -246,6 +259,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           type="button"
         >
           <RotateCw size={16} /> Redo
+          <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd">
+            Ctrl+Shift+Z
+          </kbd>
         </button>
         {redoLastUsed && (
           <span

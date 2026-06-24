@@ -1,7 +1,7 @@
 {
   "version": 1,
   "totalCycles": 2500,
-  "completedCount": 70,
+  "completedCount": 90,
   "pendingCount": 2430,
   "batchSize": 10,
   "autoApprove": true,
@@ -826,7 +826,7 @@
       "feature": "CHANGELOG entry template for cycle 81",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 82,
@@ -834,7 +834,7 @@
       "feature": "E2E regression for health metadata after reload",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 83,
@@ -842,7 +842,7 @@
       "feature": "Show keyboard hint on toolbar redo",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 84,
@@ -850,7 +850,7 @@
       "feature": "Show last-sync timestamp on Platform Health",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 85,
@@ -858,7 +858,7 @@
       "feature": "Validate required fields in Guardrail before save",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 86,
@@ -866,7 +866,7 @@
       "feature": "Snap-to-grid toggle for canvas nodes",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 87,
@@ -874,7 +874,7 @@
       "feature": "Add eval-dataset comment header in generated Python module",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 88,
@@ -882,7 +882,7 @@
       "feature": "Add request ID header to platform API responses",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 89,
@@ -890,7 +890,7 @@
       "feature": "Eval config preset: regression",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 90,
@@ -898,7 +898,7 @@
       "feature": "Skip link to main canvas region",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 91,

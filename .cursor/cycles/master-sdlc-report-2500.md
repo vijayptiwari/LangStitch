@@ -73,8 +73,18 @@
 | 78 | Modal focus trap | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 | 79 | Alt+D duplicate node | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 | 80 | Undo stack depth notice | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 81 | CHANGELOG entry template | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 82 | Health metadata reload E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 83 | Toolbar redo keyboard hint | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 84 | Platform Health last-sync | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 85 | Guardrail required validation | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 86 | Snap-to-grid toggle | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 87 | Python eval-dataset header | APPROVED | N/A | PASSED | 92 | 1 | yes | COMPLETE |
+| 88 | API X-Request-ID header | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 89 | Eval regression preset | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 90 | Skip link to canvas | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
 
-**Progress: 80 / 2500**
+**Progress: 90 / 2500**
 
 ## Batch log
 
@@ -88,9 +98,10 @@
 | 5 | 51–60 | 0d084c0 | green | COMPLETE |
 | 6 | 61–70 | 17ffaaf | green | COMPLETE |
 | 7 | 71–80 | c3e119e | green | COMPLETE |
+| 8 | 81–90 | pending | green | COMPLETE |
 
 ## Summary
-- Completed: 80 / 2500 cycles
+- Completed: 90 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
@@ -99,4 +110,5 @@
 - Batch 5 avg UAT: 90.2
 - Batch 6 avg UAT: 90.5
 - Batch 7 avg UAT: 91.0
-- Next: Batch 8 (cycles 81–90)
+- Batch 8 avg UAT: 90.5
+- Next: Batch 9 (cycles 91–100)

@@ -14,7 +14,7 @@ test.describe('SDLC Batch 1 — cycles 11–20', () => {
     await page.getByRole('button', { name: /Reset/i }).click()
     const redo = page.getByTestId('toolbar-redo')
     await expect(redo).toBeEnabled()
-    await expect(redo).toHaveAttribute('title', 'Redo last reset')
+    await expect(redo).toHaveAttribute('title', /Redo last reset/i)
     await redo.click()
     await expect(page.getByTestId('graph-name-input')).toHaveValue('Redo Test Graph')
   })
