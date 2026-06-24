@@ -11,7 +11,7 @@
   "uatThreshold": 85,
   "status": "COMPLETE",
   "lastCompletedBatch": 8,
-  "lastCommit": "pending",
+  "lastCommit": "a3494b6",
   "startedAt": "2026-06-24T00:00:00Z",
   "notes": "Batch 8 complete (cycles 81-90). Next: Batch 9 (cycles 91-100)."
 }

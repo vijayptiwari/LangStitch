@@ -98,7 +98,7 @@
 | 5 | 51–60 | 0d084c0 | green | COMPLETE |
 | 6 | 61–70 | 17ffaaf | green | COMPLETE |
 | 7 | 71–80 | c3e119e | green | COMPLETE |
-| 8 | 81–90 | pending | green | COMPLETE |
+| 8 | 81–90 | a3494b6 | green | COMPLETE |
 
 ## Summary
 - Completed: 90 / 2500 cycles
