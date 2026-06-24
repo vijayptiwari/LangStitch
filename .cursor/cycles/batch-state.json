@@ -9,7 +9,7 @@
   "autoApprove": true,
   "autoPush": true,
   "uatThreshold": 85,
-  "status": "READY",
+  "status": "RUNNING",
   "lastCompletedBatch": 4,
   "lastCommit": "41c4cd9",
   "startedAt": "2026-06-24T00:00:00Z",
