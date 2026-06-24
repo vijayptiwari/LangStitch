@@ -19,7 +19,7 @@ import {
   type ExportFormat,
 } from '../../lib/codegen/bundleGenerator'
 import { platformApi, downloadBlob } from '../../lib/api/platformClient'
-import { DEFAULT_EVAL } from '../../lib/designerConstants'
+import { DEFAULT_EVAL, EVAL_PRESET_REGRESSION } from '../../lib/designerConstants'
 import type { GraphDocument, StitchNodeData } from '../../types/graph'
 import type { Edge, Node } from '@xyflow/react'
 
@@ -44,6 +44,7 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
   const [log, setLog] = useState('')
   const [busy, setBusy] = useState(false)
   const [apiOnline, setApiOnline] = useState<boolean | null>(null)
+  const [lastHealthSync, setLastHealthSync] = useState<string | null>(null)
 
   const [gitUrl, setGitUrl] = useState('')
   const [gitBranch, setGitBranch] = useState('main')
@@ -116,7 +117,13 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
 
   useEffect(() => {
     if (!open) return
-    platformApi.health().then(() => setApiOnline(true)).catch(() => setApiOnline(false))
+    platformApi
+      .health()
+      .then(() => {
+        setApiOnline(true)
+        setLastHealthSync(new Date().toLocaleTimeString())
+      })
+      .catch(() => setApiOnline(false))
     refreshGitStatus()
   }, [open, refreshGitStatus])
 
@@ -401,6 +408,11 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
               {apiOnline === false && <span className="platform-badge warn">API offline</span>}
               {apiOnline === true && <span className="platform-badge ok">API online</span>}
             </p>
+            {apiOnline === true && lastHealthSync && (
+              <p className="platform-health-sync" data-testid="platform-health-last-sync">
+                Platform Health · Last sync: {lastHealthSync}
+              </p>
+            )}
           </div>
           <button className="btn-icon" onClick={onClose} type="button" aria-label="Close">
             <X size={18} />
@@ -499,6 +511,26 @@ export function PlatformDrawer({ open, onClose }: PlatformDrawerProps) {
                 </p>
               ) : (
                 <>
+                  <div className="platform-actions">
+                    <button
+                      className="btn-secondary-sm"
+                      type="button"
+                      data-testid="eval-preset-regression"
+                      disabled={busy}
+                      onClick={() =>
+                        patchEval({
+                          enabled: true,
+                          datasetName: EVAL_PRESET_REGRESSION.datasetName,
+                          datasetId: EVAL_PRESET_REGRESSION.datasetId,
+                          experimentPrefix: EVAL_PRESET_REGRESSION.experimentPrefix,
+                          maxConcurrency: EVAL_PRESET_REGRESSION.maxConcurrency,
+                          description: EVAL_PRESET_REGRESSION.description,
+                        })
+                      }
+                    >
+                      Apply regression preset
+                    </button>
+                  </div>
                   <Field label="Dataset name">
                     <input
                       className="input"

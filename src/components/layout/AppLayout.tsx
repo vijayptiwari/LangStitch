@@ -55,12 +55,22 @@ export function AppLayout() {
 
   return (
     <div className="app" data-testid="langstitch-app">
+      <a className="skip-link" href="#graph-canvas-main" data-testid="skip-to-canvas">
+        Skip to canvas
+      </a>
       <Toolbar onOpenPlatform={() => setPlatformOpen(true)} />
       <div className="workspace">
         <aside className="sidebar left">
           <NodePalette />
         </aside>
-        <main className="canvas-area" data-testid="graph-canvas-area" onDrop={onDrop} onDragOver={onDragOver}>
+        <main
+          id="graph-canvas-main"
+          className="canvas-area"
+          data-testid="graph-canvas-area"
+          tabIndex={-1}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+        >
           <ReactFlowProvider>
             <GraphCanvas />
           </ReactFlowProvider>

@@ -194,8 +194,17 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         >
           <RotateCw size={16} /> Redo
         </button>
-        <button className="btn-secondary" data-testid="toolbar-platform" onClick={onOpenPlatform} type="button">
+        <button
+          className="btn-secondary"
+          data-testid="toolbar-platform"
+          title="Platform (Ctrl+E)"
+          onClick={onOpenPlatform}
+          type="button"
+        >
           <Server size={16} /> Platform
+          <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd">
+            Ctrl+E
+          </kbd>
         </button>
         <button
           className={`btn-secondary ${showCodePanel ? 'active' : ''}`}

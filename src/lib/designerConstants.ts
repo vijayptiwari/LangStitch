@@ -78,6 +78,16 @@ export const DEFAULT_EVAL: EvalConfig = {
   description: '',
 }
 
+/** Cycle 29 — regression eval preset applied from Platform → Eval */
+export const EVAL_PRESET_REGRESSION: EvalConfig = {
+  enabled: true,
+  datasetName: 'regression-suite',
+  datasetId: '',
+  experimentPrefix: 'regression',
+  maxConcurrency: 4,
+  description: 'Regression eval preset — full graph smoke suite',
+}
+
 export const DEFAULT_GRAPH_SETTINGS: GraphSettings = {
   checkpoint: 'memory',
   interruptBefore: '',

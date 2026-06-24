@@ -6,6 +6,7 @@ import {
   MiniMap,
   ReactFlow,
   useReactFlow,
+  type Edge,
   type Node,
   type Viewport,
 } from '@xyflow/react'
@@ -105,6 +106,22 @@ export function GraphCanvas() {
     [updateViewport],
   )
 
+  const onBeforeDelete = useCallback(
+    async ({ nodes: nodesToDelete }: { nodes: Node<StitchNodeData>[]; edges: Edge[] }) => {
+      const deletable = nodesToDelete.filter(
+        (n) => n.data?.kind !== 'start' && n.data?.kind !== 'end',
+      )
+      if (deletable.length === 0) return false
+      if (deletable.length >= 2) {
+        return window.confirm(
+          `Delete ${deletable.length} selected nodes? This cannot be undone.`,
+        )
+      }
+      return true
+    },
+    [],
+  )
+
   const defaultEdgeOptions = useMemo(
     () => ({
       animated: false,
@@ -131,6 +148,9 @@ export function GraphCanvas() {
         onNodeDoubleClick={onNodeDoubleClick}
         onPaneClick={onPaneClick}
         onMoveEnd={onMoveEnd}
+        onBeforeDelete={onBeforeDelete}
+        deleteKeyCode={['Backspace', 'Delete']}
+        multiSelectionKeyCode="Shift"
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         connectionLineStyle={connectionLineStyle}

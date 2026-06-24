@@ -506,6 +506,11 @@ export function generatePythonCode(
   const agentsSetup = generateAgentRegistry(agentRegistry, doc)
 
   const settings = doc.settings ?? DEFAULT_GRAPH_SETTINGS
+  const evalCfg = settings.eval
+  const evalDatasetLine =
+    evalCfg?.enabled && (evalCfg.datasetName || evalCfg.datasetId)
+      ? `Eval dataset: ${evalCfg.datasetName || evalCfg.datasetId}`
+      : ''
 
   const builders = Object.entries(allCanvases)
     .map(([id, canvas]) => {
@@ -520,7 +525,7 @@ Settings: checkpoint=${settings.checkpoint}, max_steps=${settings.maxSteps}
 Lifecycle: on_startup/on_shutdown hooks included
 Observability: LangSmith=${settings.observability?.langsmith?.enabled} Langfuse=${settings.observability?.langfuse?.enabled}
 Tools: ${toolRegistry.length} · Agents: ${agentRegistry.length} · MCP servers: ${mcpServers.length}
-"""
+${evalDatasetLine ? `${evalDatasetLine}\n` : ''}"""
 
 import os
 from langgraph.graph import StateGraph, START, END

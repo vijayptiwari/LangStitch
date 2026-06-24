@@ -66,6 +66,18 @@ Open **http://localhost:5173**
 | Personas | `personas/` |
 | RAG Pipelines | `rag/` (vector, vectorless, hybrid) |
 
+### Export formats
+
+Use **Platform → Export** (or toolbar **Save** for `.langstitch.json` only):
+
+| Format | Value | Contents |
+|--------|-------|----------|
+| **Python** | `python` | LangGraph multi-module ZIP — `graphs/`, `nodes/`, `skills/`, `eval_runner.py`, `langsmith.json` |
+| **Spring Boot** | `spring` | API gateway scaffold for Java teams |
+| **Full bundle** | `full` | Python + Spring + Dockerfiles + Helm chart |
+
+LangStitch remembers your last export format per project in the browser session. Re-import via **Platform → Import** (`.langstitch.json` or exported ZIP).
+
 ### Python 3.13 export
 Multi-module ZIP with `graphs/`, `nodes/`, `skills/`, `prompts/`, `tools/`, `guardrails/`, `rag/`, etc. Includes **`langsmith.json`** for IDE re-import.
 

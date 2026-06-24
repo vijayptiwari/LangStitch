@@ -38,6 +38,13 @@ const TABS: { id: AssetTab; label: string }[] = [
   { id: 'rag', label: 'RAG Pipelines' },
 ]
 
+function guardrailValidationError(g: GuardrailDefinition): string | null {
+  if (!g.name.trim() || !g.policy.trim()) {
+    return 'Name and policy are required before saving.'
+  }
+  return null
+}
+
 export function AssetDesignersPanel() {
   const [tab, setTab] = useState<AssetTab>('skills')
   const document = useGraphStore((s) => s.document)
@@ -169,10 +176,17 @@ export function AssetDesignersPanel() {
             >
               <Plus size={12} /> Add guardrail
             </button>
-            {guardrails.map((g) => (
-              <Section key={g.id} title={g.name}>
+            {guardrails.map((g) => {
+              const validationError = guardrailValidationError(g)
+              return (
+              <Section key={g.id} title={g.name || 'Untitled guardrail'}>
                 <Field label="Name">
-                  <input className="input" value={g.name} onChange={(e) => updateGuardrailDefinition(g.id, { name: e.target.value })} />
+                  <input
+                    className="input"
+                    data-testid={`guardrail-name-${g.id}`}
+                    value={g.name}
+                    onChange={(e) => updateGuardrailDefinition(g.id, { name: e.target.value })}
+                  />
                 </Field>
                 <Field label="Type">
                   <select className="input" value={g.type} onChange={(e) => updateGuardrailDefinition(g.id, { type: e.target.value as GuardrailDefinition['type'] })}>
@@ -190,8 +204,19 @@ export function AssetDesignersPanel() {
                   </select>
                 </Field>
                 <Field label="Policy">
-                  <textarea className="textarea code" rows={4} value={g.policy} onChange={(e) => updateGuardrailDefinition(g.id, { policy: e.target.value })} />
+                  <textarea
+                    className="textarea code"
+                    rows={4}
+                    data-testid={`guardrail-policy-${g.id}`}
+                    value={g.policy}
+                    onChange={(e) => updateGuardrailDefinition(g.id, { policy: e.target.value })}
+                  />
                 </Field>
+                {validationError && (
+                  <p className="field-error" data-testid="guardrail-validation-error">
+                    {validationError}
+                  </p>
+                )}
                 <label className="designer-check">
                   <input type="checkbox" checked={g.enabled} onChange={(e) => updateGuardrailDefinition(g.id, { enabled: e.target.checked })} />
                   Enabled
@@ -200,7 +225,7 @@ export function AssetDesignersPanel() {
                   <Trash2 size={12} /> Remove
                 </button>
               </Section>
-            ))}
+            )})}
           </>
         )}
 
