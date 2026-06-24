@@ -515,6 +515,12 @@ def write_project_files_endpoint(req: ExportRequest):
     return {"ok": True, "path": str(base)}
 
 
+@app.options("/api/export")
+async def export_project_preflight():
+    """CORS preflight for browser cross-origin export requests."""
+    return Response(status_code=204)
+
+
 @app.post("/api/export")
 def export_project(req: ExportRequest):
     check_export_rate_limit(req.project_id)

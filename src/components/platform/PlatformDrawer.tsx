@@ -589,8 +589,8 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details">
-                <summary>Export manifest preview</summary>
+              <details className="export-manifest-details" data-testid="export-dry-run-preview">
+                <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
                 </pre>
@@ -736,6 +736,26 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   {evalResult && (
                     <p className="platform-status" data-testid="eval-result">
                       {evalResult}
+                      {(evalConfig?.datasetName || evalConfig?.datasetId) && (
+                        <>
+                          {' '}
+                          <span data-testid="eval-result-dataset-summary">
+                            Dataset:{' '}
+                            {evalConfig?.datasetName ? (
+                              <a
+                                href={`https://smith.langchain.com/datasets?search=${encodeURIComponent(evalConfig.datasetName)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                data-testid="eval-result-dataset-link"
+                              >
+                                {evalConfig.datasetName}
+                              </a>
+                            ) : (
+                              evalConfig?.datasetId
+                            )}
+                          </span>
+                        </>
+                      )}
                       {evalLatencyMs != null && (
                         <>
                           {' '}

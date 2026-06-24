@@ -34,7 +34,7 @@ test.describe('SDLC Batch 5 — cycles 51–60', () => {
     })
     await page.getByTestId('toolbar-platform').click()
     await page.getByRole('button', { name: /Export/i }).click()
-    await page.getByText('Export manifest preview').click()
+    await page.getByTestId('export-dry-run-preview').click()
     const preview = page.getByTestId('export-manifest-preview')
     await expect(preview).toBeVisible()
     await expect(preview).toContainText(/eval-dataset/i)

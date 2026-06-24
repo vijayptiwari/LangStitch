@@ -259,7 +259,20 @@ export function AssetDesignersPanel() {
                   <input type="checkbox" checked={g.enabled} onChange={(e) => updateGuardrailDefinition(g.id, { enabled: e.target.checked })} />
                   Enabled
                 </label>
-                <button type="button" className="btn-danger-sm" onClick={() => removeGuardrailDefinition(g.id)}>
+                <button
+                  type="button"
+                  className="btn-danger-sm"
+                  data-testid={`guardrail-remove-${g.id}`}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        `Delete guardrail "${g.name}"? This cannot be undone.`,
+                      )
+                    ) {
+                      removeGuardrailDefinition(g.id)
+                    }
+                  }}
+                >
                   <Trash2 size={12} /> Remove
                 </button>
               </Section>

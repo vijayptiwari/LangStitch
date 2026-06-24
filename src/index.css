@@ -716,6 +716,28 @@ body {
   fill: rgba(6, 8, 15, 0.75) !important;
 }
 
+.react-flow__minimap-node[data-selected='true'] {
+  stroke: #fbbf24 !important;
+  stroke-width: 3px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .shortcuts-overlay,
+  .platform-drawer,
+  .react-flow__viewport {
+    transition: none !important;
+  }
+}
+
 .react-flow__attribution {
   display: none;
 }

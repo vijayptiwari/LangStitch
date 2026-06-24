@@ -57,6 +57,18 @@ Open **http://localhost:5173**
 - **RAG Agent** — bound to RAG pipelines (chunk, embed, retrieve)
 - **Multi-Intent Classifier** — special decision node for intent routing
 
+### RAG nodes
+
+LangStitch models retrieval-augmented generation as first-class canvas and export assets:
+
+| Piece | Where to configure | Export path |
+|-------|-------------------|-------------|
+| **RAG Agent node** | Canvas palette → RAG Agent; bind a pipeline in the node designer | `nodes/` handler wired to `rag/` |
+| **RAG Pipelines** | Assets → RAG Pipelines (vector, vectorless, hybrid chunk/embed/retrieve steps) | `rag/<pipeline_id>/` |
+| **Query / output keys** | RAG Agent node designer — maps state keys for query input and retrieved context | Python `State` fields in generated graph |
+
+Design a pipeline under **Assets → RAG Pipelines**, then drop a **RAG Agent** node and select that pipeline. Export includes `rag/` modules plus the agent node stub that calls `run_pipeline` at deploy time.
+
 ### Asset designers (sidebar → Assets)
 | Designer | Exports to |
 |----------|------------|

@@ -78,6 +78,17 @@ export function GraphCanvas() {
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
   const updateViewport = useGraphStore((s) => s.updateViewport)
   const snapToGrid = document.settings?.snapToGrid ?? DEFAULT_GRAPH_SETTINGS.snapToGrid
+  const showMinimap = document.settings?.showMinimap ?? DEFAULT_GRAPH_SETTINGS.showMinimap
+
+  const minimapNodeColor = useCallback(
+    (n: Node<StitchNodeData>) => getNodeColor(n.data?.kind as string | undefined),
+    [],
+  )
+
+  const minimapNodeStrokeColor = useCallback(
+    (n: Node<StitchNodeData>) => (n.id === selectedNodeId ? '#fbbf24' : 'transparent'),
+    [selectedNodeId],
+  )
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node<StitchNodeData>) => selectNode(node.id),
@@ -111,6 +122,12 @@ export function GraphCanvas() {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && selectedNodeId) {
         e.preventDefault()
         duplicateSelectedNode()
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+        e.preventDefault()
+        useGraphStore.getState().updateGraphSettings({
+          showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
+        })
       }
     }
     window.addEventListener('keydown', onKey)
@@ -199,13 +216,17 @@ export function GraphCanvas() {
           color="rgba(255, 255, 255, 0.04)"
         />
         <Controls showInteractive={false} position="bottom-left" />
-        <MiniMap
-          nodeColor={(n) => getNodeColor(n.data?.kind as string | undefined)}
-          maskColor="rgba(6, 8, 15, 0.82)"
-          pannable
-          zoomable
-          position="bottom-right"
-        />
+        {showMinimap && (
+          <MiniMap
+            nodeColor={minimapNodeColor}
+            nodeStrokeColor={minimapNodeStrokeColor}
+            nodeStrokeWidth={3}
+            maskColor="rgba(6, 8, 15, 0.82)"
+            pannable
+            zoomable
+            position="bottom-right"
+          />
+        )}
       </ReactFlow>
     </div>
   )

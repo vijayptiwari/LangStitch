@@ -100,6 +100,7 @@ export const DEFAULT_GRAPH_SETTINGS: GraphSettings = {
   maxSteps: 25,
   enableStreaming: true,
   snapToGrid: false,
+  showMinimap: true,
   tags: '',
   lifecycle: { ...DEFAULT_LIFECYCLE },
   checkpointer: { ...DEFAULT_CHECKPOINTER },

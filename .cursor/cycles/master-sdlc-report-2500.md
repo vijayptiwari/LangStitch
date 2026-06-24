@@ -53,8 +53,18 @@
 | 58 | Open-shortcuts E2E flow | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 59 | Persist redo last-used | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 60 | Platform Git output copy | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 61 | Guardrail delete confirm | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 62 | Minimap selected highlight | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 63 | Export dry-run eval-dataset | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 64 | CORS preflight /api/export | APPROVED | N/A | PASSED | 92 | 1 | yes | COMPLETE |
+| 65 | Eval dataset link in summary | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 66 | Reduce-motion transitions | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 67 | Shortcuts toggle minimap | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 68 | Viewport localStorage persist | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 69 | README RAG nodes section | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 70 | toolbar-save visibility E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 
-**Progress: 60 / 2500**
+**Progress: 70 / 2500**
 
 ## Batch log
 
@@ -66,13 +76,15 @@
 | 3 | 31–40 | 80ceb35 | green | COMPLETE |
 | 4 | 41–50 | 41c4cd9 | green | COMPLETE |
 | 5 | 51–60 | 0d084c0 | green | COMPLETE |
+| 6 | 61–70 | TBD | green | COMPLETE |
 
 ## Summary
-- Completed: 60 / 2500 cycles
+- Completed: 70 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
 - Batch 3 avg UAT: 90.3
 - Batch 4 avg UAT: 89.9
 - Batch 5 avg UAT: 90.2
-- Next: Batch 6 (cycles 61–70)
+- Batch 6 avg UAT: 90.5
+- Next: Batch 7 (cycles 71–80)

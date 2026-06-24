@@ -292,6 +292,7 @@ export interface GraphSettings {
   maxSteps: number
   enableStreaming: boolean
   snapToGrid: boolean
+  showMinimap: boolean
   tags: string
   lifecycle: LifecycleHooks
   checkpointer: CheckpointerConfig

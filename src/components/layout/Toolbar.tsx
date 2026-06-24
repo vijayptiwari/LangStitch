@@ -318,6 +318,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
               <li><kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab</li>
               <li><kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)</li>
+              <li><kbd>Ctrl</kbd>+<kbd>M</kbd> — Toggle minimap</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
