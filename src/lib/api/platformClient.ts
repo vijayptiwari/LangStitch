@@ -34,7 +34,7 @@ export interface ProjectData {
 }
 
 export const platformApi = {
-  health: () => request<{ status: string }>('/health'),
+  health: () => request<{ status: string; version?: string; python?: string }>('/health'),
 
   saveProject: (projectId: string, payload: ProjectData) =>
     request<{ ok: boolean; path: string }>('/project/save', {

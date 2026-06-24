@@ -199,7 +199,12 @@ def load_project_json(base: Path) -> dict[str, Any]:
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "langstitch-platform"}
+    return {
+        "status": "ok",
+        "service": "langstitch-platform",
+        "version": app.version,
+        "python": sys.version.split()[0],
+    }
 
 
 # ─── Project ───
