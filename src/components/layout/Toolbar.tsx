@@ -45,7 +45,7 @@ function LangStitchLogo() {
 }
 
 const REDO_LAST_USED_KEY = 'langstitch-toolbar-redo-last-used'
-const DOCS_URL = 'https://vijayptiwari.github.io/LangStitch/docs/'
+const DOCS_URL = 'https://langstitch.com/docs/'
 
 export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
   const graphDoc = useGraphStore((s) => s.document)

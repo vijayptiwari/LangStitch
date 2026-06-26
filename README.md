@@ -8,16 +8,16 @@
 
 | Link | URL |
 |------|-----|
-| **Product site (live try)** | [vijayptiwari.github.io/LangStitch/](https://vijayptiwari.github.io/LangStitch/) |
-| **Full IDE** | [vijayptiwari.github.io/LangStitch/app/](https://vijayptiwari.github.io/LangStitch/app/) |
-| **Try page** | [vijayptiwari.github.io/LangStitch/try.html](https://vijayptiwari.github.io/LangStitch/try.html) |
-| **Documentation** | [vijayptiwari.github.io/LangStitch/docs/](https://vijayptiwari.github.io/LangStitch/docs/) |
+| **Product site (live try)** | [langstitch.com](https://langstitch.com/) |
+| **Full IDE** | [langstitch.com/app/](https://langstitch.com/app/) |
+| **Try page** | [langstitch.com/try.html](https://langstitch.com/try.html) |
+| **Documentation** | [langstitch.com/docs/](https://langstitch.com/docs/) |
 
 ---
 
 ## Try LangStitch live
 
-Open the **[product site](https://vijayptiwari.github.io/LangStitch/)** — it embeds the IDE so you can try the canvas with zero install. For full screen, use **[Open IDE](https://vijayptiwari.github.io/LangStitch/app/)**.
+Open the **[product site](https://langstitch.com/)** — it embeds the IDE so you can try the canvas with zero install. For full screen, use **[Open IDE](https://langstitch.com/app/)**.
 
 > Platform API features (Git, export, agent run) require Docker or local dev below.
 

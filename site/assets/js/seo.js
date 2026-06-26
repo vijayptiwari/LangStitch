@@ -1,6 +1,6 @@
 (function () {
-  var SITE_ORIGIN = "https://vijayptiwari.github.io";
-  var SITE_PATH = "/LangStitch";
+  var SITE_ORIGIN = "https://langstitch.com";
+  var SITE_PATH = "";
   var SITE_URL = SITE_ORIGIN + SITE_PATH;
   var SITE_NAME = "LangStitch";
   var TWITTER = "@vijayptiwari";

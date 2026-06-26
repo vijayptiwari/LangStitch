@@ -35,7 +35,7 @@ jobs:
 
       - name: Assemble product site + docs
         run: |
-          cp site/index.html site/try.html site/styles.css site/sitemap.xml site/robots.txt dist/
+          cp site/index.html site/try.html site/styles.css site/sitemap.xml site/robots.txt site/CNAME dist/
           cp -r site/assets dist/assets
           cp -r docs dist/docs
 
