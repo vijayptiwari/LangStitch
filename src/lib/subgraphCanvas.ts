@@ -44,5 +44,8 @@ export function syncCanvas(
   edges: Edge[],
 ) {
   const existing = canvasByGraph[graphId]
-  return { ...canvasByGraph, [graphId]: { nodes, edges, viewport: existing?.viewport } }
+  return {
+    ...canvasByGraph,
+    [graphId]: { nodes, edges, viewport: existing?.viewport, annotations: existing?.annotations },
+  }
 }

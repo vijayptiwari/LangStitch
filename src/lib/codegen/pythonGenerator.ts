@@ -16,6 +16,7 @@ import { slugify } from '../nodeRegistry'
 import { DEFAULT_GRAPH_SETTINGS, mergeGraphSettings } from '../designerConstants'
 import { MAIN_GRAPH_ID } from '../subgraphCanvas'
 import { buildRenderContext, renderTemplate } from './templateEngine'
+import { BUILTIN_MANIFESTS } from '../builtinManifests'
 
 function stateFieldToPython(field: StateField): string {
   const typeMap: Record<StateField['type'], string> = {
@@ -433,20 +434,45 @@ function getNodeName(node: Node<StitchNodeData>): string {
   return slugify(node.id)
 }
 
+/** Node kinds we fully own and can safely register with the SDK ``@graph_node``. */
+const DECORATABLE_NODE_KINDS = new Set<StitchNodeData['kind']>([
+  'llm',
+  'tool',
+  'agent',
+  'rag',
+  'subgraph',
+])
+
+/** Prefix a generated node `def` with an `@graph_node(...)` registration decorator. */
+function decorateNode(node: Node<StitchNodeData>, code: string): string {
+  if (!code) return code
+  if (!DECORATABLE_NODE_KINDS.has(node.data.kind)) return code
+  const description = JSON.stringify(node.data.description ?? node.data.label ?? '')
+  return `@graph_node(description=${description})\n${code}`
+}
+
+/**
+ * Emit one graph as an SDK `@graph` build function plus its compile line.
+ *
+ * The build function returns a `GraphBuilder` (registered on the LangStitch
+ * registry); the compile line materializes a module-level compiled graph for
+ * backward-compatible direct import (`from ...graphs.main import graph`).
+ */
 function generateGraphBuilder(
   nodes: Node<StitchNodeData>[],
   edges: Edge[],
   graphName = 'main',
   settings = DEFAULT_GRAPH_SETTINGS,
-): string {
-  const graphVar = graphName === 'main' || graphName === 'Main Graph' ? 'graph' : `${slugify(graphName)}_graph`
-  const builder: string[] = []
-  builder.push(`# --- ${graphName} graph ---`)
-  builder.push(`builder = StateGraph(State)`)
+): { fn: string; compile: string } {
+  const isMain = graphName === 'main' || graphName === 'Main Graph'
+  const graphVar = isMain ? 'graph' : `${slugify(graphName)}_graph`
+  const buildFn = isMain ? 'build_main' : `build_${slugify(graphName)}`
+  const body: string[] = []
+  body.push(`    builder = GraphBuilder(${JSON.stringify(graphName)}, state_schema=State)`)
 
   for (const node of nodes) {
     if (node.data.kind === 'start' || node.data.kind === 'end') continue
-    builder.push(`builder.add_node("${getNodeName(node)}", ${getNodeName(node)})`)
+    body.push(`    builder.add_node("${getNodeName(node)}", ${getNodeName(node)})`)
   }
 
   const startNode = nodes.find((n) => n.data.kind === 'start')
@@ -455,7 +481,7 @@ function generateGraphBuilder(
   if (startNode) {
     const startEdge = edges.find((e) => e.source === startNode.id)
     if (startEdge) {
-      builder.push(`builder.add_edge(START, "${getNodeName(nodes.find((n) => n.id === startEdge.target)!)}")`)
+      body.push(`    builder.add_edge(START, "${getNodeName(nodes.find((n) => n.id === startEdge.target)!)}")`)
     }
   }
 
@@ -466,7 +492,7 @@ function generateGraphBuilder(
     if (startNode && edge.source === startNode.id) continue
     if (endNode && edge.target === endNode.id) {
       if (routerIds.has(edge.source)) continue
-      builder.push(`builder.add_edge("${getNodeName(nodes.find((n) => n.id === edge.source)!)}", END)`)
+      body.push(`    builder.add_edge("${getNodeName(nodes.find((n) => n.id === edge.source)!)}", END)`)
       continue
     }
     if (routerIds.has(edge.source)) continue
@@ -474,7 +500,7 @@ function generateGraphBuilder(
     const source = nodes.find((n) => n.id === edge.source)
     const target = nodes.find((n) => n.id === edge.target)
     if (!source || !target || source.data.kind === 'start' || target.data.kind === 'end') continue
-    builder.push(`builder.add_edge("${getNodeName(source)}", "${getNodeName(target)}")`)
+    body.push(`    builder.add_edge("${getNodeName(source)}", "${getNodeName(target)}")`)
   }
 
   for (const router of routerNodes) {
@@ -488,31 +514,38 @@ function generateGraphBuilder(
             const edge = routerEdges.find((e) => e.sourceHandle === branch.id)
             const targetNode = edge ? nodes.find((n) => n.id === edge.target) : undefined
             const target = targetNode?.data.kind === 'end' ? 'END' : `"${targetNode ? getNodeName(targetNode) : branch.label}"`
-            return `        "${branch.label}": ${target}`
+            return `            "${branch.label}": ${target}`
           })
           .join(',\n')
       : ''
 
-    builder.push(
-      `builder.add_conditional_edges(\n    "${getNodeName(router)}",\n    ${getNodeName(router)}_route,\n    {\n${pathMap}\n    },\n)`,
+    body.push(
+      `    builder.add_conditional_edges(\n        "${getNodeName(router)}",\n        ${getNodeName(router)}_route,\n        {\n${pathMap}\n        },\n    )`,
     )
   }
+
+  body.push('    return builder')
+
+  const decorator = isMain
+    ? `@graph(name=${JSON.stringify(graphName)}, entrypoint=True)`
+    : `@graph(name=${JSON.stringify(graphName)})`
+  const fn = `# --- ${graphName} graph ---\n${decorator}\ndef ${buildFn}() -> GraphBuilder:\n${body.join('\n')}`
 
   const compileArgs: string[] = []
   if (settings.checkpointer?.manager && settings.checkpointer.manager !== 'none') {
     compileArgs.push('checkpointer=checkpointer')
   }
   if (settings.interruptBefore) {
-    const nodes = settings.interruptBefore.split(',').map((n) => n.trim()).filter(Boolean)
-    if (nodes.length) compileArgs.push(`interrupt_before=[${nodes.map((n) => `"${n}"`).join(', ')}]`)
+    const interruptNodes = settings.interruptBefore.split(',').map((n) => n.trim()).filter(Boolean)
+    if (interruptNodes.length)
+      compileArgs.push(`interrupt_before=[${interruptNodes.map((n) => `"${n}"`).join(', ')}]`)
   }
 
-  const compileLine = compileArgs.length
-    ? `${graphVar} = builder.compile(${compileArgs.join(', ')})`
-    : `${graphVar} = builder.compile()`
+  const compile = compileArgs.length
+    ? `${graphVar} = ${buildFn}().compile(${compileArgs.join(', ')})`
+    : `${graphVar} = ${buildFn}().compile()`
 
-  builder.push(compileLine)
-  return builder.join('\n')
+  return { fn, compile }
 }
 
 export function generatePythonCode(
@@ -531,7 +564,10 @@ export function generatePythonCode(
   const functions = Object.entries(allCanvases)
     .flatMap(([, canvas]) =>
       canvas.nodes.map((n) =>
-        generateNodeFunction(n, remoteGraphs, toolRegistry, agentRegistry, componentRegistry),
+        decorateNode(
+          n,
+          generateNodeFunction(n, remoteGraphs, toolRegistry, agentRegistry, componentRegistry),
+        ),
       ),
     )
     .filter(Boolean)
@@ -556,12 +592,14 @@ export function generatePythonCode(
       ? `Eval dataset: ${evalCfg.datasetName || evalCfg.datasetId}`
       : ''
 
-  const builders = Object.entries(allCanvases)
-    .map(([id, canvas]) => {
-      const sg = doc.subgraphs.find((s) => s.id === id)
-      return generateGraphBuilder(canvas.nodes, canvas.edges, sg?.name ?? id, settings)
-    })
-    .join('\n\n')
+  const builderParts = Object.entries(allCanvases).map(([id, canvas]) => {
+    const sg = doc.subgraphs.find((s) => s.id === id)
+    return generateGraphBuilder(canvas.nodes, canvas.edges, sg?.name ?? id, settings)
+  })
+  const builderFns = builderParts.map((p) => p.fn).join('\n\n')
+  // Compile lines run last so every @graph build function is registered before
+  // any module-level compiled graph (e.g. `graph`) is materialized.
+  const compileLines = builderParts.map((p) => p.compile).join('\n')
 
   return `"""Generated by LangStitch — ${doc.name}
 ${doc.description ?? 'Visual LangGraph definition'}
@@ -572,7 +610,7 @@ Tools: ${toolRegistry.length} · Agents: ${agentRegistry.length} · MCP servers:
 ${evalDatasetLine ? `${evalDatasetLine}\n` : ''}"""
 
 import os
-from langgraph.graph import StateGraph, START, END
+from langstitch import graph_node, graph, GraphBuilder, START, END, human_interrupt
 ${componentImports.length ? '\n' + componentImports.join('\n') + '\n' : ''}
 ${stateClass}
 
@@ -584,7 +622,8 @@ ${toolsSetup}
 ${agentsSetup}
 ${remoteRefs}
 ${functions}
-${builders}
+${builderFns}
+${compileLines}
 
 if __name__ == "__main__":
     on_startup({})
@@ -644,6 +683,7 @@ export function createDefaultDocument(): GraphDocument {
     version: '1.2',
     name: 'my_langgraph',
     description: 'A LangGraph workflow built with LangStitch',
+    projectVersion: '0.1.0',
     stateFields: [
       { id: 'sf1', name: 'messages', type: 'messages', reducer: 'append' },
       { id: 'sf2', name: 'query', type: 'str', reducer: 'replace', defaultValue: '""' },
@@ -728,7 +768,7 @@ export function createDefaultDocument(): GraphDocument {
         metadataFilters: '',
       },
     ],
-    componentRegistry: [],
+    componentRegistry: [...BUILTIN_MANIFESTS],
     settings: mergeGraphSettings(),
   }
 }

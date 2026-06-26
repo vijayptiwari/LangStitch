@@ -12,6 +12,7 @@ import {
 import type {
   AgentDefinition,
   BusinessRuleDefinition,
+  CanvasAnnotation,
   CanvasSnapshot,
   CustomNodeData,
   GraphDocument,
@@ -30,6 +31,7 @@ import type { ComponentManifest } from '../types/component'
 import { createDefaultDocument, createSubgraph } from '../lib/codegen/pythonGenerator'
 import { DEFAULT_GRAPH_SETTINGS, MAX_UNDO_STACK_DEPTH, mergeGraphSettings } from '../lib/designerConstants'
 import { getNodeTheme } from '../lib/nodeTheme'
+import { autoLayout, alignNodes, type AlignMode } from '../lib/layout/autoLayout'
 import { buildDefaultConfig } from '../lib/customComponents'
 import { nodeTypes } from '../lib/nodeRegistry'
 import {
@@ -37,7 +39,26 @@ import {
   MAIN_GRAPH_ID,
   syncCanvas,
 } from '../lib/subgraphCanvas'
+import { mergeComponentRegistry } from '../lib/customComponents'
+import { migrateProjectNodes } from '../lib/migrateNodeData'
 import { saveViewport, loadViewport } from '../lib/viewportStorage'
+
+function isCanvasLocked(state: { document: GraphDocument }): boolean {
+  return Boolean(state.document.settings?.locked)
+}
+
+function filterLockedNodeChanges(
+  changes: NodeChange<Node<StitchNodeData>>[],
+  locked: boolean,
+): NodeChange<Node<StitchNodeData>>[] {
+  if (!locked) return changes
+  return changes.filter((c) => c.type === 'select' || c.type === 'dimensions')
+}
+
+function filterLockedEdgeChanges(changes: EdgeChange[], locked: boolean): EdgeChange[] {
+  if (!locked) return changes
+  return changes.filter((c) => c.type === 'select')
+}
 
 function styledEdge(
   id: string,
@@ -78,9 +99,12 @@ function persistActiveCanvas(state: {
   document: GraphDocument
   nodes: Node<StitchNodeData>[]
   edges: Edge[]
+  annotations?: CanvasAnnotation[]
 }) {
   const id = state.document.activeSubgraphId
-  return syncCanvas(state.canvasByGraph, id, state.nodes, state.edges)
+  const synced = syncCanvas(state.canvasByGraph, id, state.nodes, state.edges)
+  synced[id] = { ...synced[id], annotations: state.annotations ?? synced[id]?.annotations ?? [] }
+  return synced
 }
 
 /** Zustand store for graph document, canvas state, undo/redo, and project I/O (cycle 93 JSDoc; cycle 141 JSDoc). */
@@ -90,6 +114,8 @@ interface GraphStore {
   navigationPath: string[]
   nodes: Node<StitchNodeData>[]
   edges: Edge[]
+  /** Visual-only annotations (shapes, labels, scope frames) for the active canvas. */
+  annotations: CanvasAnnotation[]
   selectedNodeId: string | null
   showCodePanel: boolean
   designerTab: 'node' | 'graph' | 'assets' | 'components'
@@ -117,7 +143,23 @@ interface GraphStore {
   toggleCodePanel: () => void
 
   setDocumentMeta: (meta: Partial<Pick<GraphDocument, 'name' | 'description'>>) => void
+  /** Set the user-facing project version string (document.projectVersion). */
+  setProjectVersion: (version: string) => void
   updateGraphSettings: (settings: Partial<GraphSettings>) => void
+
+  /** True when the active document is locked (read-only canvas). */
+  isCanvasLocked: () => boolean
+  /** Auto-layout the active canvas with dagre and push undo history. */
+  beautifyActiveCanvas: () => void
+  /** Align currently selected nodes by the given mode. */
+  alignSelection: (mode: AlignMode) => void
+
+  /** Add a visual annotation to the active canvas. */
+  addAnnotation: (annotation: CanvasAnnotation) => void
+  /** Patch an existing annotation by id. */
+  updateAnnotation: (id: string, patch: Partial<CanvasAnnotation>) => void
+  /** Remove an annotation by id. */
+  removeAnnotation: (id: string) => void
   setDesignerTab: (tab: 'node' | 'graph' | 'assets' | 'components') => void
   addStateField: (field: StateField) => void
   updateStateField: (id: string, field: Partial<StateField>) => void
@@ -195,6 +237,7 @@ interface GraphStore {
   clearUndoDepthNotice: () => void
   duplicateSelectedNode: () => void
   isGraphEmpty: () => boolean
+  getActiveAnnotations: () => CanvasAnnotation[]
   /** Persist pan/zoom for the active subgraph (also writes localStorage). */
   updateViewport: (viewport: { x: number; y: number; zoom: number }) => void
 }
@@ -297,6 +340,7 @@ interface RedoSnapshot {
   navigationPath: string[]
   nodes: Node<StitchNodeData>[]
   edges: Edge[]
+  annotations: CanvasAnnotation[]
 }
 
 let redoSnapshot: RedoSnapshot | null = null
@@ -311,6 +355,7 @@ function captureHistorySnapshot(state: GraphStore): HistorySnapshot {
     navigationPath: state.navigationPath,
     nodes: state.nodes,
     edges: state.edges,
+    annotations: state.annotations,
   }
 }
 
@@ -352,22 +397,36 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   navigationPath: [MAIN_GRAPH_ID],
   nodes: initialNodes,
   edges: initialEdges,
+  annotations: [],
   selectedNodeId: null,
   showCodePanel: true,
   designerTab: 'graph',
   undoDepthLimitNotice: false,
   isDirty: false,
 
-  setNodes: (nodes) => applyCanvasUpdate(get, set, nodes, get().edges),
-  setEdges: (edges) => applyCanvasUpdate(get, set, get().nodes, edges),
+  setNodes: (nodes) => {
+    if (isCanvasLocked(get())) return
+    applyCanvasUpdate(get, set, nodes, get().edges)
+  },
+  setEdges: (edges) => {
+    if (isCanvasLocked(get())) return
+    applyCanvasUpdate(get, set, get().nodes, edges)
+  },
 
-  onNodesChange: (changes) =>
-    applyCanvasUpdate(get, set, applyNodeChanges(changes, get().nodes), get().edges),
+  onNodesChange: (changes) => {
+    const filtered = filterLockedNodeChanges(changes, isCanvasLocked(get()))
+    if (filtered.length === 0) return
+    applyCanvasUpdate(get, set, applyNodeChanges(filtered, get().nodes), get().edges)
+  },
 
-  onEdgesChange: (changes) =>
-    applyCanvasUpdate(get, set, get().nodes, applyEdgeChanges(changes, get().edges)),
+  onEdgesChange: (changes) => {
+    const filtered = filterLockedEdgeChanges(changes, isCanvasLocked(get()))
+    if (filtered.length === 0) return
+    applyCanvasUpdate(get, set, get().nodes, applyEdgeChanges(filtered, get().edges))
+  },
 
   onConnect: (connection) => {
+    if (isCanvasLocked(get())) return
     pushUndoHistory(get(), set)
     const sourceNode = get().nodes.find((n) => n.id === connection.source)
     const kind = sourceNode?.data.kind ?? 'llm'
@@ -394,11 +453,13 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   addNode: (node) => {
+    if (isCanvasLocked(get())) return
     pushUndoHistory(get(), set)
     applyCanvasUpdate(get, set, [...get().nodes, node], get().edges)
   },
 
   updateNodeData: (nodeId, data) => {
+    if (isCanvasLocked(get())) return
     pushUndoHistory(get(), set)
     applyCanvasUpdate(
       get,
@@ -411,6 +472,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   removeNode: (nodeId) => {
+    if (isCanvasLocked(get())) return
     const node = get().nodes.find((n) => n.id === nodeId)
     if (node?.data.kind === 'start' || node?.data.kind === 'end') return
     pushUndoHistory(get(), set)
@@ -513,6 +575,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       document: { ...state.document, activeSubgraphId: graphId },
       nodes: canvas.nodes,
       edges: canvas.edges,
+      annotations: canvas.annotations ?? [],
       selectedNodeId: null,
     })
   },
@@ -533,6 +596,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       document: { ...state.document, activeSubgraphId: graphId },
       nodes: canvas.nodes,
       edges: canvas.edges,
+      annotations: canvas.annotations ?? [],
       selectedNodeId: null,
       designerTab: 'graph',
     })
@@ -551,6 +615,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       document: { ...state.document, activeSubgraphId: parentId },
       nodes: canvas.nodes,
       edges: canvas.edges,
+      annotations: canvas.annotations ?? [],
       selectedNodeId: null,
     })
   },
@@ -848,9 +913,14 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath = navigationPath ?? (p as typeof navigationPath)
     }
 
+    const migrated = migrateProjectNodes(canvasByGraph, nodes)
+    canvasByGraph = migrated.canvasByGraph ?? canvasByGraph
+    nodes = migrated.nodes ?? nodes
+
     const doc: GraphDocument = {
       ...createDefaultDocument(),
       ...document,
+      projectVersion: document.projectVersion ?? '0.1.0',
       settings: mergeGraphSettings(document.settings),
       remoteGraphs: document.remoteGraphs ?? [],
       toolRegistry: document.toolRegistry ?? [],
@@ -861,7 +931,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       businessRuleRegistry: document.businessRuleRegistry ?? [],
       personaRegistry: document.personaRegistry ?? [],
       ragPipelines: document.ragPipelines ?? [],
-      componentRegistry: document.componentRegistry ?? [],
+      componentRegistry: mergeComponentRegistry(document.componentRegistry),
       subgraphs: (document.subgraphs ?? []).map((sg) => ({
         ...sg,
         parentId: sg.parentId ?? (sg.id === MAIN_GRAPH_ID ? null : MAIN_GRAPH_ID),
@@ -895,6 +965,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath: navigationPath ?? buildPathToGraph(activeId, doc.subgraphs),
       nodes: active.nodes,
       edges: active.edges,
+      annotations: active.annotations ?? [],
       selectedNodeId: null,
       designerTab: 'graph',
       isDirty: false,
@@ -909,6 +980,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath: state.navigationPath,
       nodes: state.nodes,
       edges: state.edges,
+      annotations: state.annotations,
     }
     undoStack = []
     set({
@@ -917,6 +989,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath: [MAIN_GRAPH_ID],
       nodes: initialNodes,
       edges: initialEdges,
+      annotations: [],
       selectedNodeId: null,
       designerTab: 'graph',
       isDirty: false,
@@ -933,6 +1006,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath: snap.navigationPath,
       nodes: snap.nodes,
       edges: snap.edges,
+      annotations: snap.annotations,
       selectedNodeId: null,
       designerTab: 'graph',
     })
@@ -949,6 +1023,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath: snap.navigationPath,
       nodes: snap.nodes,
       edges: snap.edges,
+      annotations: snap.annotations,
       selectedNodeId: null,
       designerTab: 'graph',
     })
@@ -959,6 +1034,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   clearUndoDepthNotice: () => set({ undoDepthLimitNotice: false }),
 
   duplicateSelectedNode: () => {
+    if (isCanvasLocked(get())) return
     const selectedId = get().selectedNodeId
     if (!selectedId) return
     const node = get().nodes.find((n) => n.id === selectedId)
@@ -978,6 +1054,73 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
 
   isGraphEmpty: () =>
     get().nodes.filter((n) => n.data?.kind !== 'start' && n.data?.kind !== 'end').length === 0,
+
+  setProjectVersion: (version) =>
+    set({ document: { ...get().document, projectVersion: version }, isDirty: true }),
+
+  isCanvasLocked: () => isCanvasLocked(get()),
+
+  beautifyActiveCanvas: () => {
+    if (isCanvasLocked(get())) return
+    pushUndoHistory(get(), set)
+    const laid = autoLayout(get().nodes, get().edges)
+    applyCanvasUpdate(get, set, laid, get().edges)
+  },
+
+  alignSelection: (mode) => {
+    if (isCanvasLocked(get())) return
+    const selectedIds = new Set(get().nodes.filter((n) => n.selected).map((n) => n.id))
+    if (selectedIds.size === 0) return
+    pushUndoHistory(get(), set)
+    const aligned = alignNodes(get().nodes, selectedIds, mode)
+    applyCanvasUpdate(get, set, aligned, get().edges)
+  },
+
+  getActiveAnnotations: () => {
+    const id = get().document.activeSubgraphId
+    return get().canvasByGraph[id]?.annotations ?? []
+  },
+
+  addAnnotation: (annotation) => {
+    if (isCanvasLocked(get())) return
+    const state = get()
+    const id = state.document.activeSubgraphId
+    const canvas = state.canvasByGraph[id] ?? { nodes: state.nodes, edges: state.edges }
+    const annotations = [...(canvas.annotations ?? []), annotation]
+    set({
+      canvasByGraph: { ...state.canvasByGraph, [id]: { ...canvas, annotations } },
+      annotations,
+      isDirty: true,
+    })
+  },
+
+  updateAnnotation: (annId, patch) => {
+    if (isCanvasLocked(get())) return
+    const state = get()
+    const id = state.document.activeSubgraphId
+    const canvas = state.canvasByGraph[id] ?? { nodes: state.nodes, edges: state.edges }
+    const annotations = (canvas.annotations ?? []).map((a) =>
+      a.id === annId ? { ...a, ...patch } : a,
+    )
+    set({
+      canvasByGraph: { ...state.canvasByGraph, [id]: { ...canvas, annotations } },
+      annotations,
+      isDirty: true,
+    })
+  },
+
+  removeAnnotation: (annId) => {
+    if (isCanvasLocked(get())) return
+    const state = get()
+    const gid = state.document.activeSubgraphId
+    const canvas = state.canvasByGraph[gid] ?? { nodes: state.nodes, edges: state.edges }
+    const annotations = (canvas.annotations ?? []).filter((a) => a.id !== annId)
+    set({
+      canvasByGraph: { ...state.canvasByGraph, [gid]: { ...canvas, annotations } },
+      annotations,
+      isDirty: true,
+    })
+  },
 
   updateViewport: (viewport) => {
     const state = get()

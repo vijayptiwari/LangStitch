@@ -24,7 +24,7 @@ test.describe('Basic agent — UI workflow', () => {
 
     await expect(page.getByTestId('code-block')).toBeVisible()
     const code = await page.getByTestId('code-block').textContent()
-    expect(code).toContain('StateGraph')
+    expect(code).toContain('GraphBuilder')
     expect(code).toContain('basic_agent_e2e')
     expect(code).toContain('LangStitch')
   })

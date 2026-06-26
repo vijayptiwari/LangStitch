@@ -1,4 +1,4 @@
-import { Grid3x3, Settings2 } from 'lucide-react'
+import { Grid3x3, Lock, LockOpen, Settings2 } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import { DEFAULT_GRAPH_SETTINGS } from '../../lib/designerConstants'
 import { SubgraphNavigator } from './SubgraphNavigator'
@@ -10,12 +10,25 @@ export function CanvasToolbar() {
   const updateGraphSettings = useGraphStore((s) => s.updateGraphSettings)
   const activeSg = document.subgraphs.find((s) => s.id === document.activeSubgraphId)
   const snapToGrid = document.settings?.snapToGrid ?? DEFAULT_GRAPH_SETTINGS.snapToGrid
+  const locked = document.settings?.locked ?? false
 
   return (
     <div className="canvas-toolbar">
       <SubgraphNavigator />
       <span className="canvas-toolbar-label">Graph Designer Canvas</span>
       <span className="canvas-toolbar-name">{activeSg?.name ?? document.name}</span>
+      {locked && <span className="canvas-toolbar-locked-hint">Canvas locked — unlock to edit</span>}
+      <button
+        type="button"
+        className={`canvas-toolbar-btn ${locked ? 'active' : ''}`}
+        data-testid="canvas-lock-toggle"
+        title={locked ? 'Unlock canvas' : 'Lock canvas'}
+        aria-pressed={locked}
+        onClick={() => updateGraphSettings({ locked: !locked })}
+      >
+        {locked ? <Lock size={14} /> : <LockOpen size={14} />}
+        {locked ? 'Locked' : 'Lock'}
+      </button>
       <button
         type="button"
         className={`canvas-toolbar-btn ${snapToGrid ? 'active' : ''}`}

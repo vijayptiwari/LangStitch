@@ -20,11 +20,8 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import type { ComponentManifest, ConfigField } from '../types/component'
+import { BUILTIN_IDS, BUILTIN_MANIFESTS } from './builtinManifests'
 
-/**
- * Whitelisted lucide icon names selectable in the Component Designer.
- * Unknown names fall back to `box` (NFR-4: no dynamic icon resolution).
- */
 export const ICON_MAP: Record<string, LucideIcon> = {
   box: Box,
   puzzle: Puzzle,
@@ -62,19 +59,19 @@ export interface CustomPaletteItem {
   color: string
 }
 
-/** Map the component registry → palette entries (memoizable, pure). */
 export function customPaletteItems(registry: ComponentManifest[] | undefined): CustomPaletteItem[] {
-  return (registry ?? []).map((m) => ({
-    componentId: m.id,
-    label: m.label,
-    description: m.description,
-    category: m.category,
-    icon: m.theme.icon,
-    color: m.theme.color,
-  }))
+  return (registry ?? [])
+    .filter((m) => m.category === 'node')
+    .map((m) => ({
+      componentId: m.id,
+      label: m.label,
+      description: m.description,
+      category: m.category,
+      icon: m.theme.icon,
+      color: m.theme.color,
+    }))
 }
 
-/** Resolve a manifest from the registry by component id. */
 export function resolveComponent(
   registry: ComponentManifest[] | undefined,
   componentId: string,
@@ -82,7 +79,6 @@ export function resolveComponent(
   return (registry ?? []).find((m) => m.id === componentId)
 }
 
-/** Coerce a config field's declared default into its runtime value per kind. */
 export function defaultValueForField(field: ConfigField): unknown {
   if (field.defaultValue !== undefined) return field.defaultValue
   switch (field.kind) {
@@ -92,12 +88,27 @@ export function defaultValueForField(field: ConfigField): unknown {
       return field.min ?? 0
     case 'select':
       return field.options?.[0]?.value ?? ''
+    case 'multiref':
+    case 'list':
+      return []
+    case 'group':
+      return {}
+    case 'ref':
+      return ''
     default:
       return ''
   }
 }
 
-/** Build the initial `config` bag for a placed node from a manifest. */
+export function getBuiltinRegistry(userManifests: ComponentManifest[] = []): ComponentManifest[] {
+  const customs = (userManifests ?? []).filter((m) => !BUILTIN_IDS.has(m.id))
+  return [...BUILTIN_MANIFESTS, ...customs]
+}
+
+export function mergeComponentRegistry(existing: ComponentManifest[] | undefined): ComponentManifest[] {
+  return getBuiltinRegistry(existing ?? [])
+}
+
 export function buildDefaultConfig(manifest: ComponentManifest): Record<string, unknown> {
   const config: Record<string, unknown> = {}
   for (const field of manifest.configFields) {

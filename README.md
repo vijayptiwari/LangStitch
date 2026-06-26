@@ -101,19 +101,21 @@ Use **Platform → Export** (or toolbar **Save** for `.langstitch.json` only):
 
 | Format | Value | Contents |
 |--------|-------|----------|
-| **Python** | `python` | LangGraph multi-module ZIP — `graphs/`, `nodes/`, `skills/`, `eval_runner.py`, `langsmith.json` |
+| **Python** | `python` | **langstitch SDK** project — `@graph_node`, `GraphBuilder`, `@langstitch_graph_server`, `eval_runner.py`, Helm chart |
 | **Spring Boot** | `spring` | API gateway scaffold for Java teams |
 | **Full bundle** | `full` | Python + Spring + Dockerfiles + Helm chart |
 
+All node types are **Component Designer manifests** (built-in + marketplace/custom connectors). Export also supports **diagram JPEG/PNG** from the canvas controls panel.
+
 LangStitch remembers your last export format per project in the browser session. Re-import via **Platform → Import** (`.langstitch.json` or exported ZIP).
 
-### Python 3.13 export
-Multi-module ZIP with `graphs/`, `nodes/`, `skills/`, `prompts/`, `tools/`, `guardrails/`, `rag/`, etc. Includes **`langsmith.json`** for IDE re-import.
+### Python export (langstitch SDK)
+Multi-module ZIP using the **langstitch** Python SDK (`langstitch[graph,server]`). Includes `app/server.py` with `@langstitch_graph_server`, `deploy/helm/<slug>/`, and **`langsmith.json`** for IDE re-import.
 
 ```bash
 pip install -e ".[dev]"
-pytest
-python -m my_langgraph
+langstitch run
+python -m my_langgraph.eval_runner
 ```
 
 ### Integrations

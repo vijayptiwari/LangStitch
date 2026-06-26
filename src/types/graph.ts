@@ -305,6 +305,7 @@ export interface GraphSettings {
   enableStreaming: boolean
   snapToGrid: boolean
   showMinimap: boolean
+  locked?: boolean
   tags: string
   lifecycle: LifecycleHooks
   checkpointer: CheckpointerConfig
@@ -395,6 +396,8 @@ export interface GraphDocument {
   version: '1.0' | '1.1' | '1.2'
   name: string
   description?: string
+  /** Semantic version of the generated project (pyproject, server, Helm chart). */
+  projectVersion?: string
   stateFields: StateField[]
   subgraphs: SubgraphDefinition[]
   activeSubgraphId: string
@@ -421,6 +424,27 @@ export interface CanvasSnapshot {
   nodes: import('@xyflow/react').Node<StitchNodeData>[]
   edges: import('@xyflow/react').Edge[]
   viewport?: CanvasViewport
+  annotations?: CanvasAnnotation[]
+}
+
+export type AnnotationKind = 'shape_rect' | 'shape_ellipse' | 'label' | 'group_frame'
+
+export interface CanvasAnnotation {
+  id: string
+  kind: AnnotationKind
+  position: { x: number; y: number }
+  width: number
+  height: number
+  label?: string
+  fill?: string
+  stroke?: string
+  opacity?: number
+  cornerRadius?: number
+  fontSize?: number
+  fontColor?: string
+  textAlign?: 'left' | 'center' | 'right'
+  /** Optional parent group/scope annotation id for nested scope blocks. */
+  parentId?: string
 }
 
 export interface PaletteItem {

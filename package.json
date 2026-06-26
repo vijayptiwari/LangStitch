@@ -20,7 +20,10 @@
     "agent:run": "python runtime/basic_agent.py"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.1.4",
     "@xyflow/react": "^12.6.0",
+    "fflate": "^0.8.2",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

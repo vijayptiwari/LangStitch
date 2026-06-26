@@ -64,7 +64,24 @@ Sign in with Google/Microsoft/LinkedIn, then acquired marketplace plugins instal
 
 Open or create a `*.langstitch.json` file to launch the canvas editor.
 
-## Publish a release
+## Developer commands (Command Palette)
+
+| Command | Description |
+|---------|-------------|
+| **LangTailor: New Graph** | Create a new `.langstitch.json` |
+| **LangTailor: Open Project** | Open `.langstitch.json`, `.zip`, or exported folder |
+| **LangTailor: Build** | Scaffold full Python project + `pip install -e .` |
+| **LangTailor: Run** | `langstitch run` in integrated terminal |
+| **LangTailor: Test** | Run generated `eval_runner` |
+| **LangTailor: Package** | Build wheel + Helm chart into `dist/` |
+| **LangTailor: Version** | Bump project semver |
+| **LangTailor: Export** | ZIP (python/spring/full) or diagram JPEG/PNG |
+
+Settings: `langtailor.pythonPath`, `langtailor.outputDir`, `langtailor.serverPort`, `langtailor.imageRepository`.
+
+Extensions ship **preinstalled** in portable downloads (unpacked into VSCodium `resources/app/extensions/`).
+
+Canvas tools: **Beautify** (auto-layout), **Lock** (prevent accidental edits), alignment cluster, annotation shapes/labels, scope blocks, and **Export image** for documentation.
 
 ```bash
 # Tag push (creates GitHub Release with VSIX + platform portable zips)

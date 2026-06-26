@@ -35,6 +35,7 @@ from .context import (
 )
 from .graph import END, START, GraphBuilder, graph
 from .guardrails import input_guardrail, output_guardrail
+from .hitl import human_interrupt
 from .mcp import langstitch_mcp_server, mcp_prompt, mcp_resource, mcp_tool
 from .nodes import graph_node
 from .persona import persona
@@ -102,6 +103,8 @@ __all__ = [
     "GraphBuilder",
     "START",
     "END",
+    # human-in-the-loop
+    "human_interrupt",
     # runtime
     "LangStitchApp",
     "create_app",

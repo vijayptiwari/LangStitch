@@ -8,6 +8,7 @@ import {
   useReactFlow,
   type Edge,
   type Node,
+  type NodeChange,
   type Viewport,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
@@ -17,6 +18,7 @@ import { DEFAULT_GRAPH_SETTINGS } from '../../lib/designerConstants'
 import { getNodeColor } from '../../lib/nodeTheme'
 import { loadViewport } from '../../lib/viewportStorage'
 import { CanvasToolbar } from './CanvasToolbar'
+import { CanvasControlsPanel } from './CanvasControlsPanel'
 import { TruncatedEdge } from './TruncatedEdge'
 import { StartNode } from './nodes/StartNode'
 import { EndNode } from './nodes/EndNode'
@@ -29,6 +31,9 @@ import { AgentNode } from './nodes/AgentNode'
 import { RagNode } from './nodes/RagNode'
 import { IntentClassifierNode } from './nodes/IntentClassifierNode'
 import { CustomComponentNode } from './nodes/CustomComponentNode'
+import { ShapeNode } from './nodes/ShapeNode'
+import { LabelNode } from './nodes/LabelNode'
+import { ScopeNode } from './nodes/ScopeNode'
 
 const nodeTypes = {
   startNode: StartNode,
@@ -42,6 +47,9 @@ const nodeTypes = {
   ragNode: RagNode,
   intentClassifierNode: IntentClassifierNode,
   customNode: CustomComponentNode,
+  shapeNode: ShapeNode,
+  labelNode: LabelNode,
+  scopeNode: ScopeNode,
 }
 
 const edgeTypes = {
@@ -83,8 +91,12 @@ export function GraphCanvas() {
   const setDesignerTab = useGraphStore((s) => s.setDesignerTab)
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
   const updateViewport = useGraphStore((s) => s.updateViewport)
+  const updateAnnotation = useGraphStore((s) => s.updateAnnotation)
+  const removeAnnotation = useGraphStore((s) => s.removeAnnotation)
   const snapToGrid = document.settings?.snapToGrid ?? DEFAULT_GRAPH_SETTINGS.snapToGrid
   const showMinimap = document.settings?.showMinimap ?? DEFAULT_GRAPH_SETTINGS.showMinimap
+  const locked = document.settings?.locked ?? false
+  const annotations = useGraphStore((s) => s.annotations)
 
   const minimapNodeColor = useCallback(
     (n: Node<StitchNodeData>) => getNodeColor(n.data?.kind as string | undefined),
@@ -122,6 +134,29 @@ export function GraphCanvas() {
   )
 
   const onPaneClick = useCallback(() => selectNode(null), [selectNode])
+
+  const handleNodesChange = useCallback(
+    (changes: NodeChange<Node<StitchNodeData>>[]) => {
+      const annIds = new Set(annotations.map((a) => a.id))
+      const graphChanges: NodeChange<Node<StitchNodeData>>[] = []
+      for (const ch of changes) {
+        const id = 'id' in ch ? ch.id : undefined
+        if (id && annIds.has(id)) {
+          if (ch.type === 'position' && ch.position) {
+            updateAnnotation(id, { position: ch.position })
+          } else if (ch.type === 'dimensions' && ch.dimensions) {
+            updateAnnotation(id, { width: ch.dimensions.width, height: ch.dimensions.height })
+          } else if (ch.type === 'remove') {
+            removeAnnotation(id)
+          }
+          continue
+        }
+        graphChanges.push(ch)
+      }
+      if (graphChanges.length) onNodesChange(graphChanges)
+    },
+    [annotations, onNodesChange, updateAnnotation, removeAnnotation],
+  )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -218,6 +253,36 @@ export function GraphCanvas() {
     [],
   )
 
+  const displayNodes = useMemo(() => {
+    // Scope/group frames must precede children (React Flow parentId ordering).
+    const ordered = [...annotations].sort((a, b) =>
+      (a.kind === 'group_frame' ? 0 : 1) - (b.kind === 'group_frame' ? 0 : 1),
+    )
+    const annNodes = ordered.map((a) => {
+      const type =
+        a.kind === 'label' ? 'labelNode' : a.kind === 'group_frame' ? 'scopeNode' : 'shapeNode'
+      const data =
+        a.kind === 'label'
+          ? { kind: 'annotation_label', text: a.label ?? '', fontSize: a.fontSize, fontColor: a.fontColor, textAlign: a.textAlign }
+          : a.kind === 'group_frame'
+            ? { kind: 'scope', label: a.label ?? 'Scope' }
+            : { kind: 'annotation_shape', shape: a.kind === 'shape_ellipse' ? 'ellipse' : 'rect', label: a.label, fill: a.fill, stroke: a.stroke, opacity: a.opacity, cornerRadius: a.cornerRadius }
+      return {
+        id: a.id,
+        type,
+        position: a.position,
+        data,
+        style: { width: a.width, height: a.height },
+        zIndex: a.kind === 'group_frame' ? -1 : 0,
+        parentId: a.parentId,
+        connectable: !locked && a.kind === 'group_frame',
+        draggable: !locked,
+        selectable: true,
+      }
+    })
+    return [...annNodes, ...nodes] as Node<StitchNodeData>[]
+  }, [annotations, nodes, locked])
+
   const displayEdges = useMemo(
     () =>
       edges.map((edge) => ({
@@ -236,18 +301,21 @@ export function GraphCanvas() {
     <div className="graph-canvas-wrap" data-testid="graph-canvas">
       <CanvasToolbar />
       <ReactFlow
-        nodes={nodes}
+        nodes={displayNodes}
         edges={displayEdges}
-        onNodesChange={onNodesChange}
+        onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
-        onNodeContextMenu={onNodeContextMenu}
+        onNodeContextMenu={locked ? undefined : onNodeContextMenu}
         onPaneClick={onPaneClick}
         onMoveEnd={onMoveEnd}
         onBeforeDelete={onBeforeDelete}
-        deleteKeyCode={['Backspace', 'Delete']}
+        deleteKeyCode={locked ? null : ['Backspace', 'Delete']}
+        nodesDraggable={!locked}
+        nodesConnectable={!locked}
+        edgesReconnectable={!locked}
         multiSelectionKeyCode="Shift"
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
@@ -262,6 +330,7 @@ export function GraphCanvas() {
         proOptions={{ hideAttribution: true }}
       >
         <ViewportRestore />
+        <CanvasControlsPanel />
         <Background
           variant={BackgroundVariant.Dots}
           gap={26}

@@ -14,7 +14,30 @@ export interface ManifestValidation {
 
 const PORT_SIDES = new Set(['left', 'right'])
 const PORT_MULTIPLICITIES = new Set(['single', 'multi'])
-const FIELD_KINDS = new Set(['string', 'number', 'boolean', 'select', 'code', 'secret', 'json'])
+const FIELD_KINDS = new Set([
+  'string',
+  'number',
+  'boolean',
+  'select',
+  'code',
+  'secret',
+  'json',
+  'ref',
+  'multiref',
+  'list',
+  'group',
+])
+const REF_KINDS = new Set(['ref', 'multiref'])
+const REF_SOURCES = new Set([
+  'tools',
+  'agents',
+  'skills',
+  'guardrails',
+  'personas',
+  'pipelines',
+  'mcp',
+  'subgraphs',
+])
 const CATEGORIES = new Set(['node', 'connector', 'adaptor'])
 
 /** Validate a manifest (used by the designer save path and on import). */
@@ -53,6 +76,13 @@ export function validateManifest(m: ComponentManifest): ManifestValidation {
     if (!FIELD_KINDS.has(f.kind)) errors.push(`Invalid field kind for ${f.id}: ${f.kind}`)
     if (f.kind === 'select' && !(f.options && f.options.length > 0)) {
       errors.push(`Select field "${f.id}" requires at least one option.`)
+    }
+    if (REF_KINDS.has(f.kind)) {
+      if (!f.source) {
+        errors.push(`Reference field "${f.id}" requires a "source" registry binding.`)
+      } else if (!REF_SOURCES.has(f.source)) {
+        errors.push(`Field "${f.id}" has an invalid ref source: ${f.source}`)
+      }
     }
     if (
       typeof f.min === 'number' &&

@@ -80,6 +80,38 @@ function escapePythonStrContent(value: unknown): string {
     .replace(/\r/g, '\\r')
 }
 
+/** Render a registry reference (single id) as a Python string literal. */
+function toPythonRef(value: unknown): string {
+  return toPythonString(value)
+}
+
+/** Render a multi-reference field (list of ids) as a Python list literal. */
+function toPythonMultiRef(value: unknown): string {
+  const arr = Array.isArray(value)
+    ? value
+    : typeof value === 'string' && value.trim()
+      ? value.split(',').map((s) => s.trim()).filter(Boolean)
+      : []
+  return `[${arr.map((item) => toPythonString(item)).join(', ')}]`
+}
+
+/**
+ * Render a structured `list`/`group` value as a Python literal. The runtime
+ * value is stored as a parsed JS object/array; a stringified payload is also
+ * accepted for forward-compat with imported configs.
+ */
+function toPythonStructured(value: unknown, errors: string[], token: string): string {
+  if (typeof value === 'string') {
+    return toPythonJson(value, errors, token)
+  }
+  try {
+    return jsonToPyLiteral(value ?? null)
+  } catch {
+    errors.push(`Invalid structured value for ${token}`)
+    return `# UNRESOLVED:${token}`
+  }
+}
+
 /** Escape a config field value into a Python literal based on its kind. */
 function escapeFieldValue(
   field: RenderField,
@@ -100,6 +132,13 @@ function escapeFieldValue(
       return `os.environ.get(${toPythonString(field.value)})`
     case 'code':
       return toPythonString(field.value)
+    case 'ref':
+      return toPythonRef(field.value)
+    case 'multiref':
+      return toPythonMultiRef(field.value)
+    case 'list':
+    case 'group':
+      return toPythonStructured(field.value, errors, token)
     default:
       return toPythonString(field.value)
   }

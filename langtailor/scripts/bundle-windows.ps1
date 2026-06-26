@@ -35,10 +35,31 @@ if (-not (Test-Path $codium)) {
 }
 if (-not (Test-Path $codium)) { throw "codium.cmd not found under $extractRoot" }
 
-Write-Host "Installing extensions into portable VSCodium ..."
+$extensionsDir = Join-Path $vscodiumRoot "resources\app\extensions"
+if (-not (Test-Path $extensionsDir)) { New-Item -ItemType Directory -Path $extensionsDir -Force | Out-Null }
+
+function Install-BuiltInExtension {
+  param([string]$VsixPath)
+  $tempDir = Join-Path $env:RUNNER_TEMP ("vsix-" + [guid]::NewGuid().ToString())
+  New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+  try {
+    Expand-Archive -Path $VsixPath -DestinationPath $tempDir -Force
+    $manifestPath = Join-Path $tempDir "extension\package.json"
+    if (-not (Test-Path $manifestPath)) { throw "Invalid VSIX: no extension/package.json in $VsixPath" }
+    $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+    $extId = $manifest.name
+    $dest = Join-Path $extensionsDir $extId
+    if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+    Copy-Item -Path (Join-Path $tempDir "extension") -Destination $dest -Recurse
+    Write-Host "Installed built-in extension: $extId -> $dest"
+  } finally {
+    if (Test-Path $tempDir) { Remove-Item -Recurse -Force $tempDir }
+  }
+}
+
+Write-Host "Installing extensions as built-in into $extensionsDir ..."
 foreach ($Vsix in $VsixFiles) {
-  & $codium --install-extension $Vsix.FullName --force
-  if ($LASTEXITCODE -ne 0) { throw "codium --install-extension failed for $($Vsix.Name) with exit $LASTEXITCODE" }
+  Install-BuiltInExtension -VsixPath $Vsix.FullName
 }
 
 $outZip = Join-Path $env:GITHUB_WORKSPACE "LangTailor-win-x64-portable.zip"

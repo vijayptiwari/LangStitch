@@ -1590,6 +1590,50 @@ body {
   color: var(--accent-soft);
 }
 
+.canvas-toolbar-locked-hint {
+  font-size: 11px;
+  color: var(--warning, #f59e0b);
+  margin-left: 8px;
+}
+
+.canvas-controls-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 6px;
+  background: rgba(6, 8, 15, 0.85);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(8px);
+}
+
+.canvas-panel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.canvas-panel-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.canvas-align-cluster {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 4px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+}
+
 .toolbar-saved-at {
   margin-left: 6px;
   font-size: 10px;

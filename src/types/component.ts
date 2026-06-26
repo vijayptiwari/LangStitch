@@ -8,10 +8,39 @@ export type ConfigFieldKind =
   | 'code'
   | 'secret'
   | 'json'
+  | 'ref'
+  | 'multiref'
+  | 'list'
+  | 'group'
+
+export type RefSource =
+  | 'tools'
+  | 'agents'
+  | 'skills'
+  | 'guardrails'
+  | 'personas'
+  | 'pipelines'
+  | 'mcp'
+  | 'subgraphs'
+
+export type CodegenKind =
+  | 'node'
+  | 'router'
+  | 'terminal'
+  | 'subgraph'
+  | 'agent'
+  | 'scope'
+  | 'human_interrupt'
 
 export interface ConfigFieldOption {
   value: string
   label: string
+}
+
+export interface VisibleWhen {
+  field: string
+  equals?: string | number | boolean
+  notEquals?: string | number | boolean
 }
 
 export interface ConfigField {
@@ -19,7 +48,7 @@ export interface ConfigField {
   label: string
   kind: ConfigFieldKind
   required?: boolean
-  defaultValue?: string | number | boolean
+  defaultValue?: string | number | boolean | unknown[]
   placeholder?: string
   hint?: string
   options?: ConfigFieldOption[]
@@ -27,6 +56,14 @@ export interface ConfigField {
   max?: number
   pattern?: string
   language?: 'python' | 'json' | 'text'
+  /** Registry binding for ref/multiref fields */
+  source?: RefSource
+  /** Sub-fields for list/group kinds */
+  fields?: ConfigField[]
+  /** Show this field only when another field matches */
+  visibleWhen?: VisibleWhen
+  /** For list fields that drive dynamic output ports (routers, intents) */
+  portLabelField?: string
 }
 
 export type PortSide = 'left' | 'right'
@@ -47,12 +84,12 @@ export interface ComponentTheme {
 }
 
 export interface ComponentCodegen {
+  kind?: CodegenKind
   /**
    * Safe template. Allowed placeholders ONLY:
    *  {{label}} {{nodeName}} {{description}} {{outputKey}}
    *  {{field.<id>}}        -> escaped per field kind
    *  {{field.<id>.raw}}    -> raw (code fields only)
-   * Must define a function `def {{nodeName}}(state: State) -> dict:` returning a dict.
    */
   template: string
   imports?: string[]
@@ -72,6 +109,8 @@ export interface ComponentManifest {
   codegen: ComponentCodegen
   author?: string
   version?: string
+  /** Built-in manifests cannot be removed from the registry */
+  builtin?: boolean
 }
 
 /** Provenance wrapper for the portable `.component.json` file (§5.6). */

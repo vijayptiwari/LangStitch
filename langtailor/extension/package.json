@@ -1,11 +1,13 @@
 {
   "name": "langtailor-canvas",
   "displayName": "LangTailor Canvas",
-  "description": "Visual LangGraph canvas — design agent workflows and export Python, built into LangTailor.",
-  "version": "0.1.2",
+  "description": "Visual LangGraph IDE — design agent workflows on a drag-and-drop canvas, scaffold Python projects with the langstitch SDK, and deploy with Build/Run/Test/Package commands.",
+  "version": "0.2.0",
   "publisher": "langstitch",
   "license": "MIT",
   "icon": "icon.png",
+  "preview": false,
+  "qna": "https://github.com/vijayptiwari/LangStitch/discussions",
   "homepage": "https://langtailor.langstitch.com",
   "bugs": {
     "url": "https://github.com/vijayptiwari/LangStitch/issues"
@@ -21,10 +23,57 @@
   "engines": {
     "vscode": "^1.90.0"
   },
-  "categories": ["Visualization", "Other"],
-  "keywords": ["langgraph", "langchain", "agents", "langstitch", "langtailor"],
+  "categories": ["Visualization", "Programming Languages", "Other"],
+  "keywords": [
+    "langgraph",
+    "langchain",
+    "agents",
+    "langstitch",
+    "langtailor",
+    "visual programming",
+    "workflow",
+    "python",
+    "hitl",
+    "human-in-the-loop"
+  ],
   "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCustomEditor:langtailor.canvas",
+    "onCommand:langtailor.newGraph",
+    "onCommand:langtailor.openProject",
+    "onCommand:langtailor.build",
+    "onCommand:langtailor.run",
+    "onCommand:langtailor.test",
+    "onCommand:langtailor.package",
+    "onCommand:langtailor.version",
+    "onCommand:langtailor.export"
+  ],
   "contributes": {
+    "configuration": {
+      "title": "LangTailor",
+      "properties": {
+        "langtailor.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "description": "Python interpreter for build, run, test, and package commands."
+        },
+        "langtailor.outputDir": {
+          "type": "string",
+          "default": "${workspaceFolder}/build",
+          "description": "Directory where Build scaffolds the generated project."
+        },
+        "langtailor.serverPort": {
+          "type": "number",
+          "default": 8000,
+          "description": "Port for the langstitch run server."
+        },
+        "langtailor.imageRepository": {
+          "type": "string",
+          "default": "",
+          "description": "Container image repository baked into the Helm chart (defaults to graph slug)."
+        }
+      }
+    },
     "customEditors": [
       {
         "viewType": "langtailor.canvas",
@@ -40,7 +89,124 @@
     "commands": [
       {
         "command": "langtailor.newGraph",
-        "title": "LangTailor: New Graph"
+        "title": "LangTailor: New Graph",
+        "icon": "$(add)"
+      },
+      {
+        "command": "langtailor.openProject",
+        "title": "LangTailor: Open Project",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "langtailor.build",
+        "title": "LangTailor: Build",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "langtailor.run",
+        "title": "LangTailor: Run",
+        "icon": "$(play)"
+      },
+      {
+        "command": "langtailor.test",
+        "title": "LangTailor: Test",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "langtailor.package",
+        "title": "LangTailor: Package",
+        "icon": "$(package)"
+      },
+      {
+        "command": "langtailor.version",
+        "title": "LangTailor: Version",
+        "icon": "$(tag)"
+      },
+      {
+        "command": "langtailor.export",
+        "title": "LangTailor: Export",
+        "icon": "$(export)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "langtailor.build",
+          "when": "resourceExtname == .json && resourceFilename =~ /\\.langstitch\\.json$/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "langtailor.run",
+          "when": "resourceExtname == .json && resourceFilename =~ /\\.langstitch\\.json$/",
+          "group": "navigation@2"
+        },
+        {
+          "command": "langtailor.test",
+          "when": "resourceExtname == .json && resourceFilename =~ /\\.langstitch\\.json$/",
+          "group": "navigation@3"
+        },
+        {
+          "command": "langtailor.export",
+          "when": "resourceExtname == .json && resourceFilename =~ /\\.langstitch\\.json$/",
+          "group": "navigation@4"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "langtailor.openProject",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "langtailor.newGraph"
+        },
+        {
+          "command": "langtailor.openProject"
+        },
+        {
+          "command": "langtailor.build",
+          "when": "activeCustomEditorId == langtailor.canvas"
+        },
+        {
+          "command": "langtailor.run",
+          "when": "activeCustomEditorId == langtailor.canvas"
+        },
+        {
+          "command": "langtailor.test",
+          "when": "activeCustomEditorId == langtailor.canvas"
+        },
+        {
+          "command": "langtailor.package",
+          "when": "activeCustomEditorId == langtailor.canvas"
+        },
+        {
+          "command": "langtailor.version",
+          "when": "activeCustomEditorId == langtailor.canvas"
+        },
+        {
+          "command": "langtailor.export",
+          "when": "activeCustomEditorId == langtailor.canvas"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "langtailor.build",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b",
+        "when": "activeCustomEditorId == langtailor.canvas"
+      },
+      {
+        "command": "langtailor.run",
+        "key": "f5",
+        "when": "activeCustomEditorId == langtailor.canvas"
+      },
+      {
+        "command": "langtailor.export",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "activeCustomEditorId == langtailor.canvas"
       }
     ]
   },

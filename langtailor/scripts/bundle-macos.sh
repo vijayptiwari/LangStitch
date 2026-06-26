@@ -79,21 +79,38 @@ if [[ ! -f "$CODIUM" ]]; then
 fi
 chmod +x "$CODIUM"
 
-EXT_DIR="$BUNDLE/extensions"
-DATA_DIR="$BUNDLE/user-data"
-mkdir -p "$EXT_DIR" "$DATA_DIR"
+EXT_DIR="$APP/Contents/Resources/app/extensions"
+mkdir -p "$EXT_DIR"
 
-echo "Installing extensions into portable bundle ..."
+install_builtin_vsix() {
+  local vsix="$1"
+  local tmp
+  tmp="$(mktemp -d)"
+  unzip -q "$vsix" -d "$tmp"
+  local pkg="$tmp/extension/package.json"
+  if [[ ! -f "$pkg" ]]; then
+    echo "Invalid VSIX (no extension/package.json): $vsix" >&2
+    rm -rf "$tmp"
+    exit 1
+  fi
+  local ext_id
+  ext_id="$(python3 -c "import json; print(json.load(open('$pkg'))['name'])")"
+  rm -rf "$EXT_DIR/$ext_id"
+  cp -R "$tmp/extension" "$EXT_DIR/$ext_id"
+  rm -rf "$tmp"
+  echo "Installed built-in extension: $ext_id"
+}
+
+echo "Installing extensions as built-in into $EXT_DIR ..."
 for VSIX in "${VSIX_FILES[@]}"; do
-  "$CODIUM" --install-extension "$VSIX" --force \
-    --extensions-dir "$EXT_DIR" \
-    --user-data-dir "$DATA_DIR"
+  install_builtin_vsix "$VSIX"
 done
 
-# codium --install-extension may leave Electron running and block hdiutil.
-pkill -f "VSCodium.app" 2>/dev/null || true
-pkill -f "Contents/MacOS/Electron" 2>/dev/null || true
-sleep 2
+# Legacy portable layout (extensions + user-data) for LangTailor.command launcher
+LEGACY_EXT_DIR="$BUNDLE/extensions"
+LEGACY_DATA_DIR="$BUNDLE/user-data"
+mkdir -p "$LEGACY_EXT_DIR" "$LEGACY_DATA_DIR"
+cp -R "$EXT_DIR"/* "$LEGACY_EXT_DIR/" 2>/dev/null || true
 
 LAUNCHER="$BUNDLE/LangTailor.command"
 cat > "$LAUNCHER" <<'LAUNCH'
