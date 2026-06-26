@@ -5,6 +5,7 @@ async function request<T>(
   options?: RequestInit,
 ): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
   })
@@ -104,6 +105,7 @@ export const platformApi = {
   ) => {
     const res = await fetch(`${API_BASE}/export`, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ project_id: projectId, format, files }),
     })
@@ -128,7 +130,7 @@ export const platformApi = {
     fd.append('file', file)
     const res = await fetch(
       `${API_BASE}/import?project_id=${encodeURIComponent(projectId)}&format=${format}`,
-      { method: 'POST', body: fd },
+      { method: 'POST', credentials: 'include', body: fd },
     )
     if (!res.ok) throw new Error(await res.text())
     return res.json() as Promise<ProjectData & { ok: boolean }>

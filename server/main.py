@@ -21,8 +21,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 
+from .auth import (
+    get_current_user_id,
+    reset_current_user_id,
+    router as auth_router,
+    set_current_user_id,
+)
+from .config import settings
 from .eval_service import EvalConfigInput, run_eval_job
 
 BUILD_TIME = datetime.now(timezone.utc).isoformat()
@@ -56,14 +63,73 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         return response
 
 
+# Paths that never require authentication.
+_PUBLIC_AUTH_PREFIXES = ("/api/health", "/api/auth", "/api/openapi.json")
+
+
+class AuthMiddleware:
+    """Pure-ASGI middleware that enforces login on protected /api routes and
+    publishes the current user id to a contextvar for workspace scoping."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        path = scope.get("path", "")
+        method = scope.get("method", "GET")
+        session = scope.get("session") or {}
+        user_id = session.get("user_id")
+        is_api = path.startswith("/api/")
+        is_public = any(path.startswith(p) for p in _PUBLIC_AUTH_PREFIXES)
+        if is_api and method != "OPTIONS" and not is_public and not user_id:
+            response = JSONResponse({"detail": "Authentication required"}, status_code=401)
+            await response(scope, receive, send)
+            return
+        token = set_current_user_id(str(user_id) if user_id else None)
+        try:
+            await self.app(scope, receive, send)
+        finally:
+            reset_current_user_id(token)
+
+
+# Middleware are applied outermost-first in reverse registration order, so the
+# final order is: CORS -> Session -> Auth -> RequestId -> routes.
 app.add_middleware(RequestIdMiddleware)
+
+if settings.auth_enabled:
+    from starlette.middleware.sessions import SessionMiddleware
+
+    app.add_middleware(AuthMiddleware)
+    app.add_middleware(
+        SessionMiddleware,
+        secret_key=settings.session_secret,
+        https_only=settings.cookie_secure,
+        same_site=settings.cookie_same_site,
+        max_age=settings.session_max_age,
+    )
+
+# With cookie-based sessions we cannot use a wildcard origin; pin to the frontend.
+_cors_origins = [settings.frontend_url] if settings.auth_enabled else ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router)
+
+
+@app.on_event("startup")
+def _on_startup() -> None:
+    if settings.auth_enabled:
+        from .db import init_db
+
+        init_db()
 
 WORKSPACE_ROOT = Path(os.environ.get("LANGSTITCH_WORKSPACE", Path.home() / ".langstitch" / "workspaces"))
 WORKSPACE_ROOT.mkdir(parents=True, exist_ok=True)
@@ -164,9 +230,21 @@ class VersionSnapshotRequest(BaseModel):
 # ─── Helpers ───
 
 
+def safe_slug(project_id: str) -> str:
+    return "".join(c if c.isalnum() or c in "-_" else "_" for c in project_id)
+
+
+def user_workspace_root() -> Path:
+    """Workspace root for the current request — scoped per user when auth is on."""
+    if settings.auth_enabled:
+        uid = get_current_user_id()
+        if uid:
+            return WORKSPACE_ROOT / "users" / safe_slug(uid)
+    return WORKSPACE_ROOT
+
+
 def project_dir(project_id: str) -> Path:
-    safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in project_id)
-    path = WORKSPACE_ROOT / safe
+    path = user_workspace_root() / safe_slug(project_id)
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -234,9 +312,10 @@ def load_project_json(base: Path) -> dict[str, Any]:
 
 def count_workspace_nodes() -> int:
     total = 0
-    if not WORKSPACE_ROOT.exists():
+    root = user_workspace_root()
+    if not root.exists():
         return 0
-    for entry in WORKSPACE_ROOT.iterdir():
+    for entry in root.iterdir():
         if not entry.is_dir():
             continue
         for name in ("langstitch.project.json", "project.langstitch.json"):
@@ -333,6 +412,29 @@ def openapi_description():
 # ─── Project ───
 
 
+def register_project(project_id: str, name: str | None) -> None:
+    """Record the project in the per-user registry (no-op when auth is off)."""
+    if not settings.auth_enabled:
+        return
+    uid = get_current_user_id()
+    if not uid:
+        return
+    from sqlalchemy import select
+
+    from .db import session_scope
+    from .models import Project
+
+    slug = safe_slug(project_id)
+    with session_scope() as db:
+        proj = db.scalar(
+            select(Project).where(Project.user_id == uid, Project.slug == slug)
+        )
+        if proj is None:
+            db.add(Project(user_id=uid, slug=slug, name=name or slug))
+        elif name:
+            proj.name = name
+
+
 @app.post("/api/project/save")
 def save_project(payload: ProjectPayload):
     base = project_dir(payload.project_id)
@@ -349,7 +451,37 @@ def save_project(payload: ProjectPayload):
         json.dumps(project_json, indent=2),
         encoding="utf-8",
     )
+    register_project(payload.project_id, payload.document.get("name"))
     return {"ok": True, "path": str(base)}
+
+
+@app.get("/api/projects")
+def list_projects():
+    """List the current user's projects (auth on) — used for workspace switching."""
+    if not settings.auth_enabled:
+        return {"projects": []}
+    uid = get_current_user_id()
+    if not uid:
+        return {"projects": []}
+    from sqlalchemy import select
+
+    from .db import session_scope
+    from .models import Project
+
+    with session_scope() as db:
+        rows = db.scalars(
+            select(Project).where(Project.user_id == uid).order_by(Project.updated_at.desc())
+        ).all()
+        return {
+            "projects": [
+                {
+                    "slug": p.slug,
+                    "name": p.name,
+                    "updated_at": p.updated_at.isoformat() if p.updated_at else None,
+                }
+                for p in rows
+            ]
+        }
 
 
 @app.post("/api/agent/run")

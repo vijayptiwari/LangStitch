@@ -14,6 +14,7 @@ import { useGraphStore } from '../../store/graphStore'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
 import { exportGraphDocument } from '../../lib/codegen/pythonGenerator'
 import type { GraphDocument } from '../../types/graph'
+import { UserMenu } from '../auth/UserMenu'
 
 function LangStitchLogo() {
   return (
@@ -343,6 +344,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         >
           <HelpCircle size={16} />
         </button>
+        <UserMenu />
         <input
           ref={fileInputRef}
           type="file"

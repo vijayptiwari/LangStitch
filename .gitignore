@@ -4,6 +4,9 @@ dist-ssr
 *.local
 .env
 .env.*
+!.env.example
+langtailor/extension/node_modules/
+langtailor/extension/dist/
 .DS_Store
 __pycache__
 *.pyc

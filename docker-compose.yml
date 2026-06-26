@@ -8,10 +8,16 @@ services:
       context: .
       dockerfile: docker/Dockerfile.api
     image: langstitch-api:local
+    # Loads auth + DB + OAuth settings when present (see .env.example).
+    env_file:
+      - path: .env
+        required: false
     environment:
       LANGSTITCH_WORKSPACE: /data/workspaces
     volumes:
       - langstitch-workspaces:/data/workspaces
+    depends_on:
+      - db
     restart: unless-stopped
 
   web:
@@ -25,5 +31,20 @@ services:
       - api
     restart: unless-stopped
 
+  # MySQL for users + per-user workspaces. Only used when
+  # LANGSTITCH_AUTH_ENABLED=true; harmless otherwise.
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-langstitch}
+      MYSQL_USER: ${MYSQL_USER:-langstitch}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-langstitch}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+    command: --default-authentication-plugin=caching_sha2_password
+    volumes:
+      - langstitch-mysql:/var/lib/mysql
+    restart: unless-stopped
+
 volumes:
   langstitch-workspaces:
+  langstitch-mysql:

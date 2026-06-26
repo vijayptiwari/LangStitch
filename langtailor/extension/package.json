@@ -1,0 +1,43 @@
+{
+  "name": "langtailor-canvas",
+  "displayName": "LangTailor Canvas",
+  "description": "Visual LangGraph canvas — design agent workflows and export Python, built into LangTailor.",
+  "version": "0.1.0",
+  "publisher": "langstitch",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Visualization", "Other"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "langtailor.canvas",
+        "displayName": "LangTailor Canvas",
+        "selector": [
+          {
+            "filenamePattern": "*.langstitch.json"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "langtailor.newGraph",
+        "title": "LangTailor: New Graph"
+      }
+    ]
+  },
+  "scripts": {
+    "build:webview": "vite build --config ../../vite.webview.config.ts",
+    "compile": "tsc -p ./",
+    "build": "npm run build:webview && npm run compile",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "~5.8.3"
+  }
+}

@@ -1,0 +1,60 @@
+# LangTailor
+
+**LangTailor** is the downloadable, desktop LangGraph IDE — a branded build of
+**VS Code / Code-OSS** (Electron, open source) with the LangStitch visual canvas
+built in. Targets: **Windows x64**, **macOS x64**, **macOS arm64**.
+
+It is the desktop successor to the web-hosted LangStitch IDE: a full code editor
+plus the drag-and-drop graph canvas and Python export, in one installable app.
+
+## Architecture
+
+```
+LangTailor (Code-OSS based desktop IDE)
+└── built-in extension: langtailor-canvas
+    ├── extension host  (extension/src/extension.ts)  — custom editor for *.langstitch.json
+    └── webview         (built from ../src via vite.webview.config.ts) — the React canvas
+```
+
+The canvas reuses the existing LangStitch React code (`/src`); a Vite build
+bundles it into `extension/media/`, and a VS Code **CustomTextEditor** hosts it
+as the editor for `*.langstitch.json`, syncing edits to the TextDocument so VS
+Code owns dirty-state, undo, and save.
+
+## Phased roadmap
+
+| Phase | Deliverable | Status |
+|-------|-------------|--------|
+| 1 | Canvas as a VS Code extension (custom editor + webview + doc sync) | ✅ scaffolded |
+| 2 | LangTailor branding overlay on Code-OSS (product.json, icons, app ids) | ⏳ |
+| 2 | CI build → Windows x64 + macOS x64/arm64 installers (.exe / .dmg) | ⏳ |
+| 3 | Code signing + notarization (Apple Developer ID, Windows cert) + auto-update | ⏳ |
+| 3 | Download page on langstitch.com + publish extension to Open VSX | ⏳ |
+
+> Phases 2–3 build on GitHub Actions runners (windows-latest / macos-latest) and
+> require an Apple Developer ID and a Windows code-signing certificate for
+> distributable, non-flagged installers. Unsigned dev builds work without them.
+
+## Develop the extension
+
+```bash
+# from repo root — build the canvas webview bundle
+npm install
+npm run build:webview
+
+# build + run the extension
+cd langtailor/extension
+npm install
+npm run build        # builds webview + compiles extension
+# then press F5 in VS Code (Run "LangTailor Canvas Extension")
+```
+
+Open or create a `*.langstitch.json` file to launch the canvas editor.
+
+## Why VS Code / Code-OSS (not "Visual Studio")
+
+Visual Studio is proprietary and not Electron-based. VS Code's core (**Code-OSS**)
+is MIT-licensed and is the standard base for branded IDEs (Cursor, Windsurf,
+Gitpod). LangTailor follows the maintainable VSCodium-style overlay approach:
+pin an upstream Code-OSS version, apply branding patches, bundle the canvas
+extension, and build installers per platform.

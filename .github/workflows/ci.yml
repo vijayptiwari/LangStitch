@@ -33,6 +33,11 @@ jobs:
       - name: Typecheck and build
         run: npm run build
 
+      - name: Build LangTailor webview + extension
+        run: |
+          npm run build:webview
+          cd langtailor/extension && npm ci && npm run compile
+
       - name: Install Playwright browser
         run: npx playwright install chromium --with-deps
 

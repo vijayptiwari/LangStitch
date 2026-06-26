@@ -10,6 +10,7 @@
     "dev:api": "python -m uvicorn server.main:app --reload --host 127.0.0.1 --port 8787",
     "dev:all": "npm run dev:api & npm run dev",
     "build": "tsc -b && vite build",
+    "build:webview": "vite build --config vite.webview.config.ts",
     "preview": "vite preview",
     "lint": "eslint .",
     "test:e2e": "playwright test",
