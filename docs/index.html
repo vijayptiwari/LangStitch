@@ -11,6 +11,7 @@
   <nav class="nav">
     <a class="nav-brand" href="../">LangStitch</a>
     <div class="nav-links">
+      <a href="#guide">SDK guide</a>
       <a href="../#try">Try live</a>
       <a href="../app/">Open IDE</a>
       <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
@@ -53,6 +54,424 @@ pip install -r server/requirements.txt
 npm start</code></pre>
           <p>UI at <strong>http://localhost:5173</strong>, API at <strong>:8787</strong></p>
         </article>
+      </div>
+    </section>
+
+    <section id="guide">
+      <h2>SDK user guide</h2>
+      <p class="section-lead">
+        A complete, production-oriented guide to the <code>langstitch</code> Python SDK. The three
+        core steps — <a href="#guide-requirements">Requirements</a>,
+        <a href="#guide-first-project">First Project</a>,
+        <a href="#guide-specification">Specification</a> — get you running; the
+        <a href="#guide-production">Production</a> sections cover configuration, secrets, observability,
+        resilience, security, testing, deployment, and CI you need before shipping.
+      </p>
+      <nav class="guide-toc" aria-label="SDK guide contents">
+        <a href="#guide-requirements">1 · Requirements</a>
+        <a href="#guide-first-project">2 · First project</a>
+        <a href="#guide-specification">3 · Specification</a>
+        <a href="#guide-config">4 · Configuration &amp; secrets</a>
+        <a href="#guide-providers">5 · Models &amp; HTTP services</a>
+        <a href="#guide-context">6 · Context &amp; registries</a>
+        <a href="#guide-production">7 · Production hardening</a>
+        <a href="#guide-deploy">8 · Deployment &amp; CI</a>
+        <a href="#guide-reference">9 · API reference</a>
+        <a href="#guide-troubleshooting">10 · Troubleshooting</a>
+      </nav>
+
+      <h3 id="guide-requirements" class="guide-step">1 · Requirements</h3>
+      <ul class="doc-list">
+        <li><strong>Python 3.10–3.13</strong> — tested on all four in CI. The core has a single
+          runtime dependency (<code>PyYAML</code>); heavy libraries are opt-in extras.</li>
+        <li><strong>Packaging tool</strong> — pip, uv, or poetry. Always install into a virtual
+          environment (<code>python -m venv .venv</code>) so builds are reproducible.</li>
+        <li><strong>Model credentials</strong> — e.g. <code>OPENAI_API_KEY</code> — only if you call a
+          real LLM. Provided via the environment (see <a href="#guide-config">§4</a>), never in code.</li>
+      </ul>
+      <h4 class="guide-substep">Extras matrix</h4>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Extra</th><th>Pulls in</th><th>Enables</th></tr></thead>
+          <tbody>
+            <tr><td><code>(core)</code></td><td>PyYAML</td><td>decorators, config, registries, context, CLI scaffold</td></tr>
+            <tr><td><code>server</code></td><td>fastapi, uvicorn</td><td><code>langstitch run</code>, <code>create_app()</code> (/health, /info, /invoke)</td></tr>
+            <tr><td><code>graph</code></td><td>langgraph, langchain-core</td><td><code>GraphBuilder.compile()</code> → real StateGraph</td></tr>
+            <tr><td><code>llm</code></td><td>langchain</td><td><code>get_llm_provider()</code> (+ a provider pkg, e.g. langchain-openai)</td></tr>
+            <tr><td><code>http</code></td><td>httpx</td><td><code>get_http_client()</code> / external services</td></tr>
+            <tr><td><code>all</code></td><td>all of the above</td><td>everything</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre><code># pick what you need
+pip install langstitch                               # core only
+pip install "langstitch[server,graph,llm,http]"      # typical agent service
+pip install "langstitch[all]"                        # everything
+
+# pin from Git until the PyPI release is live
+pip install "langstitch @ git+https://github.com/vijayptiwari/LangStitch.git#subdirectory=sdk"</code></pre>
+      <p class="section-lead">
+        <strong>Design note:</strong> importing <code>langstitch</code> never imports FastAPI, LangGraph,
+        LangChain, or httpx. Each helper imports its dependency lazily and raises a clear, actionable
+        error if the extra is missing — so the core stays light and safe to import in tooling/CI.
+      </p>
+
+      <h3 id="guide-first-project" class="guide-step">2 · First project</h3>
+      <pre><code>langstitch new my-agent      # scaffold
+cd my-agent
+python -m venv .venv && . .venv/bin/activate   # (Windows: .venv\Scripts\activate)
+pip install -e ".[server,graph,llm,http]"      # install with extras
+python -m app                # bootstrap + print registered components (JSON)
+pytest -q                    # run the generated smoke tests
+langstitch run               # start the API server</code></pre>
+      <p class="section-lead">Generated layout — every concept gets its own package:</p>
+      <pre><code>my-agent/
+  application.yaml     # application config (or precompiled application.json)
+  env.yaml             # runtime environment variables (gitignored in real projects)
+  pyproject.toml       # depends on langstitch; your package is "app"
+  app/
+    __init__.py        # imports submodules so decorators register on import
+    graphs/            # @graph — main graph (main.py) + subgraphs
+    nodes/             # @graph_node — node handlers (state -> dict)
+    skills/            # @skill
+    guardrails/        # @input_guardrail / @output_guardrail
+    policies/          # @business_policy
+    personas/          # @persona
+    tools/             # @tool
+    agents/            # @worker_agent
+    mcp/               # @langstitch_mcp_server + @mcp_tool/resource/prompt
+    config.py          # @configuration — typed application.yaml sections
+    state.py           # graph state schema (TypedDict)
+    main.py            # @langstitch_graph_server — server + bootstrap()
+  tests/               # smoke tests</code></pre>
+      <p class="section-lead">
+        <strong>How registration works:</strong> decorators record a spec on a process-global registry
+        at <em>import time</em>. <code>app/__init__.py</code> imports every submodule, so a single
+        <code>import app</code> wires up the whole application. Keep decorated modules import-safe (no
+        network/IO at module scope) so import stays fast and deterministic.
+      </p>
+      <h4 class="guide-substep">CLI reference</h4>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>langstitch new &lt;name&gt; [--dir P] [--force]</code></td><td>scaffold a project</td></tr>
+            <tr><td><code>langstitch info [--root P]</code></td><td>load config &amp; list all registered components</td></tr>
+            <tr><td><code>langstitch run [--root P] [--host] [--port]</code></td><td>start the API server</td></tr>
+            <tr><td><code>langstitch compile [--root P]</code></td><td>application.yaml → application.json (fast startup)</td></tr>
+            <tr><td><code>langstitch get &lt;json.path&gt; [--root P]</code></td><td>resolve a config path, print as JSON</td></tr>
+            <tr><td><code>langstitch version</code></td><td>print the SDK version</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="guide-specification" class="guide-step">3 · Specification</h3>
+      <p class="section-lead">
+        Describe the agent declaratively: configuration in <code>application.yaml</code>
+        (or <code>application.json</code>), components via decorators.
+      </p>
+      <h4 class="guide-substep">application.yaml</h4>
+      <pre><code>app:
+  name: my_agent
+  version: 0.1.0
+  description: Support agent built with LangStitch.
+
+model:
+  provider: openai          # passed to LangChain init_chat_model
+  name: gpt-4o-mini
+  temperature: 0.2
+
+server:
+  host: 0.0.0.0
+  port: 8000
+
+http:
+  timeout: 30               # default for get_http_client() (no service)
+
+external_services:          # see §5
+  billing:
+    serverUrl: https://api.billing.com
+    basePath: /v1
+    propagate_headers: [x-request-id, authorization]
+    auth:
+      type: bearer
+      token: ${BILLING_TOKEN}</code></pre>
+      <h4 class="guide-substep">Components (decorators)</h4>
+      <pre><code>from langstitch import (
+    graph, graph_node, skill, persona,
+    input_guardrail, output_guardrail, business_policy,
+    tool, worker_agent, configuration,
+    langstitch_graph_server, GraphBuilder, END,
+)
+
+@persona(role="assistant", tone="helpful, concise")
+def assistant() -> str:
+    return "You are a helpful LangStitch support assistant."
+
+@tool(tags=["billing"], roles=["agent"])
+def lookup_invoice(invoice_id: str) -> dict:
+    """Fetch an invoice by id."""
+    ...
+
+@input_guardrail(description="Reject empty/oversized input.", action="block")
+def non_empty(text: str) -> bool:
+    return bool(text and 0 < len(text) <= 8000)
+
+@business_policy(priority=100, description="Deny refunds over policy limit.")
+def refund_limit(context: dict) -> dict:
+    amount = context.get("amount", 0)
+    return {"decision": "deny" if amount > 1000 else "allow"}
+
+@graph_node(description="Answer the latest message.")
+def respond(state: dict) -> dict:
+    ...
+    return {"response": "...", "messages": [...]}
+
+@graph(name="main", entrypoint=True)
+def main_graph() -> GraphBuilder:
+    g = GraphBuilder("main")
+    g.add_node("respond", respond)
+    g.set_entry_point("respond")
+    g.add_edge("respond", END)
+    return g
+
+@langstitch_graph_server(name="my-agent", protocol="http", port=8000)
+class Server:
+    """Graph API server."""</code></pre>
+
+      <h3 id="guide-config" class="guide-step">4 · Configuration &amp; secrets</h3>
+      <p class="section-lead">
+        Two files drive an app, both resolved from the project root.
+        <code>load_config()</code> runs once at bootstrap and becomes the active in-memory store.
+      </p>
+      <ul class="doc-list">
+        <li><strong><code>application.yaml</code></strong> — declarative app configuration. Prefer a
+          precompiled <strong><code>application.json</code></strong> in production (built with
+          <code>langstitch compile</code>); when present it loads directly with no YAML parse and takes
+          precedence.</li>
+        <li><strong><code>env.yaml</code></strong> — runtime environment variables, flattened to
+          <code>UPPER_SNAKE</code> and exported into <code>os.environ</code> at startup
+          (<code>openai.api_key</code> → <code>OPENAI_API_KEY</code>). Existing env vars win unless
+          <code>override=True</code>, so real deployments can set secrets via the platform and keep
+          <code>env.yaml</code> for local dev.</li>
+      </ul>
+      <h4 class="guide-substep">Reading config (JSON-path)</h4>
+      <pre><code>from langstitch import get_config
+
+get_config()                              # whole AppConfig (cached)
+get_config("server.port")                 # -> 8000  (scalar)
+get_config("model")                       # -> {...} (nested object)
+get_config("external_services.billing.auth.type")
+get_config("items[0].name")               # array index, negative allowed
+get_config("missing.key", default="x")    # safe default
+get_config("server", as_json=True)        # -> '{"host": ...}'</code></pre>
+      <h4 class="guide-substep">Typed config with @configuration</h4>
+      <pre><code>from dataclasses import dataclass
+from langstitch import configuration
+
+@configuration(section="server")
+@dataclass
+class ServerConfig:
+    host: str = "0.0.0.0"
+    port: int = 8000
+
+# after load_config(): values are bound + type-coerced
+cfg = ServerConfig._langstitch_instance   # ServerConfig(host="0.0.0.0", port=8000)</code></pre>
+      <div class="callout callout-warn">
+        <strong>Secrets discipline.</strong> Never commit real secrets. Keep <code>env.yaml</code> out
+        of version control (the scaffold gitignores it) and inject secrets through your platform/orchestrator
+        in production. Use <code>${ENV_VAR}</code> interpolation in <code>application.yaml</code> so the file
+        references secrets without containing them.
+      </div>
+
+      <h3 id="guide-providers" class="guide-step">5 · Models &amp; HTTP services</h3>
+      <h4 class="guide-substep">LLM provider</h4>
+      <pre><code>from langstitch import get_llm_provider
+
+# reads model.provider / model.name / model.temperature from config;
+# API key comes from the environment (populated by env.yaml)
+llm = get_llm_provider()                       # or get_llm_provider("gpt-4o", temperature=0)
+result = llm.invoke([{"role": "user", "content": "hi"}])</code></pre>
+      <h4 class="guide-substep">External services with auth + path/query params</h4>
+      <pre><code>from langstitch import get_http_client, set_request_headers
+
+# In server middleware, record inbound headers once per request:
+set_request_headers(request.headers)            # enables header propagation
+
+api = get_http_client("billing")                # base_url, timeout, auth, propagated headers wired in
+resp = api.get("/invoices/{id}", path_params={"id": 42},
+               params={"expand": "lines"}, headers={"X-Trace": "1"})
+api.post("/invoices", json={"amount": 10})
+api.put("/invoices/{id}", path_params={"id": 42}, json={...})
+api.patch("/invoices/{id}", path_params={"id": 42}, json={...})
+api.delete("/invoices/{id}", path_params={"id": 42})
+# also: head/options, api.request("GET", ...), set_header/add_headers/remove_header
+# async: get_async_http_client("billing") -> await api.get(...); raw=True for bare httpx</code></pre>
+      <p class="section-lead">Supported <code>auth.type</code> values:</p>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>type</th><th>options</th><th>effect</th></tr></thead>
+          <tbody>
+            <tr><td><code>none</code></td><td>—</td><td>no credentials</td></tr>
+            <tr><td><code>basic</code></td><td>username, password</td><td><code>Authorization: Basic &lt;b64&gt;</code></td></tr>
+            <tr><td><code>bearer</code></td><td>token</td><td><code>Authorization: Bearer &lt;token&gt;</code></td></tr>
+            <tr><td><code>api_key</code></td><td>name (def. X-API-Key), value, in (header|query)</td><td>header or query param</td></tr>
+            <tr><td><code>oauth2</code></td><td>token_url, client_id, client_secret, scope?, audience?</td><td>client-credentials; token cached + refreshed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="guide-context" class="guide-step">6 · Context &amp; registries</h3>
+      <p class="section-lead">
+        <strong>Hierarchical context</strong> keeps parent state clean: every LLM/sub-agent call runs in
+        an isolated child scope and only its final output merges back. Tools are
+        <strong>lazily materialized</strong> — a node pulls only the subset it needs.
+      </p>
+      <pre><code>from langstitch import Context, run_llm, run_worker_agent
+
+ctx = Context(data={"question": q}, messages=[{"role": "user", "content": q}])
+
+def call_model(llm_ctx):
+    # llm_ctx.system = resolved persona; llm_ctx.tools = materialized just for this call
+    return get_llm_provider().invoke(
+        [{"role": "system", "content": llm_ctx.system}] + llm_ctx.messages,
+    )
+
+answer = run_llm(ctx, call_model, persona="assistant",
+                 tool_tags=["billing"], key="answer", as_message="assistant")
+# ctx.data["answer"] set; the child's tool traffic + scratch were discarded.
+
+# Delegate to a sub-agent (runs with only its allowed tools, isolated context):
+findings = run_worker_agent(ctx, "researcher", carry=["question"])</code></pre>
+      <p class="section-lead">
+        <strong>Dynamic registries</strong> are refreshable and lazy — they index decorator specs plus
+        optional external loaders, auto-detect changes, and never eagerly instantiate everything.
+        The graph server exposes them for introspection:
+      </p>
+      <pre><code>Server.get_all_tools(); Server.get_all_worker_agents()
+Server.get_input_guardrails(); Server.get_output_guardrails()
+Server.get_skills(); Server.get_policies(); Server.get_personas()
+Server.get_tool("lookup_invoice"); Server.refresh_registries()
+# module-level equivalents: langstitch.get_all_tools(), ... , refresh_registries()</code></pre>
+
+      <h3 id="guide-production" class="guide-step">7 · Production hardening</h3>
+      <h4 class="guide-substep">Observability &amp; logging</h4>
+      <pre><code>from langstitch import get_logger
+log = get_logger(__name__)        # level from LOG_LEVEL env (default INFO)
+log.info("handled request", extra={"intent": intent})</code></pre>
+      <ul class="doc-list">
+        <li>Set <code>LOG_LEVEL</code> via <code>env.yaml</code> / platform env. Use structured fields for
+          machine-readable logs.</li>
+        <li>Propagate a correlation id: set <code>X-Request-ID</code> on inbound requests, register it with
+          <code>set_request_headers()</code>, and list it in each service's <code>propagate_headers</code>
+          so it flows downstream.</li>
+        <li>Wire LangSmith/Langfuse at the LLM layer (provider env vars) for traces and evals.</li>
+      </ul>
+      <h4 class="guide-substep">Guardrails, policies &amp; error handling</h4>
+      <ul class="doc-list">
+        <li>Run <code>get_input_guardrails()</code> before the LLM and <code>get_output_guardrails()</code>
+          after; honor each spec's <code>action</code> (<code>block</code>/<code>warn</code>/<code>log</code>)
+          and <code>severity</code>.</li>
+        <li>Evaluate <code>get_policies()</code> in <code>priority</code> order (highest first) and
+          short-circuit on a non-<code>allow</code> decision.</li>
+        <li>Treat missing extras as configuration errors: helpers raise <code>RuntimeError</code> with an
+          install hint — fail fast at startup rather than per request. Wrap LLM/tool calls with retries and
+          timeouts; <code>get_http_client</code> honors the configured <code>timeout</code>.</li>
+      </ul>
+      <h4 class="guide-substep">Security checklist</h4>
+      <ul class="doc-list">
+        <li>Secrets only via environment / <code>${ENV_VAR}</code>; <code>env.yaml</code> gitignored.</li>
+        <li>Gate tools/agents with <code>roles=[...]</code> and select by role at context-build time.</li>
+        <li>Don't blindly propagate <code>authorization</code> to third-party hosts — only list headers a
+          service should receive in its <code>propagate_headers</code>.</li>
+        <li>Pin dependency ranges; run <code>pip audit</code> in CI; rebuild images on base updates.</li>
+      </ul>
+      <h4 class="guide-substep">Testing</h4>
+      <pre><code>from langstitch import get_registry, reset_registry, Context, run_worker_agent
+
+def test_components_register():
+    import app                       # triggers registration
+    reg = get_registry()
+    assert "respond" in reg.nodes and reg.server is not None
+
+def test_context_isolation():
+    parent = Context(data={"topic": "x"})
+    out = run_worker_agent(parent, "researcher", carry=["topic"])
+    assert "researcher" in parent.data and "messages" not in parent.data  # no leakage</code></pre>
+      <p class="section-lead">
+        Use <code>reset_registry()</code> / <code>reset_config_cache()</code> between tests for isolation.
+        Mock external HTTP with httpx <code>MockTransport</code>; the SDK's own suite runs on Python
+        3.10–3.13 in CI.
+      </p>
+
+      <h3 id="guide-deploy" class="guide-step">8 · Deployment &amp; CI</h3>
+      <h4 class="guide-substep">Container image</h4>
+      <pre><code>FROM python:3.12-slim
+WORKDIR /app
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir ".[server,graph,llm,http]"
+COPY . .
+RUN langstitch compile           # precompile application.json for fast startup
+EXPOSE 8000
+CMD ["langstitch", "run", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+      <p class="section-lead">
+        Provide secrets at runtime (<code>-e OPENAI_API_KEY=...</code> / orchestrator secrets), not in the
+        image. The server exposes <code>/health</code> (liveness), <code>/info</code> (registered
+        components), and <code>/invoke</code>.
+      </p>
+      <h4 class="guide-substep">CI &amp; release</h4>
+      <ul class="doc-list">
+        <li>Test matrix across Python 3.10–3.13; <code>python -m build</code> + <code>twine check</code>
+          validate the distribution.</li>
+        <li>Publish via PyPI <strong>Trusted Publishing</strong> (OIDC) on a version tag — no token secret.
+          Consumers then add <code>langstitch&gt;=0.1.0</code> to <code>pyproject.toml</code>.</li>
+      </ul>
+
+      <h3 id="guide-reference" class="guide-step">9 · API reference</h3>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Symbol</th><th>Kind</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>@graph_node</code></td><td>decorator</td><td>node handler <code>state → dict</code></td></tr>
+            <tr><td><code>@graph</code></td><td>decorator</td><td>graph builder (<code>entrypoint=</code>, <code>parent=</code>)</td></tr>
+            <tr><td><code>@skill</code></td><td>decorator</td><td>reusable capability</td></tr>
+            <tr><td><code>@input_guardrail</code> / <code>@output_guardrail</code></td><td>decorator</td><td>inbound/outbound validation</td></tr>
+            <tr><td><code>@business_policy</code></td><td>decorator</td><td>priority-ordered org rule</td></tr>
+            <tr><td><code>@persona</code></td><td>decorator</td><td>identity / system prompt</td></tr>
+            <tr><td><code>@configuration</code></td><td>decorator</td><td>bind a config section to a dataclass</td></tr>
+            <tr><td><code>@tool</code> / <code>@worker_agent</code></td><td>decorator</td><td>LLM tool / delegatable sub-agent</td></tr>
+            <tr><td><code>@langstitch_graph_server</code></td><td>decorator</td><td>graph API server (<code>protocol</code>, <code>port</code>, <code>name</code>, <code>properties</code>)</td></tr>
+            <tr><td><code>@langstitch_mcp_server</code> + <code>@mcp_tool/resource/prompt</code></td><td>decorator</td><td>MCP server &amp; primitives</td></tr>
+            <tr><td><code>GraphBuilder</code>, <code>START</code>, <code>END</code></td><td>class/const</td><td>declarative wiring → LangGraph</td></tr>
+            <tr><td><code>LangStitchApp</code></td><td>class</td><td>runtime: <code>bootstrap()</code>, <code>build_graph()</code>, <code>invoke()</code>, <code>info()</code></td></tr>
+            <tr><td><code>load_config</code>, <code>get_config</code>, <code>compile_config</code>, <code>query_json</code></td><td>fn</td><td>config load + JSON-path access</td></tr>
+            <tr><td><code>get_llm_provider</code>, <code>get_http_client</code>, <code>get_async_http_client</code></td><td>fn</td><td>configured clients</td></tr>
+            <tr><td><code>get_logger</code>, <code>get_env</code>, <code>get_secret</code></td><td>fn</td><td>logging &amp; env access</td></tr>
+            <tr><td><code>set_request_headers</code>, <code>load_service_config</code>, <code>ServiceClient</code></td><td>fn/class</td><td>external services + header propagation</td></tr>
+            <tr><td><code>Context</code>, <code>ContextScope</code>, <code>ContextBuilder</code>, <code>run_llm</code>, <code>run_worker_agent</code></td><td>class/fn</td><td>hierarchical context</td></tr>
+            <tr><td><code>get_all_tools</code>, <code>get_all_worker_agents</code>, <code>refresh_registries</code>, …</td><td>fn</td><td>dynamic registries</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="section-lead">
+        Exhaustive signatures and options live in the
+        <a href="https://github.com/vijayptiwari/LangStitch/blob/main/sdk/README.md">SDK README</a>
+        and source under <code>sdk/src/langstitch/</code>.
+      </p>
+
+      <h3 id="guide-troubleshooting" class="guide-step">10 · Troubleshooting</h3>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Symptom</th><th>Cause &amp; fix</th></tr></thead>
+          <tbody>
+            <tr><td><code>RuntimeError: … requires &lt;pkg&gt;</code></td><td>missing extra — <code>pip install "langstitch[server|graph|llm|http]"</code></td></tr>
+            <tr><td><code>No graph registered</code></td><td>mark the root graph <code>@graph(entrypoint=True)</code> and ensure its module is imported</td></tr>
+            <tr><td>Component missing from <code>info</code></td><td>its module isn't imported — add it to <code>app/__init__.py</code></td></tr>
+            <tr><td><code>external service … not configured</code></td><td>add it under <code>external_services</code> in config (or pass the right name)</td></tr>
+            <tr><td>Secret is empty downstream</td><td>set the env var; check <code>${VAR}</code> spelling and <code>env.yaml</code> flattening</td></tr>
+            <tr><td>Config edits not picked up</td><td>a precompiled <code>application.json</code> wins — re-run <code>langstitch compile</code></td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 

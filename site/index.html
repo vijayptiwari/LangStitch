@@ -17,6 +17,7 @@
     <div class="nav-links">
       <a href="#start">Get started</a>
       <a href="#features">Features</a>
+      <a href="#sdk">SDK</a>
       <a href="#compare">Compare</a>
       <a href="docs/">Docs</a>
       <a class="nav-cta" href="app/">Open IDE</a>
@@ -156,6 +157,130 @@ npm start</code></pre>
       </div>
     </section>
   </main>
+
+  <section id="sdk" class="sdk-section">
+    <div class="container-wide">
+      <div class="sdk-intro">
+        <p class="eyebrow">Multi-language SDK</p>
+        <h2>Bring LangStitch to your stack</h2>
+        <p class="sdk-lede">
+          The LangStitch SDK lets you build the same graphs, skills, guardrails, and policies in code —
+          with decorators, YAML/JSON config, and a CLI scaffold. Python ships today; Spring, Rust, and
+          Go are on the way.
+        </p>
+      </div>
+
+      <div class="sdk-langs">
+        <article class="sdk-lang sdk-lang--available">
+          <div class="sdk-lang__head">
+            <span class="sdk-lang__name">Python</span>
+            <span class="sdk-badge sdk-badge--live">Available</span>
+          </div>
+          <p>Decorators, config, providers, MCP, and a scaffolding CLI. Python 3.10+.</p>
+        </article>
+        <article class="sdk-lang">
+          <div class="sdk-lang__head">
+            <span class="sdk-lang__name">Spring (Java)</span>
+            <span class="sdk-badge">Coming soon</span>
+          </div>
+          <p>Spring Boot starters and annotations for LangStitch graphs and gateways.</p>
+        </article>
+        <article class="sdk-lang">
+          <div class="sdk-lang__head">
+            <span class="sdk-lang__name">Rust</span>
+            <span class="sdk-badge">Coming soon</span>
+          </div>
+          <p>A typed, async-first crate for high-performance agent runtimes.</p>
+        </article>
+        <article class="sdk-lang">
+          <div class="sdk-lang__head">
+            <span class="sdk-lang__name">Go</span>
+            <span class="sdk-badge">Coming soon</span>
+          </div>
+          <p>Idiomatic Go module for building and serving LangStitch graphs.</p>
+        </article>
+      </div>
+
+      <div class="sdk-detail">
+        <div class="sdk-detail__head">
+          <h3>Python SDK</h3>
+          <span class="sdk-badge sdk-badge--live">v0.1.0</span>
+        </div>
+        <p class="sdk-detail__lede">
+          Install the SDK, scaffold a project, and describe your agent with decorators. Configuration
+          comes from <code>application.yaml</code> (or a precompiled <code>application.json</code>) and
+          <code>env.yaml</code>.
+        </p>
+
+        <div class="sdk-grid">
+          <article class="sdk-card">
+            <h4>Install</h4>
+            <pre><code>pip install langstitch
+# with extras:
+pip install "langstitch[server,graph,llm,http]"</code></pre>
+            <p>Or pin it straight from Git before the PyPI release:</p>
+            <pre><code>langstitch @ git+https://github.com/vijayptiwari/LangStitch.git#subdirectory=sdk</code></pre>
+          </article>
+
+          <article class="sdk-card">
+            <h4>Scaffold a project</h4>
+            <pre><code>langstitch new my-agent
+cd my-agent
+pip install -e .
+python -m app        # bootstrap + print app info
+langstitch run       # start the API server</code></pre>
+            <p>Generates dedicated packages for graphs, nodes, skills, guardrails, policies, personas, tools, and agents.</p>
+          </article>
+
+          <article class="sdk-card sdk-card--wide">
+            <h4>Describe your agent with decorators</h4>
+            <pre><code>from langstitch import (
+    graph, graph_node, skill, persona,
+    input_guardrail, output_guardrail, business_policy,
+    tool, worker_agent, configuration,
+    langstitch_graph_server, langstitch_mcp_server,
+)
+
+@persona(role="assistant", tone="helpful, concise")
+def assistant() -> str:
+    return "You are a helpful LangStitch assistant."
+
+@tool(tags=["math"], roles=["user"])
+def add(a: float, b: float) -> float:
+    return a + b
+
+@graph_node(description="Answer the latest message.")
+def respond(state: dict) -> dict:
+    ...
+
+@langstitch_graph_server(name="my-agent", protocol="http", port=8000)
+class Server:
+    """Graph API server."""</code></pre>
+          </article>
+        </div>
+
+        <div class="sdk-features">
+          <span class="sdk-chip">@graph / @graph_node</span>
+          <span class="sdk-chip">@skill / @persona</span>
+          <span class="sdk-chip">@input_guardrail / @output_guardrail</span>
+          <span class="sdk-chip">@business_policy</span>
+          <span class="sdk-chip">@tool / @worker_agent</span>
+          <span class="sdk-chip">@configuration</span>
+          <span class="sdk-chip">@langstitch_graph_server</span>
+          <span class="sdk-chip">@langstitch_mcp_server</span>
+          <span class="sdk-chip">get_llm_provider()</span>
+          <span class="sdk-chip">get_http_client("service")</span>
+          <span class="sdk-chip">hierarchical context</span>
+          <span class="sdk-chip">dynamic tool / agent registries</span>
+        </div>
+
+        <div class="sdk-actions">
+          <a class="btn btn-primary" href="https://github.com/vijayptiwari/LangStitch/tree/main/sdk">SDK on GitHub</a>
+          <a class="btn btn-secondary" href="https://github.com/vijayptiwari/LangStitch/blob/main/sdk/README.md">Read the SDK README</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section id="compare" class="compare-section">
     <div class="container-wide">

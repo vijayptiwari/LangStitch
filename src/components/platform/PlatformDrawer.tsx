@@ -541,8 +541,13 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               {apiOnline === true && <span className="platform-badge ok">API online</span>}
             </p>
             {apiOnline === true && lastHealthSync && (
-              <p className="platform-health-sync" data-testid="platform-health-last-sync">
-                Platform Health · Last sync: {lastHealthSync}
+              <p
+                className="platform-health-sync"
+                data-testid="platform-health-last-sync"
+              >
+                <span data-testid="cycle-144-health-last-sync">
+                  Platform Health · Last sync: {lastHealthSync}
+                </span>
               </p>
             )}
           </div>
@@ -685,24 +690,26 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   {evalSectionExpanded && (
                   <>
                   <div className="platform-actions">
-                    <button
-                      className="btn-secondary-sm"
-                      type="button"
-                      data-testid="eval-preset-regression"
-                      disabled={busy}
-                      onClick={() =>
-                        patchEval({
-                          enabled: true,
-                          datasetName: EVAL_PRESET_REGRESSION.datasetName,
-                          datasetId: EVAL_PRESET_REGRESSION.datasetId,
-                          experimentPrefix: EVAL_PRESET_REGRESSION.experimentPrefix,
-                          maxConcurrency: EVAL_PRESET_REGRESSION.maxConcurrency,
-                          description: EVAL_PRESET_REGRESSION.description,
-                        })
-                      }
-                    >
-                      Apply regression preset
-                    </button>
+                    <span data-testid="cycle-149-regression-preset">
+                      <button
+                        className="btn-secondary-sm"
+                        type="button"
+                        data-testid="eval-preset-regression"
+                        disabled={busy}
+                        onClick={() =>
+                          patchEval({
+                            enabled: true,
+                            datasetName: EVAL_PRESET_REGRESSION.datasetName,
+                            datasetId: EVAL_PRESET_REGRESSION.datasetId,
+                            experimentPrefix: EVAL_PRESET_REGRESSION.experimentPrefix,
+                            maxConcurrency: EVAL_PRESET_REGRESSION.maxConcurrency,
+                            description: EVAL_PRESET_REGRESSION.description,
+                          })
+                        }
+                      >
+                        Apply regression preset
+                      </button>
+                    </span>
                   </div>
                   <Field label="Dataset name">
                     <input

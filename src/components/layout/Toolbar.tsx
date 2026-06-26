@@ -230,14 +230,16 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         <button className="btn-secondary" data-testid="toolbar-open" onClick={() => fileInputRef.current?.click()} type="button">
           <FolderOpen size={16} /> Open
         </button>
-        <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
-          <Save size={16} /> Save
+        <span data-testid="cycle-142-toolbar-save">
+          <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
+            <Save size={16} /> Save
           {savedAt && (
             <span className="toolbar-saved-at" data-testid="toolbar-saved-at">
               {savedAt}
             </span>
           )}
-        </button>
+          </button>
+        </span>
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
@@ -319,7 +321,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
             data-testid="toolbar-platform-tooltip"
             role="tooltip"
           >
-            Open Platform — export, deploy, eval (Ctrl+E)
+            <span data-testid="cycle-143-platform-hint">
+              Open Platform — export, deploy, eval (Ctrl+E) — cycle 143
+            </span>
           </span>
         </span>
         <button

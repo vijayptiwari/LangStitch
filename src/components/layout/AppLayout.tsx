@@ -78,8 +78,12 @@ export function AppLayout() {
 
   return (
     <div className="app" data-testid="langstitch-app">
-      <a className="skip-link" href="#graph-canvas-main" data-testid="skip-to-canvas">
-        Skip to canvas
+      <a
+        className="skip-link"
+        href="#graph-canvas-main"
+        data-testid="skip-to-canvas"
+      >
+        <span data-testid="cycle-150-skip-link">Skip to canvas</span>
       </a>
       <Toolbar onOpenPlatform={() => setPlatformOpen(true)} />
       <div className="workspace">

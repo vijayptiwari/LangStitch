@@ -294,7 +294,7 @@ export function GraphCanvas() {
             data-testid="canvas-context-delete"
             onClick={handleContextDelete}
           >
-            Delete node
+            <span data-testid="cycle-146-context-delete">Delete node</span>
           </button>
         </div>
       )}

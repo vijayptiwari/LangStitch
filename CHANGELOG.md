@@ -53,7 +53,7 @@ Example (Cycle 129):
 Example (Cycle 141):
 
 ```
-- **Batch 13 (Cycles 131–140):** toolbar redo cycle 131 tooltip, Deploy tab skeleton (cycle 132), guardrail empty-state hint, minimap selected highlight, langsmith.json eval-dataset, health node-count, eval pass-rate panel, shortcuts focus trap cycle 138, duplicate node shortcut docs, merge viewport on import (`e2e/cycles-batch-13.spec.ts`).
+- **Batch 14 (Cycles 141–150):** graphStore JSDoc (cycle 141), toolbar-save visibility E2E, Platform Ctrl+E hint (cycle 143), Platform Health last-sync (cycle 144), guardrail required validation (cycle 145), canvas context menu delete (cycle 146), Python eval-dataset comment header (cycle 147), API X-Request-ID (cycle 148), regression eval preset (cycle 149), skip-to-canvas link (cycle 150) (`e2e/cycles-batch-14.spec.ts`).
 ```
 
 ### Added (Batch 3)
@@ -68,3 +68,4 @@ Example (Cycle 141):
 - **Batch 11 (Cycles 111–120):** Export manifest eval-dataset, OpenAPI `/api/export` docs, eval session history (cap 113), aria-live eval finished, Alt+H platform toggle, viewport localStorage, README keyboard shortcuts, health metadata reload E2E, platform tab last-used persistence, Platform Git log copy (`e2e/cycles-batch-11.spec.ts`).
 - **Batch 12 (Cycles 121–130):** Guardrail delete confirm, edge label truncation tooltip (cycle 122), export dry-run eval-dataset preview, CORS preflight `/api/export`, eval dataset link in result summary, reduce-motion CSS, Ctrl+G toggle minimap, undo depth limit notice (cycle 128 testid), CHANGELOG cycle 129 template, save-and-reload E2E (`e2e/cycles-batch-12.spec.ts`).
 - **Batch 13 (Cycles 131–140):** Toolbar redo cycle 131 tooltip, Deploy tab loading skeleton (cycle 132), guardrail empty-state hint (cycle 133), minimap selected-node highlight (cycle 134), `langsmith.json` eval-dataset metadata, health API `node-count`, eval pass-rate in result panel, shortcuts modal focus trap (cycle 138), duplicate node shortcut docs (cycle 139), merge imported viewport on load (`e2e/cycles-batch-13.spec.ts`).
+- **Batch 14 (Cycles 141–150):** graphStore JSDoc (cycle 141), toolbar-save visibility E2E, Platform Ctrl+E hint (cycle 143), Platform Health last-sync (cycle 144), guardrail required validation (cycle 145), canvas context menu delete (cycle 146), Python eval-dataset comment header (cycle 147), API `X-Request-ID` (cycle 148), regression eval preset (cycle 149), skip-to-canvas link (cycle 150) (`e2e/cycles-batch-14.spec.ts`).
