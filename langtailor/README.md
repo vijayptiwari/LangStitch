@@ -25,11 +25,11 @@ Code owns dirty-state, undo, and save.
 
 | Phase | Deliverable | Status |
 |-------|-------------|--------|
-| 1 | Canvas as a VS Code extension (custom editor + webview + doc sync) | ✅ scaffolded |
-| 2 | LangTailor branding overlay on Code-OSS (product.json, icons, app ids) | ⏳ |
+| 1 | Canvas as a VS Code extension (custom editor + webview + doc sync) | ✅ done |
+| 2 | Branding overlay (`overlay/product.json`) + VSIX CI workflow | ✅ scaffolded |
 | 2 | CI build → Windows x64 + macOS x64/arm64 installers (.exe / .dmg) | ⏳ |
 | 3 | Code signing + notarization (Apple Developer ID, Windows cert) + auto-update | ⏳ |
-| 3 | Download page on langstitch.com + publish extension to Open VSX | ⏳ |
+| 3 | Download page at [langtailor.langstitch.com](https://langtailor.langstitch.com) | ✅ live |
 
 > Phases 2–3 build on GitHub Actions runners (windows-latest / macos-latest) and
 > require an Apple Developer ID and a Windows code-signing certificate for

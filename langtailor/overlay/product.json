@@ -1,0 +1,22 @@
+{
+  "nameShort": "LangTailor",
+  "nameLong": "LangTailor",
+  "applicationName": "langtailor",
+  "dataFolderName": ".langtailor",
+  "win32MutexName": "langtailor",
+  "win32DirName": "LangTailor",
+  "win32NameVersion": "LangTailor",
+  "win32RegValueName": "LangTailor",
+  "win32AppUserModelId": "LangStitch.LangTailor",
+  "win32ShellNameShort": "LangTailor",
+  "darwinBundleIdentifier": "com.langstitch.langtailor",
+  "linuxIconName": "langtailor",
+  "urlProtocol": "langtailor",
+  "licenseUrl": "https://github.com/LangStitch/LangStitch/blob/main/LICENSE",
+  "reportIssueUrl": "https://github.com/LangStitch/LangStitch/issues",
+  "documentationUrl": "https://langstitch.com/docs/",
+  "extensionsGallery": {
+    "serviceUrl": "https://open-vsx.org/vscode/gallery",
+    "itemUrl": "https://open-vsx.org/vscode/item"
+  }
+}

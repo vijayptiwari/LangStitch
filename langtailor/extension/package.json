@@ -33,11 +33,12 @@
     "build:webview": "vite build --config ../../vite.webview.config.ts",
     "compile": "tsc -p ./",
     "build": "npm run build:webview && npm run compile",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package --no-dependencies --out ../../dist-langtailor"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.0",
     "typescript": "~5.8.3"
   }
 }
