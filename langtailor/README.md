@@ -29,8 +29,8 @@ Code owns dirty-state, undo, and save.
 | 2 | Branding overlay (`overlay/product.json`) + VSIX CI workflow | ✅ done |
 | 2 | GitHub Release: VSIX + Windows + macOS portable zips (VSCodium bundle) | ✅ workflow |
 | 2 | Open VSX marketplace publish (`langstitch.langtailor-canvas`) | ✅ workflow (opt-in) |
-| 2 | Native macOS .dmg / signed Windows .exe installers | ⏳ |
-| 3 | Code signing + notarization (Apple Developer ID, Windows cert) + auto-update | ⏳ |
+| 2 | Native macOS `.dmg` + optional code signing (Phase 3 scaffold) | ✅ unsigned dmg |
+| 3 | Code signing + notarization when certs configured | ⏳ opt-in via `LANGTAILOR_SIGNING_ENABLED` |
 | 3 | Download page at [langtailor.langstitch.com](https://langtailor.langstitch.com) | ✅ live |
 
 > Phases 2–3 build on GitHub Actions runners (windows-latest / macos-latest) and
@@ -79,6 +79,12 @@ Gitpod / Eclipse Theia users:
    **Actions → Publish LangTailor to Open VSX**
 
 Install: `codium --install-extension langstitch.langtailor-canvas`
+
+Setup guide: [langtailor/docs/OPENVSX_SETUP.md](docs/OPENVSX_SETUP.md) · run `.\langtailor\scripts\setup-openvsx.ps1`
+
+### Code signing (production)
+
+See [langtailor/docs/SIGNING_SETUP.md](docs/SIGNING_SETUP.md). Set `LANGTAILOR_SIGNING_ENABLED=true` and platform certificate secrets when ready.
 
 ## Why VS Code / Code-OSS (not "Visual Studio")
 

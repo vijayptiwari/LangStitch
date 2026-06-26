@@ -10,11 +10,13 @@ ARCH="${1:?Usage: bundle-macos.sh arm64|x64}"
 case "$ARCH" in
   arm64)
     ASSET_PATTERN='^VSCodium-darwin-arm64-.+\.zip$'
-    OUT_NAME="LangTailor-darwin-arm64-portable.zip"
+    OUT_ZIP="LangTailor-darwin-arm64-portable.zip"
+    OUT_DMG="LangTailor-darwin-arm64.dmg"
     ;;
   x64)
     ASSET_PATTERN='^VSCodium-darwin-x64-.+\.zip$'
-    OUT_NAME="LangTailor-darwin-x64-portable.zip"
+    OUT_ZIP="LangTailor-darwin-x64-portable.zip"
+    OUT_DMG="LangTailor-darwin-x64.dmg"
     ;;
   *)
     echo "Unknown arch: $ARCH (expected arm64 or x64)" >&2
@@ -90,10 +92,15 @@ exec "$APP/Contents/MacOS/Electron" \
 LAUNCH
 chmod +x "$LAUNCHER"
 
-OUT_ZIP="$ROOT/$OUT_NAME"
-rm -f "$OUT_ZIP"
+OUT_ZIP_PATH="$ROOT/$OUT_ZIP"
+OUT_DMG_PATH="$ROOT/$OUT_DMG"
+rm -f "$OUT_ZIP_PATH" "$OUT_DMG_PATH"
 (
   cd "$BUNDLE"
-  zip -qr "$OUT_ZIP" VSCodium.app extensions user-data LangTailor.command
+  zip -qr "$OUT_ZIP_PATH" VSCodium.app extensions user-data LangTailor.command
 )
-echo "Created $OUT_ZIP ($(wc -c < "$OUT_ZIP") bytes)"
+echo "Created $OUT_ZIP_PATH ($(wc -c < "$OUT_ZIP_PATH") bytes)"
+
+echo "Creating DMG ..."
+hdiutil create -volname "LangTailor" -srcfolder "$BUNDLE" -ov -format UDZO "$OUT_DMG_PATH"
+echo "Created $OUT_DMG_PATH ($(wc -c < "$OUT_DMG_PATH") bytes)"

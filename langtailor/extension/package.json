@@ -2,9 +2,18 @@
   "name": "langtailor-canvas",
   "displayName": "LangTailor Canvas",
   "description": "Visual LangGraph canvas — design agent workflows and export Python, built into LangTailor.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "langstitch",
   "license": "MIT",
+  "icon": "icon.png",
+  "homepage": "https://langtailor.langstitch.com",
+  "bugs": {
+    "url": "https://github.com/vijayptiwari/LangStitch/issues"
+  },
+  "galleryBanner": {
+    "color": "#06080f",
+    "theme": "dark"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/vijayptiwari/LangStitch.git"

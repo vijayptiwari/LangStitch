@@ -1,143 +1,181 @@
-name: LangTailor Release
-
-on:
-  push:
-    tags:
-      - 'langtailor-v*'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Semver without v prefix (e.g. 0.1.1)'
-        required: true
-        default: '0.1.1'
-
-permissions:
-  contents: write
-
-jobs:
-  build-vsix:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Build VSIX
-        run: |
-          npm ci
-          npm run build:webview
-          cd langtailor/extension
-          npm install
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
-          fi
-          npm run compile
-          mkdir -p ../../dist-langtailor
-          npx @vscode/vsce package --no-dependencies --out ../../dist-langtailor
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: langtailor-vsix
-          path: dist-langtailor/*.vsix
-
-  bundle-windows:
-    needs: build-vsix
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: langtailor-vsix
-          path: dist-langtailor
-
-      - name: Bundle portable Windows IDE
-        shell: pwsh
-        run: ./langtailor/scripts/bundle-windows.ps1
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: langtailor-windows-portable
-          path: LangTailor-win-x64-portable.zip
-
-  bundle-macos:
-    needs: build-vsix
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: arm64
-          - arch: x64
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: langtailor-vsix
-          path: dist-langtailor
-
-      - name: Bundle portable macOS IDE (${{ matrix.arch }})
-        run: chmod +x langtailor/scripts/bundle-macos.sh && ./langtailor/scripts/bundle-macos.sh "${{ matrix.arch }}"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: langtailor-macos-${{ matrix.arch }}
-          path: LangTailor-darwin-${{ matrix.arch }}-portable.zip
-
-  publish:
-    needs: [build-vsix, bundle-windows, bundle-macos]
-    if: always() && needs.build-vsix.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: langtailor-vsix
-          path: dist-langtailor
-
-      - uses: actions/download-artifact@v4
-        if: needs.bundle-windows.result == 'success'
-        continue-on-error: true
-        with:
-          name: langtailor-windows-portable
-          path: dist-release
-
-      - uses: actions/download-artifact@v4
-        if: needs.bundle-macos.result == 'success'
-        continue-on-error: true
-        with:
-          name: langtailor-macos-arm64
-          path: dist-release
-
-      - uses: actions/download-artifact@v4
-        if: needs.bundle-macos.result == 'success'
-        continue-on-error: true
-        with:
-          name: langtailor-macos-x64
-          path: dist-release
-
-      - name: Resolve release tag
-        id: tag
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "tag=langtailor-v${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: LangTailor ${{ steps.tag.outputs.tag }}
-          generate_release_notes: true
-          files: |
-            dist-langtailor/*.vsix
-            dist-release/*
-          fail_on_unmatched_files: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+name: LangTailor Release
+
+on:
+  push:
+    tags:
+      - 'langtailor-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Semver without v prefix (e.g. 0.1.2)'
+        required: true
+        default: '0.1.2'
+
+permissions:
+  contents: write
+
+jobs:
+  build-vsix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build VSIX
+        run: |
+          npm ci
+          npm run build:webview
+          cd langtailor/extension
+          npm install
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
+          fi
+          npm run compile
+          mkdir -p ../../dist-langtailor
+          npx @vscode/vsce package --no-dependencies --out ../../dist-langtailor
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor/*.vsix
+
+  bundle-windows:
+    needs: build-vsix
+    runs-on: windows-latest
+    env:
+      LANGTAILOR_SIGNING_ENABLED: ${{ vars.LANGTAILOR_SIGNING_ENABLED }}
+      WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor
+
+      - name: Bundle portable Windows IDE
+        shell: pwsh
+        run: ./langtailor/scripts/bundle-windows.ps1
+
+      - name: Sign Windows bundle (optional)
+        if: vars.LANGTAILOR_SIGNING_ENABLED == 'true'
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $zip = Get-ChildItem LangTailor-win-x64-portable.zip
+          $dir = Join-Path $env:RUNNER_TEMP "win-bundle"
+          if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
+          Expand-Archive $zip.FullName -DestinationPath $dir
+          if (Test-Path (Join-Path $dir "bin\codium.cmd")) {
+            $bundleRoot = $dir
+          } else {
+            $bundleRoot = (Get-ChildItem $dir -Directory | Select-Object -First 1).FullName
+          }
+          ./langtailor/scripts/sign-windows.ps1 -BundleDir $bundleRoot
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: langtailor-windows-portable
+          path: |
+            LangTailor-win-x64-portable.zip
+            LangTailor-win-x64-portable-signed.zip
+
+  bundle-macos:
+    needs: build-vsix
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+          - arch: x64
+    runs-on: macos-14
+    env:
+      LANGTAILOR_SIGNING_ENABLED: ${{ vars.LANGTAILOR_SIGNING_ENABLED }}
+      APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor
+
+      - name: Bundle portable macOS IDE (${{ matrix.arch }})
+        run: chmod +x langtailor/scripts/bundle-macos.sh && ./langtailor/scripts/bundle-macos.sh "${{ matrix.arch }}"
+
+      - name: Sign macOS DMG (optional)
+        if: vars.LANGTAILOR_SIGNING_ENABLED == 'true'
+        continue-on-error: true
+        run: |
+          chmod +x langtailor/scripts/sign-macos.sh
+          unzip -q "LangTailor-darwin-${{ matrix.arch }}-portable.zip" -d "$RUNNER_TEMP/bundle"
+          ./langtailor/scripts/sign-macos.sh "${{ matrix.arch }}" "$RUNNER_TEMP/bundle"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: langtailor-macos-${{ matrix.arch }}
+          path: |
+            LangTailor-darwin-${{ matrix.arch }}-portable.zip
+            LangTailor-darwin-${{ matrix.arch }}.dmg
+
+  publish:
+    needs: [build-vsix, bundle-windows, bundle-macos]
+    if: always() && needs.build-vsix.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor
+
+      - uses: actions/download-artifact@v4
+        if: needs.bundle-windows.result == 'success'
+        continue-on-error: true
+        with:
+          name: langtailor-windows-portable
+          path: dist-release
+
+      - uses: actions/download-artifact@v4
+        if: needs.bundle-macos.result == 'success'
+        continue-on-error: true
+        with:
+          name: langtailor-macos-arm64
+          path: dist-release
+
+      - uses: actions/download-artifact@v4
+        if: needs.bundle-macos.result == 'success'
+        continue-on-error: true
+        with:
+          name: langtailor-macos-x64
+          path: dist-release
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=langtailor-v${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: LangTailor ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            dist-langtailor/*.vsix
+            dist-release/*
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
