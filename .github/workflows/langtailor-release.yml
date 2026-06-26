@@ -62,7 +62,7 @@ jobs:
 
   publish:
     needs: [build-vsix, bundle-windows]
-    if: always() && needs.build-vsix.result == 'success'
+    if: always() && needs.build-vsix.result == 'success' && (needs.bundle-windows.result == 'success' || needs.bundle-windows.result == 'failure')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

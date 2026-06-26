@@ -40,6 +40,6 @@ if ($LASTEXITCODE -ne 0) { throw "codium --install-extension failed with exit $L
 
 $outZip = Join-Path $env:GITHUB_WORKSPACE "LangTailor-win-x64-portable.zip"
 if (Test-Path $outZip) { Remove-Item -Force $outZip }
-Compress-Archive -Path $vscodiumRoot.FullName -DestinationPath $outZip -CompressionLevel Optimal
+Compress-Archive -Path $vscodiumRoot -DestinationPath $outZip -CompressionLevel Optimal
 
 Write-Host "Created $outZip ($((Get-Item $outZip).Length) bytes)"
