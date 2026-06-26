@@ -1,0 +1,96 @@
+name: LangTailor Release
+
+on:
+  push:
+    tags:
+      - 'langtailor-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Semver without v prefix (e.g. 0.1.0)'
+        required: true
+        default: '0.1.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build-vsix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build VSIX
+        run: |
+          npm ci
+          npm run build:webview
+          cd langtailor/extension
+          npm install
+          npm run compile
+          mkdir -p ../../dist-langtailor
+          npx @vscode/vsce package --no-dependencies --out ../../dist-langtailor
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor/*.vsix
+
+  bundle-windows:
+    needs: build-vsix
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor
+
+      - name: Bundle portable Windows IDE
+        shell: pwsh
+        run: ./langtailor/scripts/bundle-windows.ps1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: langtailor-windows-portable
+          path: LangTailor-win-x64-portable.zip
+
+  publish:
+    needs: [build-vsix, bundle-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-vsix
+          path: dist-langtailor
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-windows-portable
+          path: dist-release
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=langtailor-v${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: LangTailor ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            dist-langtailor/*.vsix
+            dist-release/LangTailor-win-x64-portable.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

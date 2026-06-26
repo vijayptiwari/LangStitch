@@ -26,8 +26,9 @@ Code owns dirty-state, undo, and save.
 | Phase | Deliverable | Status |
 |-------|-------------|--------|
 | 1 | Canvas as a VS Code extension (custom editor + webview + doc sync) | ✅ done |
-| 2 | Branding overlay (`overlay/product.json`) + VSIX CI workflow | ✅ scaffolded |
-| 2 | CI build → Windows x64 + macOS x64/arm64 installers (.exe / .dmg) | ⏳ |
+| 2 | Branding overlay (`overlay/product.json`) + VSIX CI workflow | ✅ done |
+| 2 | GitHub Release: VSIX + Windows portable zip (VSCodium bundle) | ✅ workflow |
+| 2 | Native macOS .dmg / signed Windows .exe installers | ⏳ |
 | 3 | Code signing + notarization (Apple Developer ID, Windows cert) + auto-update | ⏳ |
 | 3 | Download page at [langtailor.langstitch.com](https://langtailor.langstitch.com) | ✅ live |
 
@@ -50,6 +51,19 @@ npm run build        # builds webview + compiles extension
 ```
 
 Open or create a `*.langstitch.json` file to launch the canvas editor.
+
+## Publish a release
+
+```bash
+# Tag push (creates GitHub Release with VSIX + Windows portable zip)
+git tag langtailor-v0.1.0
+git push origin langtailor-v0.1.0
+
+# Or run manually: Actions → LangTailor Release → Run workflow
+```
+
+Downloads appear at [langtailor.langstitch.com](https://langtailor.langstitch.com) and
+[GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases).
 
 ## Why VS Code / Code-OSS (not "Visual Studio")
 
