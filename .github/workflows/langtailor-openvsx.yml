@@ -1,0 +1,49 @@
+name: Publish LangTailor to Open VSX
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Extension semver to build and publish (e.g. 0.1.1)'
+        required: true
+        default: '0.1.1'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: >-
+      vars.OPENVSX_PUBLISH_ENABLED == 'true' && (
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.release.tag_name, 'langtailor-v'))
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build VSIX
+        run: |
+          npm ci
+          npm run build:webview
+          cd langtailor/extension
+          npm install
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
+          fi
+          npm run compile
+          mkdir -p ../../dist-langtailor
+          npx @vscode/vsce package --no-dependencies --out ../../dist-langtailor
+
+      - name: Publish to Open VSX
+        run: npx ovsx publish dist-langtailor/*.vsix -p "$OVSX_PAT"
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

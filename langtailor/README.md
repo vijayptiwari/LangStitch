@@ -27,7 +27,8 @@ Code owns dirty-state, undo, and save.
 |-------|-------------|--------|
 | 1 | Canvas as a VS Code extension (custom editor + webview + doc sync) | ✅ done |
 | 2 | Branding overlay (`overlay/product.json`) + VSIX CI workflow | ✅ done |
-| 2 | GitHub Release: VSIX + Windows portable zip (VSCodium bundle) | ✅ workflow |
+| 2 | GitHub Release: VSIX + Windows + macOS portable zips (VSCodium bundle) | ✅ workflow |
+| 2 | Open VSX marketplace publish (`langstitch.langtailor-canvas`) | ✅ workflow (opt-in) |
 | 2 | Native macOS .dmg / signed Windows .exe installers | ⏳ |
 | 3 | Code signing + notarization (Apple Developer ID, Windows cert) + auto-update | ⏳ |
 | 3 | Download page at [langtailor.langstitch.com](https://langtailor.langstitch.com) | ✅ live |
@@ -55,15 +56,29 @@ Open or create a `*.langstitch.json` file to launch the canvas editor.
 ## Publish a release
 
 ```bash
-# Tag push (creates GitHub Release with VSIX + Windows portable zip)
-git tag langtailor-v0.1.0
-git push origin langtailor-v0.1.0
+# Tag push (creates GitHub Release with VSIX + platform portable zips)
+git tag langtailor-v0.1.1
+git push origin langtailor-v0.1.1
 
 # Or run manually: Actions → LangTailor Release → Run workflow
 ```
 
 Downloads appear at [langtailor.langstitch.com](https://langtailor.langstitch.com) and
 [GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases).
+
+### Open VSX (extension marketplace)
+
+The canvas extension can be published to [Open VSX](https://open-vsx.org) for VSCodium /
+Gitpod / Eclipse Theia users:
+
+1. Create a publisher at [open-vsx.org](https://open-vsx.org) named `langstitch`
+2. Generate a Personal Access Token
+3. Add repo secret `OVSX_PAT`
+4. Set repository variable `OPENVSX_PUBLISH_ENABLED` = `true`
+5. Publish runs automatically on `langtailor-v*` GitHub Releases, or via
+   **Actions → Publish LangTailor to Open VSX**
+
+Install: `codium --install-extension langstitch.langtailor-canvas`
 
 ## Why VS Code / Code-OSS (not "Visual Studio")
 
