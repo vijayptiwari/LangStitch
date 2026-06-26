@@ -113,8 +113,18 @@
 | 118 | Health metadata reload E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 119 | Platform tab last-used persist | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 120 | Platform Git output copy | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 121 | Guardrail delete confirm | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 122 | Edge label truncation tooltip | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 123 | Export dry-run eval-dataset | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 124 | CORS preflight /api/export | APPROVED | N/A | PASSED | 92 | 1 | yes | COMPLETE |
+| 125 | Eval dataset link in summary | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 126 | Reduce-motion transitions | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 127 | Ctrl+G toggle minimap | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 128 | Undo stack depth notice | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 129 | CHANGELOG entry template | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 130 | Save-and-reload E2E flow | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 
-**Progress: 120 / 2500**
+**Progress: 130 / 2500**
 
 ## Batch log
 
@@ -132,9 +142,10 @@
 | 9 | 91–100 | 397af48 | green | COMPLETE |
 | 10 | 101–110 | 17e5d82 | green | COMPLETE |
 | 11 | 111–120 | a6fccf5 | green | COMPLETE |
+| 12 | 121–130 | TBD | green | COMPLETE |
 
 ## Summary
-- Completed: 120 / 2500 cycles
+- Completed: 130 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
@@ -147,4 +158,5 @@
 - Batch 9 avg UAT: 90.2
 - Batch 10 avg UAT: 90.0
 - Batch 11 avg UAT: 90.2
-- Next: Batch 12 (cycles 121–130)
+- Batch 12 avg UAT: 90.5
+- Next: Batch 13 (cycles 131–140)

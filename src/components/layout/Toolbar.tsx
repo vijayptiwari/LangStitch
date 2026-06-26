@@ -276,11 +276,13 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         )}
         {undoDepthLimitNotice && (
           <span data-testid="cycle-80-undo-depth-notice">
-            <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
-              Undo history limit reached — oldest changes dropped.
-              <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
-                ×
-              </button>
+            <span data-testid="cycle-128-undo-depth-notice">
+              <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
+                Undo history limit reached — oldest changes dropped.
+                <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
+                  ×
+                </button>
+              </span>
             </span>
           </span>
         )}
@@ -361,7 +363,10 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
               </li>
-              <li><kbd>Ctrl</kbd>+<kbd>M</kbd> — Toggle minimap</li>
+              <li data-testid="cycle-127-toggle-minimap">
+                <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap
+              </li>
+              <li><kbd>Ctrl</kbd>+<kbd>M</kbd> — Toggle minimap (legacy)</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>

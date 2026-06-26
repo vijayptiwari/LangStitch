@@ -142,7 +142,10 @@ export function GraphCanvas() {
         e.preventDefault()
         duplicateSelectedNode()
       }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key.toLowerCase() === 'm' || e.key.toLowerCase() === 'g')
+      ) {
         e.preventDefault()
         useGraphStore.getState().updateGraphSettings({
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),

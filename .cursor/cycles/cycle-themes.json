@@ -1,8 +1,8 @@
 {
   "version": 1,
   "totalCycles": 2500,
-  "completedCount": 120,
-  "pendingCount": 2380,
+  "completedCount": 130,
+  "pendingCount": 2370,
   "batchSize": 10,
   "autoApprove": true,
   "autoPush": true,
@@ -407,6 +407,56 @@
       "cycle": 120,
       "status": "COMPLETE",
       "note": "batch-11"
+    },
+    {
+      "cycle": 121,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 122,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 123,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 124,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 125,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 126,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 127,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 128,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 129,
+      "status": "COMPLETE",
+      "note": "batch-12"
+    },
+    {
+      "cycle": 130,
+      "status": "COMPLETE",
+      "note": "batch-12"
     }
   ],
   "cycles": [
@@ -1296,7 +1346,7 @@
       "feature": "Confirm dialog before delete in Guardrail",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 122,
@@ -1304,7 +1354,7 @@
       "feature": "Edge label truncation with tooltip cycle 122",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 123,
@@ -1312,7 +1362,7 @@
       "feature": "Export dry-run preview shows eval-dataset",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 124,
@@ -1320,7 +1370,7 @@
       "feature": "CORS preflight support for /api/export",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 125,
@@ -1328,7 +1378,7 @@
       "feature": "Link eval dataset name in result summary",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 126,
@@ -1336,7 +1386,7 @@
       "feature": "Reduce-motion respect for transitions",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 127,
@@ -1344,7 +1394,7 @@
       "feature": "Keyboard shortcut Ctrl+G for toggle minimap",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 128,
@@ -1352,7 +1402,7 @@
       "feature": "Undo stack depth limit with user notice",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 129,
@@ -1360,7 +1410,7 @@
       "feature": "CHANGELOG entry template for cycle 129",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 130,
@@ -1368,7 +1418,7 @@
       "feature": "E2E test: save-and-reload user flow",
       "mode": "compact",
       "size": "micro",
-      "status": "PENDING"
+      "status": "COMPLETE"
     },
     {
       "cycle": 131,

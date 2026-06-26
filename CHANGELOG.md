@@ -44,6 +44,12 @@ Example (Cycle 101):
 - **Batch 10 (Cycles 101–110):** eval dry-run badge, palette focus ring, shortcuts open eval tab (cycle-103 testid), dirty flag clears on import, help docs link, toolbar-save E2E, toolbar redo aria-label, collapsible Eval section, guardrail search filter, Ctrl+D node duplicate (`e2e/cycles-batch-10.spec.ts`).
 ```
 
+Example (Cycle 129):
+
+```
+- **Batch 12 (Cycles 121–130):** guardrail delete confirm, edge label truncation tooltip, export dry-run eval-dataset, CORS preflight /api/export, eval dataset link in summary, reduce-motion CSS, Ctrl+G toggle minimap, undo depth notice, CHANGELOG cycle 129 template, save-and-reload E2E (`e2e/cycles-batch-12.spec.ts`).
+```
+
 ### Added (Batch 3)
 - **Batch 3 (Cycles 31–40):** Shortcuts modal documents Ctrl+F focus search, undo stack depth limit notice (50), CHANGELOG cycle entry template, toolbar-save visibility E2E, disable redo on empty graph, Platform export retry on error, guardrail description character count, Ctrl+D node duplicate, export eval-dataset warning, rate-limit friendly `/api/export` 429 message (`e2e/cycles-batch-03.spec.ts`).
 - **Batch 4 (Cycles 41–50):** Eval dry-run badge when API key missing, high-contrast palette focus ring, Alt+G opens Eval tab, merge imported viewport on load, graphStore JSDoc, health metadata E2E after reload, toolbar platform aria-label, collapsible Platform Eval section, guardrail search filter, edge label truncation with tooltip (`e2e/cycles-batch-04.spec.ts`).
@@ -54,3 +60,4 @@ Example (Cycle 101):
 - **Batch 9 (Cycles 91–100):** Ctrl+F focus search shortcut with cycle-91 testid, merge imported viewport on load, graphStore JSDoc (cycle 93), platform-git-tab E2E with `platform-tab-git`, disable toolbar Platform on empty graph, export retry on API error, guardrail description character count, multi-select delete confirmation, export eval-dataset warning, rate-limit friendly `/api/export` 429 message (`e2e/cycles-batch-09.spec.ts`).
 - **Batch 10 (Cycles 101–110):** Eval dry-run badge, palette focus ring, shortcuts open eval tab (cycle-103 testid), dirty flag clears on import, help docs link, toolbar-save E2E, toolbar redo aria-label, collapsible Eval section, guardrail search filter, Ctrl+D node duplicate (`e2e/cycles-batch-10.spec.ts`).
 - **Batch 11 (Cycles 111–120):** Export manifest eval-dataset, OpenAPI `/api/export` docs, eval session history (cap 113), aria-live eval finished, Alt+H platform toggle, viewport localStorage, README keyboard shortcuts, health metadata reload E2E, platform tab last-used persistence, Platform Git log copy (`e2e/cycles-batch-11.spec.ts`).
+- **Batch 12 (Cycles 121–130):** Guardrail delete confirm, edge label truncation tooltip (cycle 122), export dry-run eval-dataset preview, CORS preflight `/api/export`, eval dataset link in result summary, reduce-motion CSS, Ctrl+G toggle minimap, undo depth limit notice (cycle 128 testid), CHANGELOG cycle 129 template, save-and-reload E2E (`e2e/cycles-batch-12.spec.ts`).
