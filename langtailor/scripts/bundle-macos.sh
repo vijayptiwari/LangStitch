@@ -32,7 +32,14 @@ if [[ -z "$VSIX" ]]; then
 fi
 echo "Using VSIX: $VSIX"
 
-RELEASE_JSON="$(curl -fsSL https://api.github.com/repos/VSCodium/vscodium/releases/latest)"
+CURL_API=(curl -fsSL -H "User-Agent: LangTailor-Release-CI" -H "Accept: application/vnd.github+json")
+CURL_DL=(curl -fsSL -L -H "User-Agent: LangTailor-Release-CI" -H "Accept: application/octet-stream")
+if [[ -n "${GH_TOKEN:-}" ]]; then
+  CURL_API+=(-H "Authorization: Bearer $GH_TOKEN")
+  CURL_DL+=(-H "Authorization: Bearer $GH_TOKEN")
+fi
+
+RELEASE_JSON="$("${CURL_API[@]}" https://api.github.com/repos/VSCodium/vscodium/releases/latest)"
 ASSET_URL="$(echo "$RELEASE_JSON" | python3 -c "
 import json, re, sys
 data = json.load(sys.stdin)
@@ -55,7 +62,7 @@ trap 'rm -rf "$WORK"' EXIT
 
 ZIP_PATH="$WORK/vscodium.zip"
 echo "Downloading VSCodium ($ARCH) ..."
-curl -fsSL "$ASSET_URL" -o "$ZIP_PATH"
+"${CURL_DL[@]}" "$ASSET_URL" -o "$ZIP_PATH"
 unzip -q "$ZIP_PATH" -d "$BUNDLE"
 
 APP="$(find "$BUNDLE" -maxdepth 2 -name 'VSCodium.app' -type d | head -1)"

@@ -95,6 +95,7 @@ jobs:
           - arch: x64
     runs-on: macos-14
     env:
+      GH_TOKEN: ${{ github.token }}
       LANGTAILOR_SIGNING_ENABLED: ${{ vars.LANGTAILOR_SIGNING_ENABLED }}
       APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
