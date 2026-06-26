@@ -5,6 +5,7 @@
   var SITE_NAME = "LangStitch";
   var TWITTER = "@vijayptiwari";
   var AUTHOR = "Vijay Prakash Tiwari";
+  var EMAIL = "connect@langstitch.com";
   var DEFAULT_IMAGE = SITE_ORIGIN + "/assets/photos/hero.png";
 
   var PAGES = {
@@ -25,9 +26,15 @@
             "Visual drag-and-drop IDE for LangGraph — skills, guardrails, RAG, and production Python export.",
           inLanguage: "en-US",
           publisher: {
-            "@type": "Person",
-            name: AUTHOR,
-            url: SITE_ORIGIN + "/"
+            "@type": "Organization",
+            name: SITE_NAME,
+            url: SITE_URL + "/",
+            email: EMAIL,
+            contactPoint: {
+              "@type": "ContactPoint",
+              email: EMAIL,
+              contactType: "customer support"
+            }
           },
           potentialAction: {
             "@type": "SearchAction",
@@ -47,7 +54,7 @@
           downloadUrl: "https://github.com/vijayptiwari/LangStitch",
           softwareVersion: "0.1.0",
           offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-          author: { "@type": "Person", name: AUTHOR },
+          author: { "@type": "Person", name: AUTHOR, email: EMAIL },
           license: "https://opensource.org/licenses/MIT"
         }
       ]
