@@ -142,7 +142,7 @@
 | 9 | 91–100 | 397af48 | green | COMPLETE |
 | 10 | 101–110 | 17e5d82 | green | COMPLETE |
 | 11 | 111–120 | a6fccf5 | green | COMPLETE |
-| 12 | 121–130 | TBD | green | COMPLETE |
+| 12 | 121–130 | 8b36135 | green | COMPLETE |
 
 ## Summary
 - Completed: 130 / 2500 cycles
