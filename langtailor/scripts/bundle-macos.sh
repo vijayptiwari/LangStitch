@@ -87,6 +87,11 @@ echo "Installing extension into portable bundle ..."
   --extensions-dir "$EXT_DIR" \
   --user-data-dir "$DATA_DIR"
 
+# codium --install-extension may leave Electron running and block hdiutil.
+pkill -f "VSCodium.app" 2>/dev/null || true
+pkill -f "Contents/MacOS/Electron" 2>/dev/null || true
+sleep 2
+
 LAUNCHER="$BUNDLE/LangTailor.command"
 cat > "$LAUNCHER" <<'LAUNCH'
 #!/bin/zsh
