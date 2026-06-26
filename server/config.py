@@ -13,6 +13,26 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 
+def _load_dotenv() -> None:
+    """Load secrets from a local ``.env`` file so a bare ``uvicorn`` launch works.
+
+    Secrets (DB password, session secret, OAuth/SMTP keys) live in a git-ignored
+    ``.env`` at the repo root and are read into the process environment here.
+    Real environment variables always win, so Docker/systemd/CI overrides are not
+    clobbered. Missing ``.env`` or missing ``python-dotenv`` is a silent no-op.
+    """
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if env_path.is_file():
+        load_dotenv(env_path, override=False)
+
+
+_load_dotenv()
+
+
 def _flag(name: str, default: bool = False) -> bool:
     raw = os.environ.get(name)
     if raw is None:
@@ -28,8 +48,12 @@ def _build_database_url() -> str:
     host = os.environ.get("MYSQL_HOST")
     if not host:
         return ""
-    user = os.environ.get("MYSQL_USER", "root")
-    password = os.environ.get("MYSQL_PASSWORD", "")
+    from urllib.parse import quote_plus
+
+    # Encode user/password so special characters (e.g. '@', ':', '/') in the
+    # credentials don't corrupt the URL's authority section.
+    user = quote_plus(os.environ.get("MYSQL_USER", "root"))
+    password = quote_plus(os.environ.get("MYSQL_PASSWORD", ""))
     port = os.environ.get("MYSQL_PORT", "3306")
     database = os.environ.get("MYSQL_DATABASE", "langstitch")
     return f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}?charset=utf8mb4"

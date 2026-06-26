@@ -8,6 +8,7 @@ langsmith>=0.2.0
 # LANGSTITCH_AUTH_ENABLED=true). Safe to install always.
 authlib>=1.3.0
 itsdangerous>=2.1.0
+python-dotenv>=1.0.0
 httpx>=0.27.0
 sqlalchemy>=2.0.0
 pymysql>=1.1.0
