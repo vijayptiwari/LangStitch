@@ -18,7 +18,6 @@ from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -48,6 +47,8 @@ app = FastAPI(title="LangStitch Platform API", version="0.2.0")
 
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
+    """Attach X-Request-ID to every response (cycle 148)."""
+
     async def dispatch(self, request: Request, call_next) -> Response:
         request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
         response = await call_next(request)
@@ -551,14 +552,24 @@ def export_project(req: ExportRequest):
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
         for path in base.rglob("*"):
-            if path.is_file() and ".git" not in path.parts and ".langstitch" not in path.parts:
-                zf.write(path, path.relative_to(base).as_posix())
-    buf.seek(0)
+            if not path.is_file():
+                continue
+            rel = path.relative_to(base)
+            # Exclude internal metadata dirs by their position *within* the
+            # project, not the absolute path (the workspace root itself lives
+            # under ~/.langstitch, which would otherwise exclude everything).
+            if ".git" in rel.parts or ".langstitch" in rel.parts:
+                continue
+            zf.write(path, rel.as_posix())
+    data = buf.getvalue()
     filename = f"{req.project_id}-{req.format}.zip"
-    return StreamingResponse(
-        buf,
+    return Response(
+        content=data,
         media_type="application/zip",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Length": str(len(data)),
+        },
     )
 
 
