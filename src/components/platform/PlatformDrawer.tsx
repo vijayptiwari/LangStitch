@@ -877,11 +877,13 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
           {tab === 'deploy' && (
             <div className="platform-section" data-testid="deploy-panel">
               {(busy || deployTabLoading) && (
-                <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
-                  <div className="skeleton-line" />
-                  <div className="skeleton-line short" />
-                  <div className="skeleton-line" />
-                  <div className="skeleton-block" />
+                <div data-testid="cycle-132-deploy-skeleton">
+                  <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
+                    <div className="skeleton-line" />
+                    <div className="skeleton-line short" />
+                    <div className="skeleton-line" />
+                    <div className="skeleton-block" />
+                  </div>
                 </div>
               )}
               <p className="platform-hint">Deploy to Kubernetes cluster via Helm (requires helm + kubectl configured on API host).</p>

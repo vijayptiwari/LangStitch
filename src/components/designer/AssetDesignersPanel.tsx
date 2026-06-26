@@ -198,9 +198,11 @@ export function AssetDesignersPanel() {
             </button>
             {guardrails.length === 0 && (
               <div className="designer-empty" data-testid="guardrails-empty-hint">
-                <div className="designer-empty-icon">🛡</div>
-                <h3>No guardrails yet</h3>
-                <p>Add input/output guardrails here. They export to the guardrails/ module in your Python project.</p>
+                <div data-testid="cycle-133-guardrails-empty-hint">
+                  <div className="designer-empty-icon">🛡</div>
+                  <h3>No guardrails yet</h3>
+                  <p>Add input/output guardrails here. They export to the guardrails/ module in your Python project.</p>
+                </div>
               </div>
             )}
             {filteredGuardrails.length === 0 && guardrails.length > 0 && (

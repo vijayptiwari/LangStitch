@@ -241,29 +241,40 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <button
-          className="btn-secondary"
-          data-testid="toolbar-redo"
-          aria-label="Redo last reset"
-          title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
-          disabled={redoDisabled}
-          onClick={() => {
-            redoProject()
-            setRedoAvailable(canRedo())
-            const at = new Date().toISOString()
-            localStorage.setItem(
-              REDO_LAST_USED_KEY,
-              JSON.stringify({ at, graphName: graphDoc.name }),
-            )
-            setRedoLastUsed(at)
-          }}
-          type="button"
-        >
-          <RotateCw size={16} /> Redo
-          <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd">
-            Ctrl+Shift+Z
-          </kbd>
-        </button>
+        <span className="toolbar-btn-wrap">
+          <button
+            className="btn-secondary"
+            data-testid="toolbar-redo"
+            aria-label="Redo last reset"
+            aria-describedby="toolbar-redo-tooltip-131"
+            title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
+            disabled={redoDisabled}
+            onClick={() => {
+              redoProject()
+              setRedoAvailable(canRedo())
+              const at = new Date().toISOString()
+              localStorage.setItem(
+                REDO_LAST_USED_KEY,
+                JSON.stringify({ at, graphName: graphDoc.name }),
+              )
+              setRedoLastUsed(at)
+            }}
+            type="button"
+          >
+            <RotateCw size={16} /> Redo
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd">
+              Ctrl+Shift+Z
+            </kbd>
+          </button>
+          <span
+            id="toolbar-redo-tooltip-131"
+            className="toolbar-btn-tooltip"
+            data-testid="cycle-131-redo-tooltip"
+            role="tooltip"
+          >
+            Redo last reset — cycle 131 (Ctrl+Shift+Z)
+          </span>
+        </span>
         {redoLastUsed && (
           <span
             className="toolbar-redo-persisted"
@@ -342,6 +353,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
       </div>
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" onClick={() => setShowShortcuts(false)}>
+          <div data-testid="cycle-138-focus-trap">
           <div
             className="shortcuts-panel"
             ref={shortcutsPanelRef}
@@ -359,7 +371,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li data-testid="cycle-103-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab
               </li>
-              <li><kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node</li>
+              <li data-testid="cycle-139-duplicate-node">
+                <kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node
+              </li>
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
               </li>
@@ -370,6 +384,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
           </div>
         </div>
       )}

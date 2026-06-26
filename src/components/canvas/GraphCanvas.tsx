@@ -268,15 +268,17 @@ export function GraphCanvas() {
         />
         <Controls showInteractive={false} position="bottom-left" />
         {showMinimap && (
-          <MiniMap
-            nodeColor={minimapNodeColor}
-            nodeStrokeColor={minimapNodeStrokeColor}
-            nodeStrokeWidth={3}
-            maskColor="rgba(6, 8, 15, 0.82)"
-            pannable
-            zoomable
-            position="bottom-right"
-          />
+          <div data-testid="cycle-134-minimap-highlight">
+            <MiniMap
+              nodeColor={minimapNodeColor}
+              nodeStrokeColor={minimapNodeStrokeColor}
+              nodeStrokeWidth={3}
+              maskColor="rgba(6, 8, 15, 0.82)"
+              pannable
+              zoomable
+              position="bottom-right"
+            />
+          </div>
         )}
       </ReactFlow>
       {contextMenu && (
