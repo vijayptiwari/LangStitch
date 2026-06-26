@@ -145,30 +145,53 @@ def get_http_client(
     service: Optional[str] = None,
     *,
     request_headers: Optional[dict] = None,
+    raw: bool = False,
     **overrides: Any,
 ) -> Any:
-    """Return a configured synchronous ``httpx.Client``.
+    """Return a configured :class:`~langstitch.services.ServiceClient`.
 
     With ``service``, configuration is read from
     ``external_services.<service>`` in ``application.yaml`` — ``base_url``
     (serverUrl + basePath), ``timeout``, propagated inbound headers, and auth
     (``none`` | ``basic`` | ``bearer`` | ``api_key`` | ``oauth2``). Without it,
     defaults come from the ``http`` section. Keyword args override everything.
+
+    The returned client exposes ``get/post/put/patch/delete/head/options`` and
+    ``request`` with path-parameter templating and per-request header/query
+    merging::
+
+        api = get_http_client("payments")
+        resp = api.get("/users/{id}", path_params={"id": 7},
+                       params={"expand": "wallet"}, headers={"X-Trace": "1"})
+
+    Pass ``raw=True`` to get the underlying ``httpx.Client`` instead.
     """
     httpx = _require_httpx()
-    return httpx.Client(**_client_kwargs(service, request_headers, overrides, httpx))
+    client = httpx.Client(**_client_kwargs(service, request_headers, overrides, httpx))
+    if raw:
+        return client
+    from .services import ServiceClient
+
+    return ServiceClient(client)
 
 
 def get_async_http_client(
     service: Optional[str] = None,
     *,
     request_headers: Optional[dict] = None,
+    raw: bool = False,
     **overrides: Any,
 ) -> Any:
-    """Return a configured asynchronous ``httpx.AsyncClient`` (see
-    :func:`get_http_client` for the ``service`` configuration contract)."""
+    """Return a configured :class:`~langstitch.services.AsyncServiceClient`
+    (see :func:`get_http_client` for the ``service`` configuration contract).
+    Pass ``raw=True`` for the underlying ``httpx.AsyncClient``."""
     httpx = _require_httpx()
-    return httpx.AsyncClient(**_client_kwargs(service, request_headers, overrides, httpx))
+    client = httpx.AsyncClient(**_client_kwargs(service, request_headers, overrides, httpx))
+    if raw:
+        return client
+    from .services import AsyncServiceClient
+
+    return AsyncServiceClient(client)
 
 
 def get_llm_provider(

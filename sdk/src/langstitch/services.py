@@ -49,9 +49,13 @@ __all__ = [
     "get_request_headers",
     "clear_request_headers",
     "build_service_client_kwargs",
+    "ServiceClient",
+    "AsyncServiceClient",
+    "format_path",
 ]
 
 _ENV_REF = re.compile(r"\$\{([^}]+)\}")
+_PATH_VAR = re.compile(r"\{([^{}]+)\}")
 
 # Inbound request headers for the current task/request, used for propagation.
 _REQUEST_HEADERS: "contextvars.ContextVar[Optional[Dict[str, str]]]" = contextvars.ContextVar(
@@ -281,3 +285,166 @@ def build_service_client_kwargs(
     if overrides:
         kwargs.update(overrides)
     return kwargs
+
+
+def format_path(path: str, path_params: Optional[Dict[str, Any]] = None) -> str:
+    """Substitute ``{name}`` placeholders in a URL path, URL-encoding values.
+
+    ``format_path("/users/{id}/orders/{order_id}", {"id": 7, "order_id": "a b"})``
+    -> ``"/users/7/orders/a%20b"``. Raises ``KeyError`` for a missing parameter.
+    """
+    if not path_params:
+        return path
+    from urllib.parse import quote
+
+    def _repl(match: "re.Match[str]") -> str:
+        key = match.group(1)
+        if key not in path_params:
+            raise KeyError(f"missing path parameter: {key!r} for path {path!r}")
+        return quote(str(path_params[key]), safe="")
+
+    return _PATH_VAR.sub(_repl, path)
+
+
+class _BaseServiceClient:
+    """Shared method surface for the sync/async service clients.
+
+    Wraps an ``httpx`` client and adds path-parameter templating plus convenient
+    per-request header/query merging. Attribute access falls through to the
+    underlying client, so anything httpx supports (``stream``, ``base_url``,
+    ``cookies``, ...) keeps working.
+    """
+
+    _client: Any
+
+    def __getattr__(self, name: str) -> Any:
+        # Only called when not found on the wrapper itself.
+        return getattr(self.__dict__["_client"], name)
+
+    # ── header helpers ──
+    def set_header(self, name: str, value: str) -> None:
+        self._client.headers[name] = value
+
+    def add_headers(self, headers: Dict[str, str]) -> None:
+        self._client.headers.update(headers)
+
+    def remove_header(self, name: str) -> None:
+        self._client.headers.pop(name, None)
+
+    @property
+    def headers(self) -> Any:
+        return self._client.headers
+
+    def _prepare(
+        self,
+        path: str,
+        path_params: Optional[Dict[str, Any]],
+        params: Optional[Dict[str, Any]],
+        headers: Optional[Dict[str, str]],
+        kwargs: Dict[str, Any],
+    ) -> str:
+        if params is not None:
+            kwargs["params"] = params
+        if headers is not None:
+            kwargs["headers"] = headers
+        return format_path(path, path_params)
+
+
+class ServiceClient(_BaseServiceClient):
+    """Synchronous HTTP client for a configured external service."""
+
+    def __init__(self, client: Any) -> None:
+        self._client = client
+
+    def request(
+        self,
+        method: str,
+        path: str,
+        *,
+        path_params: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> Any:
+        url = self._prepare(path, path_params, params, headers, kwargs)
+        return self._client.request(method, url, **kwargs)
+
+    def get(self, path: str, **kw: Any) -> Any:
+        return self.request("GET", path, **kw)
+
+    def post(self, path: str, **kw: Any) -> Any:
+        return self.request("POST", path, **kw)
+
+    def put(self, path: str, **kw: Any) -> Any:
+        return self.request("PUT", path, **kw)
+
+    def patch(self, path: str, **kw: Any) -> Any:
+        return self.request("PATCH", path, **kw)
+
+    def delete(self, path: str, **kw: Any) -> Any:
+        return self.request("DELETE", path, **kw)
+
+    def head(self, path: str, **kw: Any) -> Any:
+        return self.request("HEAD", path, **kw)
+
+    def options(self, path: str, **kw: Any) -> Any:
+        return self.request("OPTIONS", path, **kw)
+
+    def close(self) -> None:
+        self._client.close()
+
+    def __enter__(self) -> "ServiceClient":
+        return self
+
+    def __exit__(self, *exc: Any) -> None:
+        self.close()
+
+
+class AsyncServiceClient(_BaseServiceClient):
+    """Asynchronous HTTP client for a configured external service."""
+
+    def __init__(self, client: Any) -> None:
+        self._client = client
+
+    async def request(
+        self,
+        method: str,
+        path: str,
+        *,
+        path_params: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> Any:
+        url = self._prepare(path, path_params, params, headers, kwargs)
+        return await self._client.request(method, url, **kwargs)
+
+    async def get(self, path: str, **kw: Any) -> Any:
+        return await self.request("GET", path, **kw)
+
+    async def post(self, path: str, **kw: Any) -> Any:
+        return await self.request("POST", path, **kw)
+
+    async def put(self, path: str, **kw: Any) -> Any:
+        return await self.request("PUT", path, **kw)
+
+    async def patch(self, path: str, **kw: Any) -> Any:
+        return await self.request("PATCH", path, **kw)
+
+    async def delete(self, path: str, **kw: Any) -> Any:
+        return await self.request("DELETE", path, **kw)
+
+    async def head(self, path: str, **kw: Any) -> Any:
+        return await self.request("HEAD", path, **kw)
+
+    async def options(self, path: str, **kw: Any) -> Any:
+        return await self.request("OPTIONS", path, **kw)
+
+    async def aclose(self) -> None:
+        await self._client.aclose()
+
+    async def __aenter__(self) -> "AsyncServiceClient":
+        return self
+
+    async def __aexit__(self, *exc: Any) -> None:
+        await self.aclose()

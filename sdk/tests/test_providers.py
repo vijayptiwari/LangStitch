@@ -48,8 +48,11 @@ def test_get_config_returns_appconfig_and_caches(tmp_path, monkeypatch):
 def test_http_client_when_available():
     import httpx
 
+    from langstitch import ServiceClient
+
     client = get_http_client(timeout=1.0)
-    assert isinstance(client, httpx.Client)
+    assert isinstance(client, ServiceClient)
+    assert isinstance(get_http_client(raw=True), httpx.Client)
     client.close()
 
 

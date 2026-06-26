@@ -184,8 +184,26 @@ from langstitch import get_http_client, set_request_headers
 # In request middleware, record inbound headers once:
 set_request_headers(request.headers)
 
-client = get_http_client("payments")   # base_url, timeout, auth + propagated headers wired in
+api = get_http_client("payments")   # base_url, timeout, auth + propagated headers wired in
 ```
+
+The returned `ServiceClient` covers all HTTP verbs with `{path}` templating and
+per-request header/query merging (auth + propagated headers stay applied):
+
+```python
+api.get("/users/{id}", path_params={"id": 7}, params={"expand": "wallet"})
+api.post("/users", json={"name": "Ada"}, headers={"X-Trace": "1"})
+api.put("/users/{id}", path_params={"id": 7}, json={...})
+api.patch("/users/{id}", path_params={"id": 7}, json={...})
+api.delete("/users/{id}", path_params={"id": 7})
+api.request("OPTIONS", "/users")
+
+api.set_header("X-Tenant", "acme")      # mutate default headers
+api.add_headers({"X-Region": "eu"})
+```
+
+`get_async_http_client("payments")` returns the awaitable `AsyncServiceClient`
+equivalent. Pass `raw=True` to either for the underlying httpx client.
 
 Auth types and their options (string values support `${ENV_VAR}` interpolation):
 

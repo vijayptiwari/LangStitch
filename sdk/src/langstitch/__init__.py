@@ -66,9 +66,12 @@ from .providers import (
 from .registry import Registry, get_registry, reset_registry
 from .server import create_app, langstitch_graph_server, run
 from .services import (
+    AsyncServiceClient,
     AuthConfig,
+    ServiceClient,
     ServiceConfig,
     clear_request_headers,
+    format_path,
     get_request_headers,
     load_service_config,
     set_request_headers,
@@ -115,7 +118,10 @@ __all__ = [
     # external services
     "AuthConfig",
     "ServiceConfig",
+    "ServiceClient",
+    "AsyncServiceClient",
     "load_service_config",
+    "format_path",
     "set_request_headers",
     "get_request_headers",
     "clear_request_headers",
