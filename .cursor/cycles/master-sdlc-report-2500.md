@@ -83,8 +83,18 @@
 | 88 | API X-Request-ID header | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 | 89 | Eval regression preset | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 90 | Skip link to canvas | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 91 | Ctrl+F focus search shortcut | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 92 | Merge viewport on import | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 93 | graphStore JSDoc | APPROVED | N/A | PASSED | 88 | 1 | yes | COMPLETE |
+| 94 | platform-git-tab E2E | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 95 | Disable platform on empty graph | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 96 | Export retry on API error | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 97 | Guardrail description char count | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 98 | Multi-select delete confirm | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 99 | Export eval-dataset warning | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 100 | Export rate-limit 429 message | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 
-**Progress: 90 / 2500**
+**Progress: 100 / 2500**
 
 ## Batch log
 
@@ -99,9 +109,10 @@
 | 6 | 61–70 | 17ffaaf | green | COMPLETE |
 | 7 | 71–80 | c3e119e | green | COMPLETE |
 | 8 | 81–90 | a3494b6 | green | COMPLETE |
+| 9 | 91–100 | 397af48 | green | COMPLETE |
 
 ## Summary
-- Completed: 90 / 2500 cycles
+- Completed: 100 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
@@ -111,4 +122,5 @@
 - Batch 6 avg UAT: 90.5
 - Batch 7 avg UAT: 91.0
 - Batch 8 avg UAT: 90.5
-- Next: Batch 9 (cycles 91–100)
+- Batch 9 avg UAT: 90.2
+- Next: Batch 10 (cycles 101–110)
