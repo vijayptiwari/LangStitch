@@ -21,9 +21,18 @@ $extractRoot = Join-Path $env:RUNNER_TEMP "vscodium-extract"
 if (Test-Path $extractRoot) { Remove-Item -Recurse -Force $extractRoot }
 Expand-Archive -Path $zipPath -DestinationPath $extractRoot
 
-$vscodiumRoot = Get-ChildItem -Path $extractRoot -Directory | Select-Object -First 1
-$codium = Join-Path $vscodiumRoot.FullName "bin\codium.cmd"
-if (-not (Test-Path $codium)) { throw "codium.cmd not found at $codium" }
+$vscodiumRoot = $extractRoot
+$codium = Join-Path $vscodiumRoot "bin\codium.cmd"
+if (-not (Test-Path $codium)) {
+  $nested = Get-ChildItem -Path $extractRoot -Directory | Where-Object {
+    Test-Path (Join-Path $_.FullName "bin\codium.cmd")
+  } | Select-Object -First 1
+  if ($nested) {
+    $vscodiumRoot = $nested.FullName
+    $codium = Join-Path $vscodiumRoot "bin\codium.cmd"
+  }
+}
+if (-not (Test-Path $codium)) { throw "codium.cmd not found under $extractRoot" }
 
 Write-Host "Installing extension into portable VSCodium ..."
 & $codium --install-extension $Vsix.FullName --force
