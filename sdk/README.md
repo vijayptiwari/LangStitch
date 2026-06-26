@@ -9,6 +9,14 @@ pip install langstitch            # core (PyYAML only)
 pip install "langstitch[all]"     # + FastAPI server + LangGraph
 ```
 
+> **Prefer a visual workflow?** The LangStitch IDE ships an **SDK Component Designer** for
+> authoring custom nodes, connectors, and adaptors without writing registration code — define
+> ports, a typed config schema, and a safe Python codegen template, then export the component as
+> a portable `.component.json` or publish it to the
+> [marketplace](https://marketplace.langstitch.com). See the
+> [Component Designer docs](https://langstitch.com/docs/#components). This README covers the
+> **code-first Python SDK**.
+
 ### Use it as a dependency
 
 In your `pyproject.toml`:

@@ -12,9 +12,9 @@
     "index.html": {
       title: "LangStitch — Visual LangGraph IDE | Design, Export & Deploy Agents",
       description:
-        "Visual LangGraph IDE — design agent workflows on a canvas with skills, guardrails, RAG pipelines, and multi-intent routing. Export Python 3.13 projects, try live in browser, deploy with Docker and Helm.",
+        "Visual LangGraph IDE — design agent workflows on a canvas with skills, guardrails, RAG pipelines, and multi-intent routing. Build custom nodes, connectors & adaptors with the SDK Component Designer, share them on the marketplace, export Python 3.13 projects, and get the LangTailor desktop IDE.",
       keywords:
-        "LangStitch, LangGraph IDE, visual agent builder, LangGraph canvas, RAG pipeline designer, Python export, LangSmith, MCP Studio, agent guardrails, multi-intent classifier",
+        "LangStitch, LangGraph IDE, visual agent builder, LangGraph canvas, SDK component designer, custom nodes, connectors, adaptors, plugin marketplace, LangTailor, RAG pipeline designer, Python export, LangSmith, MCP Studio, agent guardrails, multi-intent classifier",
       type: "website",
       jsonLd: [
         {

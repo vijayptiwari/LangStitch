@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LangStitch — Documentation</title>
-  <meta name="description" content="LangStitch documentation — visual LangGraph IDE, asset designers, export, and deployment." />
+  <meta name="description" content="LangStitch documentation — visual LangGraph IDE, the SDK Component Designer for custom nodes/connectors/adaptors, asset designers, Python export, and deployment." />
   <link rel="canonical" href="https://langstitch.com/docs/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta property="og:type" content="website" />
@@ -20,7 +20,9 @@
     <a class="nav-brand" href="../">LangStitch</a>
     <div class="nav-links">
       <a href="#guide">SDK guide</a>
-      <a href="../#try">Try live</a>
+      <a href="#components">Components</a>
+      <a href="../langtailor/">LangTailor</a>
+      <a href="https://marketplace.langstitch.com">Marketplace</a>
       <a href="../app/">Open IDE</a>
       <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
     </div>
@@ -507,6 +509,70 @@ CMD ["langstitch", "run", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
       </ul>
     </section>
 
+    <section id="components">
+      <h2>SDK Component Designer (custom nodes, connectors &amp; adaptors)</h2>
+      <p class="section-lead">
+        The <strong>Components</strong> designer tab lets you build reusable custom components without editing
+        source. A component is a declarative manifest — identity, ports, a typed config-field schema, a theme,
+        and a safe Python codegen template — that renders on the canvas alongside the built-in nodes and
+        survives the project round-trip.
+      </p>
+      <h3 class="guide-step">Author a component</h3>
+      <ul class="doc-list">
+        <li><strong>Identity</strong> — id, label, category (<code>node</code> / <code>connector</code> /
+          <code>adaptor</code>), description, icon, version.</li>
+        <li><strong>Ports</strong> — input/output handles (left/right, single/multi) that wire into the graph.</li>
+        <li><strong>Config fields</strong> — typed inputs: <code>string</code>, <code>number</code>,
+          <code>boolean</code>, <code>select</code>, <code>code</code>, <code>secret</code>, <code>json</code> —
+          with validation and defaults. These render as an auto-generated property form.</li>
+        <li><strong>Theme</strong> — color + icon + badge so the node is recognizable on the canvas.</li>
+        <li><strong>Codegen template</strong> — a Python template with a live preview (see below).</li>
+      </ul>
+      <h3 class="guide-step">Safe codegen template</h3>
+      <p class="section-lead">
+        Templates use whitelisted placeholder substitution — there is no <code>eval</code> or arbitrary code
+        execution in the IDE. Values are escaped per field kind, and <code>secret</code> fields are emitted as
+        <code>os.environ.get(...)</code> rather than inlined.
+      </p>
+      <pre><code># Template (authored in the designer)
+def {{nodeName}}(state: State) -&gt; dict:
+    """{{label}} — {{description}}"""
+    import httpx
+    url = {{field.url}}                 # string  → safe Python literal
+    timeout = {{field.timeout}}         # number
+    api_key = {{field.api_key}}         # secret  → os.environ.get("...")
+    resp = httpx.request({{field.method}}, url, timeout=timeout)
+    return {"{{outputKey}}": resp.text}</code></pre>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>Placeholder</th><th>Resolves to</th></tr></thead>
+          <tbody>
+            <tr><td><code>{{nodeName}}</code></td><td>generated function name for the placed node</td></tr>
+            <tr><td><code>{{label}}</code> / <code>{{description}}</code></td><td>node label / description (escaped for docstrings)</td></tr>
+            <tr><td><code>{{outputKey}}</code></td><td>the node's output state key</td></tr>
+            <tr><td><code>{{field.&lt;id&gt;}}</code></td><td>a config value, escaped by kind (secret → <code>os.environ.get</code>)</td></tr>
+            <tr><td><code>{{field.&lt;id&gt;.raw}}</code></td><td>verbatim injection — allowed for <code>code</code> fields only</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 class="guide-step">Place, configure, export &amp; share</h3>
+      <ul class="doc-list">
+        <li>Drag the component from the <strong>Custom Components</strong> palette group onto the canvas.</li>
+        <li>Select it to edit its config in the auto-generated form; values are saved on the node.</li>
+        <li>On Python export, each custom node renders via its template into <code>graphs/main.py</code> with
+          imports hoisted and deduped; <code>langsmith.json</code> records them under
+          <code>registries.components</code> (schema version <code>1.2</code>).</li>
+        <li><strong>Portability</strong> — export a single component as <code>.component.json</code> and import it
+          into another project (with replace / import-as-copy collision handling), or publish it to the
+          <a href="https://marketplace.langstitch.com">marketplace</a>.</li>
+      </ul>
+      <div class="callout callout-warn">
+        <strong>Additive &amp; safe.</strong> Custom components are stored in <code>componentRegistry</code> on the
+        project document (GraphDocument <code>v1.2</code>); older <code>.langstitch.json</code> projects load
+        unchanged. The built-in node kinds are untouched.
+      </div>
+    </section>
+
     <section id="export">
       <h2>Python 3.13 export</h2>
       <p class="section-lead">Platform → Export → Python produces a buildable multi-module ZIP:</p>
@@ -522,8 +588,8 @@ CMD ["langstitch", "run", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
   rules/         # Business rules
   personas/      # Agent personas
   rag/           # RAG pipelines
-langsmith.json   # LangSmith + LangStitch IDE metadata
-langstitch.project.json</code></pre>
+langsmith.json   # LangSmith + LangStitch IDE metadata (incl. registries.components)
+langstitch.project.json   # full project incl. componentRegistry (custom components)</code></pre>
       <pre><code>pip install -e ".[dev]"
 pytest
 python -m &lt;package&gt;</code></pre>
@@ -575,7 +641,9 @@ npm run agent:run</code></pre>
       LangStitch · MIT ·
       <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a> ·
       <a href="../">Home</a> ·
-      <a href="../app/">IDE</a>
+      <a href="../app/">IDE</a> ·
+      <a href="../langtailor/">LangTailor</a> ·
+      <a href="https://marketplace.langstitch.com">Marketplace</a>
     </p>
   </footer>
 </body>

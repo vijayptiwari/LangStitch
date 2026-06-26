@@ -3,7 +3,7 @@
 **LangStitch** is a visual, drag-and-drop IDE for building [LangGraph](https://langchain-ai.github.io/langgraph/) workflows — with asset designers, RAG pipelines, Python 3.13 multi-module export, git sync, Docker, and Kubernetes/Helm deployment.
 
 [![CI](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml)
-[![Deploy GitHub Pages](https://github.com/vijayptiwari/LangStitch/actions/workflows/pages.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/pages.yml)
+[![Deploy to Hostinger](https://github.com/vijayptiwari/LangStitch/actions/workflows/deploy-hostinger.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/deploy-hostinger.yml)
 [![Publish Docker](https://github.com/vijayptiwari/LangStitch/actions/workflows/publish-docker.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/publish-docker.yml)
 
 | Link | URL |
@@ -139,16 +139,31 @@ Press **?** in the IDE or use the toolbar help button for the full list.
 
 ---
 
-## GitHub Pages site structure
+## Production hosting (Hostinger)
+
+The public sites are served from Hostinger shared hosting, split across subdomains.
+A single FTP upload to `public_html/` covers every host because each subdomain's
+document root is a sub-folder created in hPanel:
 
 ```
-/LangStitch/           ← Product landing (live try iframe)
-/LangStitch/app/       ← Full LangStitch IDE (React)
-/LangStitch/try.html   ← Full-screen try page
-/LangStitch/docs/      ← Documentation
+langstitch.com               → public_html/             Product landing + /app IDE + /docs
+langtailor.langstitch.com    → public_html/langtailor/  Desktop IDE download page
+sdk.langstitch.com           → public_html/sdk/         Python SDK landing
+marketplace.langstitch.com   → public_html/marketplace/ Marketplace SPA
 ```
 
-Built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`.
+Built and deployed by [`.github/workflows/deploy-hostinger.yml`](.github/workflows/deploy-hostinger.yml)
+on every push to `main`.
+
+| Setting | Where | Value |
+|---------|-------|-------|
+| `FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` | repo **Secrets** | Hostinger FTP credentials (hPanel → Files → FTP Accounts) |
+| `FTP_PUBLIC_DIR` | repo **Variables** *(optional)* | FTP path to the web root, default `public_html/` |
+| `PLATFORM_API_BASE` | repo **Variables** *(optional)* | marketplace/IDE API base, e.g. `https://api.langstitch.com/api` |
+
+> Shared hosting is static-only: the marketplace **frontend** is served here, but its
+> FastAPI backend (`server/`) must run elsewhere (VPS / container host) and be pointed
+> at via `PLATFORM_API_BASE`.
 
 ---
 
@@ -156,8 +171,8 @@ Built by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every p
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| [**Deploy GitHub Pages**](.github/workflows/pages.yml) | Push to `main` | Product site + IDE + docs |
-| [**Publish Docker**](.github/workflows/publish-docker.yml) | Push to `main` / tags | GHCR images |
+| [**Deploy to Hostinger**](.github/workflows/deploy-hostinger.yml) | Push to `main` | Build all sites + FTPS upload |
+| [**Publish Docker**](.github/workflows/publish-docker.yml) | Push to `main` / tags | GHCR images (API / marketplace backend) |
 | [**CI**](.github/workflows/ci.yml) | Push / PR | Build, E2E, agent smoke |
 | [**Release**](.github/workflows/release.yml) | Tag `v*` / manual | GitHub Release + archive |
 
@@ -191,7 +206,7 @@ npm run agent:run
 
 ```
 LangStitch/
-├── site/             Product website (GitHub Pages landing)
+├── site/             Public sites: landing + langtailor/ + sdk/ subdomain pages
 ├── docs/             Documentation site
 ├── src/              React IDE
 ├── server/           FastAPI platform API

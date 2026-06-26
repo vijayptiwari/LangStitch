@@ -1,0 +1,107 @@
+name: Deploy to Hostinger
+
+# Builds every public site and uploads them to Hostinger shared hosting over FTPS.
+# One upload to public_html/ serves all hosts because each subdomain's document
+# root is a sub-folder created in hPanel:
+#   langstitch.com           -> public_html/            (marketing + /app IDE + /docs)
+#   langtailor.langstitch.com-> public_html/langtailor/ (download page)
+#   sdk.langstitch.com       -> public_html/sdk/        (SDK landing)
+#   marketplace.langstitch.com -> public_html/marketplace/ (marketplace SPA)
+#
+# Required repo secrets:  FTP_SERVER, FTP_USERNAME, FTP_PASSWORD
+# Optional repo variables: FTP_PUBLIC_DIR (default public_html/),
+#                          PLATFORM_API_BASE (e.g. https://api.langstitch.com/api)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build IDE (served at /app/)
+        run: npm run build -- --mode pages
+
+      - name: Assemble site root
+        run: |
+          # Marketing site, langtailor/, sdk/, assets, sitemap, robots -> site root.
+          cp -r site/. dist/
+          # Documentation at /docs/.
+          mkdir -p dist/docs
+          cp -r docs/. dist/docs/
+          # GitHub Pages custom-domain marker is not used on Hostinger.
+          rm -f dist/CNAME
+          # SPA fallback so deep links into the IDE resolve to its index.html.
+          cat > dist/app/.htaccess <<'HTACCESS'
+          Options -MultiViews
+          RewriteEngine On
+          RewriteBase /app/
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . index.html [L]
+          HTACCESS
+
+      - name: Build marketplace SPA (served at marketplace subdomain root)
+        env:
+          VITE_APP_MODE: marketplace
+          VITE_PLATFORM_API: ${{ vars.PLATFORM_API_BASE || '/api' }}
+        run: |
+          # base defaults to '/' (non-pages mode) so assets resolve at the
+          # subdomain root; force marketplace mode regardless of host.
+          npx vite build --outDir dist/marketplace --emptyOutDir
+          cat > dist/marketplace/.htaccess <<'HTACCESS'
+          Options -MultiViews
+          RewriteEngine On
+          RewriteBase /
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . index.html [L]
+          HTACCESS
+
+      - name: Check FTP secrets
+        id: ftpcheck
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          if [ -n "$FTP_SERVER" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::FTP_SERVER secret is not set — built the site but skipped the Hostinger upload."
+          fi
+
+      - name: Deploy to Hostinger via FTPS
+        if: steps.ftpcheck.outputs.ready == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./dist/
+          server-dir: ${{ vars.FTP_PUBLIC_DIR || 'public_html/' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**

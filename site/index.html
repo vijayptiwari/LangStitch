@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LangStitch — Visual LangGraph IDE</title>
-  <meta name="description" content="Design LangGraph agent workflows visually. Skills, guardrails, RAG, multi-intent routing, and Python 3.13 export — try it live in your browser." />
+  <meta name="description" content="Design LangGraph agent workflows visually. Build custom nodes, connectors & adaptors with the SDK Component Designer, share them on the marketplace, and export a Python 3.13 project. Skills, guardrails, RAG, multi-intent routing, plus the LangTailor desktop IDE." />
   <meta name="theme-color" content="#6366f1" />
   <link rel="canonical" href="https://langstitch.com/" />
   <link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml" />
@@ -17,7 +17,9 @@
     <div class="nav-links">
       <a href="#start">Get started</a>
       <a href="#features">Features</a>
-      <a href="#sdk">SDK</a>
+      <a href="https://sdk.langstitch.com">SDK</a>
+      <a href="https://langtailor.langstitch.com">LangTailor</a>
+      <a href="https://marketplace.langstitch.com">Marketplace</a>
       <a href="#compare">Compare</a>
       <a href="docs/">Docs</a>
       <a class="nav-cta" href="app/">Open IDE</a>
@@ -40,9 +42,12 @@
       <div class="hero-badges">
         <span>LangGraph</span>
         <span>Python 3.13</span>
+        <span>Component SDK</span>
         <span>RAG</span>
         <span>LangSmith</span>
         <span>MCP Studio</span>
+        <span>Marketplace</span>
+        <span>LangTailor desktop</span>
       </div>
     </div>
   </header>
@@ -130,6 +135,11 @@ npm start</code></pre>
           <p>LLM, Tool, Agent, RAG, Multi-Intent Classifier, Decision, Subgraph, Function nodes — color-coded and draggable.</p>
         </article>
         <article class="card">
+          <div class="card-icon">🧩</div>
+          <h3>SDK Component Designer</h3>
+          <p>Build your own nodes, connectors &amp; adaptors visually — ports, typed config, theme, and a safe Python codegen template. No source edits, exportable as <code>.component.json</code>.</p>
+        </article>
+        <article class="card">
           <div class="card-icon">✦</div>
           <h3>Asset designers</h3>
           <p>Skill, Guardrail, Business Rules, Persona, and RAG pipeline designers — chunking, embedding, vector / vectorless / hybrid.</p>
@@ -150,6 +160,16 @@ npm start</code></pre>
           <p>Git sync, versioning, Docker build, Helm deploy — full stack via FastAPI backend.</p>
         </article>
         <article class="card">
+          <div class="card-icon">🛒</div>
+          <h3>Plugin marketplace</h3>
+          <p>Publish and install community components, connectors, and LangTailor plugins — with review flow, at <a href="https://marketplace.langstitch.com">marketplace.langstitch.com</a>.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🖥️</div>
+          <h3>LangTailor desktop</h3>
+          <p>The downloadable LangGraph IDE — a branded VS&nbsp;Code / Code-OSS build with the canvas, Python export, and marketplace sync built in. <a href="https://langtailor.langstitch.com">Get LangTailor →</a></p>
+        </article>
+        <article class="card">
           <div class="card-icon">✓</div>
           <h3>CI &amp; quality</h3>
           <p>Playwright E2E tests, agent smoke tests, automated GitHub Pages, Docker publish, and releases.</p>
@@ -161,13 +181,70 @@ npm start</code></pre>
   <section id="sdk" class="sdk-section">
     <div class="container-wide">
       <div class="sdk-intro">
-        <p class="eyebrow">Multi-language SDK</p>
+        <p class="eyebrow">Component SDK &amp; multi-language SDK</p>
         <h2>Bring LangStitch to your stack</h2>
         <p class="sdk-lede">
-          The LangStitch SDK lets you build the same graphs, skills, guardrails, and policies in code —
-          with decorators, YAML/JSON config, and a CLI scaffold. Python ships today; Spring, Rust, and
-          Go are on the way.
+          Extend LangStitch two ways. Use the <strong>SDK Component Designer</strong> to author custom
+          nodes, connectors, and adaptors visually — then export them as portable components. Or use the
+          code SDK to build the same graphs, skills, guardrails, and policies with decorators, YAML/JSON
+          config, and a CLI scaffold. Python ships today; Spring, Rust, and Go are on the way.
         </p>
+      </div>
+
+      <div class="sdk-detail" id="component-designer">
+        <div class="sdk-detail__head">
+          <h3>SDK Component Designer</h3>
+          <span class="sdk-badge sdk-badge--live">New</span>
+        </div>
+        <p class="sdk-detail__lede">
+          A visual designer for community-extensible components. Define a component once — ports, a typed
+          config-field schema, theme, and a Python codegen template — and it appears in the palette like any
+          built-in node. No source edits, no rebuild. Components are portable as <code>.component.json</code>
+          and shareable through the marketplace.
+        </p>
+
+        <div class="sdk-grid">
+          <article class="sdk-card">
+            <h4>Author visually</h4>
+            <p>Open the <strong>Components</strong> tab, add ports and config fields (string, number, boolean,
+              select, code, secret, JSON), pick a theme, and write a codegen template with a live Python preview.</p>
+          </article>
+          <article class="sdk-card">
+            <h4>Place &amp; configure</h4>
+            <p>Drag your component from the <strong>Custom Components</strong> palette group onto the canvas. Selecting
+              it shows an auto-generated property form driven by your config schema.</p>
+          </article>
+          <article class="sdk-card sdk-card--wide">
+            <h4>Safe Python export</h4>
+            <pre><code># A custom "HTTP Fetch" component renders into the graph:
+def http_1(state: State) -&gt; dict:
+    """Fetch Page — Fetch a URL and store the body"""
+    import httpx
+    url = "https://api.example.com/data"
+    api_key = os.environ.get("MY_SECRET_ENV")   # secrets never inlined
+    resp = httpx.request("POST", url, timeout=12, verify=False)
+    return {"page": resp.text}</code></pre>
+            <p>Templating is pure, whitelisted substitution — no <code>eval</code>, no arbitrary execution. Secret
+              fields emit <code>os.environ.get(...)</code>; values are escaped per field kind.</p>
+          </article>
+        </div>
+
+        <div class="sdk-features">
+          <span class="sdk-chip">custom nodes</span>
+          <span class="sdk-chip">connectors</span>
+          <span class="sdk-chip">adaptors</span>
+          <span class="sdk-chip">typed config fields</span>
+          <span class="sdk-chip">safe codegen template</span>
+          <span class="sdk-chip">secrets → os.environ.get</span>
+          <span class="sdk-chip">.component.json</span>
+          <span class="sdk-chip">palette + auto forms</span>
+          <span class="sdk-chip">marketplace-ready</span>
+        </div>
+
+        <div class="sdk-actions">
+          <a class="btn btn-primary" href="app/">Open the Component Designer</a>
+          <a class="btn btn-secondary" href="https://marketplace.langstitch.com">Browse the marketplace</a>
+        </div>
       </div>
 
       <div class="sdk-langs">
@@ -411,6 +488,13 @@ class Server:
               <td>Integrations catalog</td>
             </tr>
             <tr>
+              <td>Visual custom-component SDK (nodes / connectors / adaptors)</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Component Designer + safe codegen</td>
+              <td>Code only</td>
+              <td>Custom components in code</td>
+              <td>Connector SDK</td>
+            </tr>
+            <tr>
               <td>LangSmith / Langfuse observability</td>
               <td class="compare-highlight"><span class="mark-yes">✓</span> Export + hooks</td>
               <td><span class="mark-yes">✓</span> Deep native</td>
@@ -454,7 +538,7 @@ class Server:
             </tr>
             <tr>
               <td>Connector / template marketplace</td>
-              <td class="compare-gap"><span class="mark-gap">→</span> Growing</td>
+              <td class="compare-highlight"><span class="mark-yes">✓</span> Built-in marketplace + publish/review</td>
               <td>LangChain hub</td>
               <td><span class="mark-yes">✓</span> Large libraries</td>
               <td><span class="mark-yes">✓</span> Very large</td>
@@ -485,6 +569,11 @@ class Server:
               hooks — the path from canvas to cluster without a separate toolchain.
             </li>
             <li>
+              <strong>Extensible by the community</strong> — The SDK Component Designer turns custom nodes,
+              connectors, and adaptors into safe, portable <code>.component.json</code> manifests — shared through
+              a built-in marketplace, not locked to vendor plugins.
+            </li>
+            <li>
               <strong>Developer-first defaults</strong> — Open IDE on GitHub Pages, Docker one-liner, Playwright
               E2E, agent smoke tests, and MIT license — optimized for teams who own their runtime.
             </li>
@@ -497,7 +586,7 @@ class Server:
             <li><strong>Deep evals</strong> — LangSmith-native dataset runs and trace replay are export hooks today, not full in-IDE eval suites.</li>
             <li><strong>Live collaboration</strong> — Single-editor canvas; no real-time multi-user cursors yet.</li>
             <li><strong>Enterprise identity</strong> — Tool RBAC and guardrails exist; org-wide SSO/SAML is on the roadmap.</li>
-            <li><strong>Marketplace scale</strong> — Smaller pre-built template library vs mature low-code catalogs.</li>
+            <li><strong>Marketplace scale</strong> — The marketplace and Component Designer are live, but the pre-built catalog is still growing vs mature low-code libraries.</li>
           </ul>
           <p class="compare-gaps-note">
             Goal: match the table stakes everyone expects, then win on export quality, governance assets,
@@ -520,6 +609,8 @@ class Server:
       <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a> ·
       <a href="docs/">Documentation</a> ·
       <a href="app/">IDE</a> ·
+      <a href="https://langtailor.langstitch.com">LangTailor</a> ·
+      <a href="https://marketplace.langstitch.com">Marketplace</a> ·
       <a href="mailto:connect@langstitch.com">connect@langstitch.com</a>
     </p>
   </footer>

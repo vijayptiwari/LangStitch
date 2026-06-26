@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LangStitch SDK — decorators, config & CLI for LangGraph</title>
+  <meta name="description" content="The LangStitch SDK — Python decorators, typed config, and a CLI for building LangGraph applications with a clean project scaffold. pip install langstitch." />
+  <meta name="theme-color" content="#6366f1" />
+  <link rel="canonical" href="https://sdk.langstitch.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LangStitch" />
+  <meta property="og:url" content="https://sdk.langstitch.com/" />
+  <meta property="og:title" content="LangStitch SDK — decorators, config & CLI for LangGraph" />
+  <meta property="og:description" content="Python decorators, typed config, and a CLI for building LangGraph applications with a clean project scaffold. pip install langstitch." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="https://langstitch.com/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="https://langstitch.com/">LangStitch</a>
+    <div class="nav-links">
+      <a href="#install">Install</a>
+      <a href="#features">Features</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="https://langtailor.langstitch.com">LangTailor</a>
+      <a href="https://marketplace.langstitch.com">Marketplace</a>
+      <a href="https://langstitch.com/docs/">Docs</a>
+      <a class="nav-cta" href="https://pypi.org/project/langstitch/">PyPI</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Python SDK</p>
+      <h1>The LangStitch SDK —<br />code your LangGraph apps cleanly</h1>
+      <p class="lead">
+        Python <strong>decorators</strong>, typed <strong>config</strong>, and a <strong>CLI</strong> for building
+        LangGraph applications with a clean, exportable project scaffold — the same structure LangStitch and
+        LangTailor generate from the canvas.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#install">Install the SDK</a>
+        <a class="btn btn-secondary" href="https://pypi.org/project/langstitch/">View on PyPI</a>
+        <a class="btn btn-secondary" href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
+      </div>
+      <div class="hero-badges">
+        <span>Python 3.10+</span>
+        <span>LangGraph</span>
+        <span>LangChain</span>
+        <span>Typed</span>
+        <span>MIT</span>
+      </div>
+    </div>
+  </header>
+
+  <section id="install" class="sdk-section">
+    <div class="container-wide">
+      <div class="sdk-intro">
+        <p class="eyebrow">Install</p>
+        <h2>pip install langstitch</h2>
+        <p class="sdk-lede">
+          Install the base package, or pull in optional extras for graph, LLM, server, and HTTP integrations.
+        </p>
+      </div>
+      <div class="sdk-grid">
+        <article class="sdk-card sdk-card--wide">
+          <h4>Base install</h4>
+          <pre><code>pip install langstitch</code></pre>
+          <h4>With extras</h4>
+          <pre><code>pip install "langstitch[graph]"   # langgraph + langchain-core
+pip install "langstitch[llm]"     # langchain
+pip install "langstitch[server]"  # fastapi + uvicorn
+pip install "langstitch[all]"     # everything</code></pre>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section id="features">
+      <h2>What the SDK gives you</h2>
+      <div class="grid grid-3">
+        <article class="card">
+          <div class="card-icon">◇</div>
+          <h3>Decorators</h3>
+          <p>Declare nodes, tools, and agents with lightweight decorators that map straight onto a LangGraph <code>StateGraph</code>.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">⚙️</div>
+          <h3>Typed config</h3>
+          <p>Strongly-typed configuration with YAML loading, so secrets resolve from the environment — never inlined.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">⌨️</div>
+          <h3>CLI</h3>
+          <p>The <code>langstitch</code> command scaffolds a clean multi-module project and runs your graph locally.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🔁</div>
+          <h3>Canvas round-trip</h3>
+          <p>The same scaffold LangStitch and LangTailor export — design visually, then drop into code with no rewrite.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🧩</div>
+          <h3>Composable extras</h3>
+          <p>Opt into <code>graph</code>, <code>llm</code>, <code>server</code>, and <code>http</code> extras only when you need them.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🔓</div>
+          <h3>Open source</h3>
+          <p>MIT-licensed and typed end to end. Self-host friendly, no lock-in.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="quickstart">
+      <h2>Quickstart</h2>
+      <p class="section-lead">
+        Scaffold a project, then run it. The generated layout matches a LangStitch Python export, so canvas
+        and code stay in sync.
+      </p>
+      <pre><code>pip install "langstitch[all]"
+
+# scaffold a new project
+langstitch init my-agent
+cd my-agent
+
+# run the graph
+python -m my_agent</code></pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      LangStitch · MIT License ·
+      <a href="https://langstitch.com/">Home</a> ·
+      <a href="https://langstitch.com/app/">Web IDE</a> ·
+      <a href="https://langstitch.com/docs/">Documentation</a> ·
+      <a href="https://pypi.org/project/langstitch/">PyPI</a> ·
+      <a href="https://langtailor.langstitch.com">LangTailor</a> ·
+      <a href="https://marketplace.langstitch.com">Marketplace</a> ·
+      <a href="mailto:connect@langstitch.com">connect@langstitch.com</a>
+    </p>
+  </footer>
+</body>
+</html>
