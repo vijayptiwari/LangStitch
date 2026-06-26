@@ -13,6 +13,11 @@ __pycache__
 .venv
 venv
 playwright-report/
+playwright-report-marketplace/
 test-results/
 playwright/.cache/
+.e2e-artifacts/
+.tmp-export-*/
+*.db
+!e2e/**/*.db
 dist-langtailor/
