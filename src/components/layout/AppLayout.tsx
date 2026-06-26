@@ -33,6 +33,12 @@ export function AppLayout() {
           setPlatformOpen((open) => !open)
         }
       }
+      if (e.altKey && e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformOpen((open) => !open)
+        }
+      }
       if (e.altKey && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault()
         setPlatformInitialTab('eval')

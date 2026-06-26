@@ -351,6 +351,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
+              <li data-testid="cycle-115-alt-h-platform">
+                <kbd>Alt</kbd>+<kbd>H</kbd> — Toggle Platform drawer
+              </li>
               <li data-testid="cycle-103-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab
               </li>

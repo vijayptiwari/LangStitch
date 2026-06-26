@@ -36,8 +36,21 @@ function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const EVAL_HISTORY_LIMIT = 53
+const EVAL_HISTORY_LIMIT = 113
 const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
+const PLATFORM_TAB_KEY = 'langstitch-platform-tab-last-used'
+
+const PLATFORM_TABS: Tab[] = ['git', 'export', 'import', 'eval', 'versions', 'build', 'deploy']
+
+function loadLastPlatformTab(): Tab {
+  try {
+    const raw = localStorage.getItem(PLATFORM_TAB_KEY)
+    if (raw && PLATFORM_TABS.includes(raw as Tab)) return raw as Tab
+  } catch {
+    /* ignore */
+  }
+  return 'git'
+}
 
 interface EvalHistoryEntry {
   at: string
@@ -53,7 +66,12 @@ function loadEvalHistory(projectId: string): EvalHistoryEntry[] {
     const raw = sessionStorage.getItem(EVAL_HISTORY_KEY(projectId))
     if (!raw) return []
     const parsed = JSON.parse(raw) as EvalHistoryEntry[]
-    return Array.isArray(parsed) ? parsed.slice(0, EVAL_HISTORY_LIMIT) : []
+    if (!Array.isArray(parsed)) return []
+    const entries = parsed.slice(0, EVAL_HISTORY_LIMIT)
+    if (parsed.length > EVAL_HISTORY_LIMIT) {
+      saveEvalHistory(projectId, entries)
+    }
+    return entries
   } catch {
     return []
   }
@@ -72,7 +90,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   const loadProject = useGraphStore((s) => s.loadProject)
   const updateGraphSettings = useGraphStore((s) => s.updateGraphSettings)
 
-  const [tab, setTab] = useState<Tab>('git')
+  const [tab, setTab] = useState<Tab>(() => loadLastPlatformTab())
   const [log, setLog] = useState('')
   const [busy, setBusy] = useState(false)
   const [apiOnline, setApiOnline] = useState<boolean | null>(null)
@@ -182,9 +200,19 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
     }
   }, [projectId])
 
+  const selectTab = useCallback((id: Tab) => {
+    setTab(id)
+    try {
+      localStorage.setItem(PLATFORM_TAB_KEY, id)
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
   useEffect(() => {
     if (!open) return
-    if (initialTab) setTab(initialTab)
+    if (initialTab) selectTab(initialTab)
+    else selectTab(loadLastPlatformTab())
     platformApi
       .health()
       .then((h) => {
@@ -197,7 +225,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
         setLangsmithApiKeyConfigured(null)
       })
     refreshGitStatus()
-  }, [open, initialTab, refreshGitStatus])
+  }, [open, initialTab, refreshGitStatus, selectTab])
 
   const saveToWorkspace = async () => {
     const payload = getPayload()
@@ -531,7 +559,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               data-testid={testId}
               className={`platform-tab ${tab === id ? 'active' : ''}`}
               onClick={() => {
-                setTab(id)
+                selectTab(id)
                 if (id === 'versions') loadVersions()
               }}
             >

@@ -111,6 +111,21 @@ MCP Studio, tool/agent registry, remote graphs, A2A, LangSmith, Langfuse, struct
 ### Platform panel
 Git sync, export/import, versioning, Docker build, Helm deploy.
 
+### Keyboard shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+S` | Save project (`.langstitch.json`) |
+| `Ctrl+E` / `Ctrl+K` / `Alt+H` | Toggle Platform drawer |
+| `Alt+G` | Open Platform → Eval tab |
+| `Alt+D` | Duplicate selected canvas node |
+| `Ctrl+F` | Focus graph name search |
+| `Ctrl+M` | Toggle minimap |
+| `Ctrl+Shift+Z` | Redo last reset |
+| `?` | Open keyboard shortcuts help |
+
+Press **?** in the IDE or use the toolbar help button for the full list.
+
 ---
 
 ## GitHub Pages site structure

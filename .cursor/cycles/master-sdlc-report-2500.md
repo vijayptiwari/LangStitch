@@ -103,8 +103,18 @@
 | 108 | Collapsible Eval section | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
 | 109 | Guardrail search filter | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 110 | Ctrl+D node duplicate | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 111 | Export manifest eval-dataset | APPROVED | VALIDATED | PASSED | 91 | 1 | yes | COMPLETE |
+| 112 | OpenAPI /api/export docs | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 113 | Eval history last-113 runs | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 114 | Eval finished live region | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 115 | Alt+H platform toggle | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 116 | Viewport localStorage | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 117 | README keyboard shortcuts | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 118 | Health metadata reload E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 119 | Platform tab last-used persist | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 120 | Platform Git output copy | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 
-**Progress: 110 / 2500**
+**Progress: 120 / 2500**
 
 ## Batch log
 
@@ -121,9 +131,10 @@
 | 8 | 81–90 | a3494b6 | green | COMPLETE |
 | 9 | 91–100 | 397af48 | green | COMPLETE |
 | 10 | 101–110 | 17e5d82 | green | COMPLETE |
+| 11 | 111–120 | f08b877 | green | COMPLETE |
 
 ## Summary
-- Completed: 110 / 2500 cycles
+- Completed: 120 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
@@ -135,4 +146,5 @@
 - Batch 8 avg UAT: 90.5
 - Batch 9 avg UAT: 90.2
 - Batch 10 avg UAT: 90.0
-- Next: Batch 11 (cycles 111–120)
+- Batch 11 avg UAT: 90.2
+- Next: Batch 12 (cycles 121–130)
