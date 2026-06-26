@@ -1,0 +1,70 @@
+[project]
+name = "langstitch"
+version = "0.1.0"
+description = "LangStitch SDK — decorators, config, and CLI for building LangGraph applications with a clean project scaffold."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "LangStitch" }]
+keywords = ["langgraph", "langchain", "agents", "llm", "sdk", "langstitch"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Typing :: Typed",
+]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+server = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+]
+graph = [
+  "langgraph>=0.4.0",
+  "langchain-core>=0.3.0",
+]
+llm = [
+  "langchain>=0.3.0",
+]
+http = [
+  "httpx>=0.27.0",
+]
+dev = [
+  "pytest>=8.0",
+]
+all = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "langgraph>=0.4.0",
+  "langchain-core>=0.3.0",
+  "langchain>=0.3.0",
+  "httpx>=0.27.0",
+]
+
+[project.scripts]
+langstitch = "langstitch.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/vijayptiwari/LangStitch"
+Repository = "https://github.com/vijayptiwari/LangStitch"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/langstitch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
