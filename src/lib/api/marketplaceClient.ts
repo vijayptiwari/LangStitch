@@ -79,6 +79,17 @@ export interface PublishInput {
 
 export type PublishPayload = PublishInput & { artifact?: File }
 
+const API_UNAVAILABLE_MSG =
+  'Marketplace API is not reachable. Host the platform API (FastAPI) on a server that can run Python — for example api.langstitch.com — then set PLATFORM_API_BASE in the deploy workflow.'
+
+async function parseJsonResponse<T>(res: Response): Promise<T> {
+  const contentType = res.headers.get('content-type') ?? ''
+  if (!contentType.includes('application/json')) {
+    throw new Error(API_UNAVAILABLE_MSG)
+  }
+  return res.json() as Promise<T>
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: 'include',
@@ -88,14 +99,17 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   if (!res.ok) {
     let message = res.statusText
     try {
-      const body = await res.json()
-      message = (body as { detail?: string }).detail ?? message
-    } catch {
+      const body = await parseJsonResponse<{ detail?: string }>(res)
+      message = body.detail ?? message
+    } catch (e) {
+      if (e instanceof Error && e.message === API_UNAVAILABLE_MSG) {
+        throw e
+      }
       /* fall back to status text */
     }
     throw new Error(message)
   }
-  return res.json() as Promise<T>
+  return parseJsonResponse<T>(res)
 }
 
 export interface BrowseParams {
@@ -160,12 +174,21 @@ export const marketplaceApi = {
       if (!res.ok) {
         let message = res.statusText
         try {
-          const body = await res.json()
-          message = (body as { detail?: string }).detail ?? message
+          const contentType = res.headers.get('content-type') ?? ''
+          if (contentType.includes('application/json')) {
+            const body = await res.json()
+            message = (body as { detail?: string }).detail ?? message
+          } else {
+            message = API_UNAVAILABLE_MSG
+          }
         } catch {
           /* use status text */
         }
         throw new Error(message)
+      }
+      const contentType = res.headers.get('content-type') ?? ''
+      if (!contentType.includes('application/json')) {
+        throw new Error(API_UNAVAILABLE_MSG)
       }
       return res.json() as Promise<{ ok: boolean; status: SubmissionStatus; submission: Submission }>
     }
