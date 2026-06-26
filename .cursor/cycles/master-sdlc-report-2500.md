@@ -93,8 +93,18 @@
 | 98 | Multi-select delete confirm | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 99 | Export eval-dataset warning | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
 | 100 | Export rate-limit 429 message | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 101 | Eval dry-run badge | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 102 | Palette focus ring | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 103 | Shortcuts open eval tab | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 104 | Dirty flag clears on import | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 105 | Help docs link for core | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 106 | toolbar-save visibility E2E | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 107 | Toolbar redo aria-label | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
+| 108 | Collapsible Eval section | APPROVED | N/A | PASSED | 89 | 1 | yes | COMPLETE |
+| 109 | Guardrail search filter | APPROVED | N/A | PASSED | 90 | 1 | yes | COMPLETE |
+| 110 | Ctrl+D node duplicate | APPROVED | N/A | PASSED | 91 | 1 | yes | COMPLETE |
 
-**Progress: 100 / 2500**
+**Progress: 110 / 2500**
 
 ## Batch log
 
@@ -110,9 +120,10 @@
 | 7 | 71–80 | c3e119e | green | COMPLETE |
 | 8 | 81–90 | a3494b6 | green | COMPLETE |
 | 9 | 91–100 | 397af48 | green | COMPLETE |
+| 10 | 101–110 | 5e64b2b | green | COMPLETE |
 
 ## Summary
-- Completed: 100 / 2500 cycles
+- Completed: 110 / 2500 cycles
 - Escalated: none
 - Batch 1 avg UAT: 91.2
 - Batch 2 avg UAT: 90.3
@@ -123,4 +134,5 @@
 - Batch 7 avg UAT: 91.0
 - Batch 8 avg UAT: 90.5
 - Batch 9 avg UAT: 90.2
-- Next: Batch 10 (cycles 101–110)
+- Batch 10 avg UAT: 90.0
+- Next: Batch 11 (cycles 111–120)

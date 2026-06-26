@@ -225,7 +225,7 @@ test.describe('SDLC Batch 5 — cycles 51–60', () => {
       ).__graphStore.getState()
       store.resetProject()
     })
-    await page.getByRole('button', { name: /Reset/i }).click()
+    await page.getByRole('button', { name: 'Reset', exact: true }).click()
     await page.getByTestId('toolbar-redo').click()
     const stored = await page.evaluate(() => localStorage.getItem('langstitch-toolbar-redo-last-used'))
     expect(stored).toBeTruthy()

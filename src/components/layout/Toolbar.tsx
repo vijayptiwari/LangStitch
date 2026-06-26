@@ -244,6 +244,7 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
         <button
           className="btn-secondary"
           data-testid="toolbar-redo"
+          aria-label="Redo last reset"
           title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
           disabled={redoDisabled}
           onClick={() => {
@@ -350,7 +351,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
-              <li><kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab</li>
+              <li data-testid="cycle-103-open-eval-tab">
+                <kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab
+              </li>
               <li><kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node</li>
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
