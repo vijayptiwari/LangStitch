@@ -4,6 +4,11 @@
   "description": "Visual LangGraph canvas — design agent workflows and export Python, built into LangTailor.",
   "version": "0.1.0",
   "publisher": "langstitch",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vijayptiwari/LangStitch.git"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
