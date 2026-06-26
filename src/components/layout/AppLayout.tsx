@@ -13,6 +13,7 @@ import type { NodeKind } from '../../types/graph'
 export function AppLayout() {
   const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const addNode = useGraphStore((s) => s.addNode)
+  const isGraphEmpty = useGraphStore((s) => s.isGraphEmpty)
   const [platformOpen, setPlatformOpen] = useState(false)
   const [platformInitialTab, setPlatformInitialTab] = useState<
     'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy' | 'eval' | undefined
@@ -22,11 +23,15 @@ export function AppLayout() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
         e.preventDefault()
-        setPlatformOpen((open) => !open)
+        if (!isGraphEmpty()) {
+          setPlatformOpen((open) => !open)
+        }
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
-        setPlatformOpen((open) => !open)
+        if (!isGraphEmpty()) {
+          setPlatformOpen((open) => !open)
+        }
       }
       if (e.altKey && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault()
@@ -36,7 +41,7 @@ export function AppLayout() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [isGraphEmpty])
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {

@@ -492,7 +492,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   if (!open) return null
 
   const tabs: { id: Tab; label: string; icon: typeof GitBranch; testId?: string }[] = [
-    { id: 'git', label: 'Git', icon: GitBranch },
+    { id: 'git', label: 'Git', icon: GitBranch, testId: 'platform-tab-git' },
     { id: 'export', label: 'Export', icon: Download },
     { id: 'import', label: 'Import', icon: Upload },
     { id: 'eval', label: 'Eval', icon: TestTube2, testId: 'platform-tab-eval' },

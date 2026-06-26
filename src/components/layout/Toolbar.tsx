@@ -287,10 +287,11 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           <button
             className="btn-secondary"
             data-testid="toolbar-platform"
-            title="Platform (Ctrl+E)"
+            title={graphEmpty ? 'Platform unavailable on empty graph' : 'Platform (Ctrl+E)'}
             aria-label="Open Platform drawer"
             aria-describedby="toolbar-platform-tooltip"
             onClick={onOpenPlatform}
+            disabled={graphEmpty}
             type="button"
           >
             <Server size={16} /> Platform
@@ -351,7 +352,9 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
               <li><kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab</li>
               <li><kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node</li>
-              <li><kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)</li>
+              <li data-testid="cycle-91-focus-search">
+                <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
+              </li>
               <li><kbd>Ctrl</kbd>+<kbd>M</kbd> — Toggle minimap</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
