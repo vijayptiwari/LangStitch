@@ -12,6 +12,7 @@ export const nodeTypes: Record<NodeKind, string> = {
   agent: 'agentNode',
   rag: 'ragNode',
   intent_classifier: 'intentClassifierNode',
+  custom: 'customNode',
 }
 
 export const paletteItems: PaletteItem[] = [

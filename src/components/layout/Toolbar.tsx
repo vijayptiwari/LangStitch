@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
+  Blocks,
   FolderOpen,
   Layers,
   Plus,
@@ -48,7 +49,13 @@ function LangStitchLogo() {
 const REDO_LAST_USED_KEY = 'langstitch-toolbar-redo-last-used'
 const DOCS_URL = 'https://langstitch.com/docs/'
 
-export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
+export function Toolbar({
+  onOpenPlatform,
+  onOpenMarketplace,
+}: {
+  onOpenPlatform: () => void
+  onOpenMarketplace: () => void
+}) {
   const graphDoc = useGraphStore((s) => s.document)
   const isDirty = useGraphStore((s) => s.isDirty)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
@@ -334,6 +341,15 @@ export function Toolbar({ onOpenPlatform }: { onOpenPlatform: () => void }) {
           type="button"
         >
           <Terminal size={16} /> Code
+        </button>
+        <button
+          className="btn-secondary"
+          data-testid="toolbar-marketplace"
+          onClick={onOpenMarketplace}
+          type="button"
+          title="Plugin & connector marketplace"
+        >
+          <Blocks size={16} /> Marketplace
         </button>
         <button
           className="btn-secondary"

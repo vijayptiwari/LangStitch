@@ -59,6 +59,17 @@ Open **http://localhost:5173**
 - **Alt+D** — duplicate the selected node; **right-click** a node for context-menu delete
 - Undo history is capped at 50 steps with a toolbar notice when the limit is reached
 
+### SDK Component Designer
+
+Author your own **custom components** (nodes/connectors/adaptors) visually — no source edits required. Open **Assets → Components** to define a component manifest: identity, theme, input/output ports, a typed config-field schema, and a Python codegen template.
+
+- Custom components appear under **Custom Components** in the palette and drag onto the canvas like built-in nodes.
+- Selecting a custom node shows an **auto-generated property form** from its config-field schema.
+- Components export to Python via their template (imports hoisted/deduped, secret fields emit `os.environ.get(...)` — never inlined) and are listed in `langsmith.json` under `registries.components` (`schema_version 1.2`).
+- Manifests survive the project round-trip and are **portable**: export a single component as `.component.json` and import it into another project (with replace / import-as-copy collision handling).
+
+Built-in nodes are unchanged — the component system is fully additive.
+
 ### Platform API health
 
 `GET /api/health` returns `node-count` (number of nodes in the active graph document) alongside version and build metadata — useful for smoke checks and monitoring.

@@ -25,12 +25,13 @@ case "$ARCH" in
 esac
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-VSIX="$(find "$ROOT/dist-langtailor" -maxdepth 1 -name '*.vsix' | head -1)"
-if [[ -z "$VSIX" ]]; then
+mapfile -t VSIX_FILES < <(find "$ROOT/dist-langtailor" -maxdepth 1 -name '*.vsix' | sort)
+if [[ ${#VSIX_FILES[@]} -eq 0 ]]; then
   echo "No .vsix found in $ROOT/dist-langtailor" >&2
   exit 1
 fi
-echo "Using VSIX: $VSIX"
+echo "Using VSIX files:"
+for f in "${VSIX_FILES[@]}"; do echo "  $f"; done
 
 CURL_API=(curl -fsSL -H "User-Agent: LangTailor-Release-CI" -H "Accept: application/vnd.github+json")
 CURL_DL=(curl -fsSL -L -H "User-Agent: LangTailor-Release-CI" -H "Accept: application/octet-stream")
@@ -82,10 +83,12 @@ EXT_DIR="$BUNDLE/extensions"
 DATA_DIR="$BUNDLE/user-data"
 mkdir -p "$EXT_DIR" "$DATA_DIR"
 
-echo "Installing extension into portable bundle ..."
-"$CODIUM" --install-extension "$VSIX" --force \
-  --extensions-dir "$EXT_DIR" \
-  --user-data-dir "$DATA_DIR"
+echo "Installing extensions into portable bundle ..."
+for VSIX in "${VSIX_FILES[@]}"; do
+  "$CODIUM" --install-extension "$VSIX" --force \
+    --extensions-dir "$EXT_DIR" \
+    --user-data-dir "$DATA_DIR"
+done
 
 # codium --install-extension may leave Electron running and block hdiutil.
 pkill -f "VSCodium.app" 2>/dev/null || true

@@ -28,6 +28,7 @@ import { SubgraphNode } from './nodes/SubgraphNode'
 import { AgentNode } from './nodes/AgentNode'
 import { RagNode } from './nodes/RagNode'
 import { IntentClassifierNode } from './nodes/IntentClassifierNode'
+import { CustomComponentNode } from './nodes/CustomComponentNode'
 
 const nodeTypes = {
   startNode: StartNode,
@@ -40,6 +41,7 @@ const nodeTypes = {
   agentNode: AgentNode,
   ragNode: RagNode,
   intentClassifierNode: IntentClassifierNode,
+  customNode: CustomComponentNode,
 }
 
 const edgeTypes = {

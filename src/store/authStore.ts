@@ -15,6 +15,7 @@ interface AuthState {
   enabled: boolean
   providers: AuthProvider[]
   user: AuthUser | null
+  isAdmin: boolean
   /** True when auth is on and nobody is logged in → show the login screen. */
   needsLogin: boolean
   refresh: () => Promise<void>
@@ -27,6 +28,7 @@ function derive(ctx: AuthContext) {
     enabled: ctx.enabled,
     providers: ctx.providers,
     user: ctx.user,
+    isAdmin: Boolean(ctx.is_admin),
     needsLogin: ctx.enabled && !ctx.user,
   }
 }
@@ -36,6 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   enabled: false,
   providers: [],
   user: null,
+  isAdmin: false,
   needsLogin: false,
 
   refresh: async () => {

@@ -1,8 +1,9 @@
-import { Box, GitBranch, Sparkles } from 'lucide-react'
+import { Box, GitBranch, Puzzle, Sparkles } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import { NodeDesigner } from './NodeDesigner'
 import { GraphDesigner } from './GraphDesigner'
 import { AssetDesignersPanel } from './AssetDesignersPanel'
+import { ComponentDesignerPanel } from './ComponentDesignerPanel'
 
 export function DesignerPanel() {
   const designerTab = useGraphStore((s) => s.designerTab)
@@ -40,10 +41,20 @@ export function DesignerPanel() {
           <Sparkles size={14} />
           Assets
         </button>
+        <button
+          type="button"
+          data-testid="designer-tab-components"
+          className={`designer-tab ${designerTab === 'components' ? 'active' : ''}`}
+          onClick={() => setDesignerTab('components')}
+        >
+          <Puzzle size={14} />
+          Components
+        </button>
       </nav>
       {designerTab === 'node' && <NodeDesigner />}
       {designerTab === 'graph' && <GraphDesigner />}
       {designerTab === 'assets' && <AssetDesignersPanel />}
+      {designerTab === 'components' && <ComponentDesignerPanel />}
     </aside>
   )
 }

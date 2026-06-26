@@ -4,10 +4,11 @@
 $ErrorActionPreference = "Stop"
 
 $VsixDir = Join-Path $PSScriptRoot "..\..\dist-langtailor"
-$Vsix = Get-ChildItem -Path $VsixDir -Filter "*.vsix" | Select-Object -First 1
-if (-not $Vsix) { throw "No .vsix found in $VsixDir" }
+$VsixFiles = Get-ChildItem -Path $VsixDir -Filter "*.vsix"
+if (-not $VsixFiles) { throw "No .vsix found in $VsixDir" }
 
-Write-Host "Using VSIX: $($Vsix.FullName)"
+Write-Host "Using VSIX files:"
+$VsixFiles | ForEach-Object { Write-Host "  $($_.FullName)" }
 
 $release = Invoke-RestMethod -Uri "https://api.github.com/repos/VSCodium/vscodium/releases/latest"
 $asset = $release.assets | Where-Object { $_.name -match "^VSCodium-win32-x64-.+\.zip$" } | Select-Object -First 1
@@ -34,9 +35,11 @@ if (-not (Test-Path $codium)) {
 }
 if (-not (Test-Path $codium)) { throw "codium.cmd not found under $extractRoot" }
 
-Write-Host "Installing extension into portable VSCodium ..."
-& $codium --install-extension $Vsix.FullName --force
-if ($LASTEXITCODE -ne 0) { throw "codium --install-extension failed with exit $LASTEXITCODE" }
+Write-Host "Installing extensions into portable VSCodium ..."
+foreach ($Vsix in $VsixFiles) {
+  & $codium --install-extension $Vsix.FullName --force
+  if ($LASTEXITCODE -ne 0) { throw "codium --install-extension failed for $($Vsix.Name) with exit $LASTEXITCODE" }
+}
 
 $outZip = Join-Path $env:GITHUB_WORKSPACE "LangTailor-win-x64-portable.zip"
 if (Test-Path $outZip) { Remove-Item -Force $outZip }

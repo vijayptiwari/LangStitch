@@ -5,6 +5,7 @@ All notable changes to LangStitch are documented here.
 ## [Unreleased]
 
 ### Added
+- **SDK Component Designer** (SDLC Cycle 141): a manifest-driven **Components** designer tab for visually authoring custom nodes/connectors/adaptors — define identity, theme, ports, a typed config-field schema, and a safe Python codegen template with no manual file edits. Custom components appear under **Custom Components** in the palette, drag onto the canvas, and render an auto-generated property form on selection. Components participate in Python export/codegen via their template (imports hoisted/deduped, secrets emit `os.environ.get(...)`), are listed in `langsmith.json` `registries.components` (`schema_version 1.2`), survive the project round-trip, and are portable via single-component `.component.json` export/import with collision handling (replace / import-as-copy). Built-in default nodes are unchanged (additive `'custom'` kind). UAT **ACCEPTED 96/100**; E2E `e2e/sdk-component-designer.spec.ts` (6/6).
 - **LangSmith Eval Runner MVP** (SDLC Cycle 1): Platform drawer **Eval** tab, dataset config, dry-run validation, `POST /api/eval/run`, `eval` section in `langsmith.json`, generated `eval_runner.py`, E2E coverage (`e2e/eval-runner.spec.ts`).
 - SDLC subagents and `langstitch-sdlc-cycle` skill under `.cursor/`.
 - **Cycles 2–9:** Graph Designer eval summary, Ctrl+S save, health API version, export format memory, LangSmith eval link, save timestamp, shortcuts modal (`e2e/cycles-ux.spec.ts`).

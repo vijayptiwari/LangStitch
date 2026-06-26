@@ -13,6 +13,7 @@ import type {
   AgentDefinition,
   BusinessRuleDefinition,
   CanvasSnapshot,
+  CustomNodeData,
   GraphDocument,
   GraphSettings,
   GuardrailDefinition,
@@ -25,9 +26,12 @@ import type {
   StateField,
   ToolDefinition,
 } from '../types/graph'
+import type { ComponentManifest } from '../types/component'
 import { createDefaultDocument, createSubgraph } from '../lib/codegen/pythonGenerator'
 import { DEFAULT_GRAPH_SETTINGS, MAX_UNDO_STACK_DEPTH, mergeGraphSettings } from '../lib/designerConstants'
 import { getNodeTheme } from '../lib/nodeTheme'
+import { buildDefaultConfig } from '../lib/customComponents'
+import { nodeTypes } from '../lib/nodeRegistry'
 import {
   createEmptySubgraphCanvas,
   MAIN_GRAPH_ID,
@@ -88,7 +92,7 @@ interface GraphStore {
   edges: Edge[]
   selectedNodeId: string | null
   showCodePanel: boolean
-  designerTab: 'node' | 'graph' | 'assets'
+  designerTab: 'node' | 'graph' | 'assets' | 'components'
   isDirty: boolean
 
   /** Replace all nodes on the active canvas. */
@@ -114,7 +118,7 @@ interface GraphStore {
 
   setDocumentMeta: (meta: Partial<Pick<GraphDocument, 'name' | 'description'>>) => void
   updateGraphSettings: (settings: Partial<GraphSettings>) => void
-  setDesignerTab: (tab: 'node' | 'graph' | 'assets') => void
+  setDesignerTab: (tab: 'node' | 'graph' | 'assets' | 'components') => void
   addStateField: (field: StateField) => void
   updateStateField: (id: string, field: Partial<StateField>) => void
   removeStateField: (id: string) => void
@@ -152,6 +156,15 @@ interface GraphStore {
   addRagPipeline: (pipeline: RagPipelineConfig) => void
   updateRagPipeline: (id: string, pipeline: Partial<RagPipelineConfig>) => void
   removeRagPipeline: (id: string) => void
+
+  /** Component registry CRUD (mirrors addToolDefinition etc.). */
+  addComponentManifest: (manifest: ComponentManifest) => void
+  updateComponentManifest: (id: string, patch: Partial<ComponentManifest>) => void
+  removeComponentManifest: (id: string) => void
+  /** Count placed instances of a custom component across all canvases. */
+  countComponentInstances: (componentId: string) => number
+  /** Build and place a custom node from a manifest with default config. */
+  placeCustomNode: (componentId: string, position: { x: number; y: number }) => void
 
   /** Serialize document, canvas snapshots, and navigation for save/export. */
   getProjectPayload: () => {
@@ -739,6 +752,65 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       },
     }),
 
+  addComponentManifest: (manifest) =>
+    set({
+      document: {
+        ...get().document,
+        componentRegistry: [...(get().document.componentRegistry ?? []), manifest],
+      },
+      isDirty: true,
+    }),
+
+  updateComponentManifest: (id, patch) =>
+    set({
+      document: {
+        ...get().document,
+        componentRegistry: (get().document.componentRegistry ?? []).map((m) =>
+          m.id === id ? { ...m, ...patch } : m,
+        ),
+      },
+      isDirty: true,
+    }),
+
+  removeComponentManifest: (id) =>
+    set({
+      document: {
+        ...get().document,
+        componentRegistry: (get().document.componentRegistry ?? []).filter((m) => m.id !== id),
+      },
+      isDirty: true,
+    }),
+
+  countComponentInstances: (componentId) => {
+    const state = get()
+    const canvases = persistActiveCanvas(state)
+    let count = 0
+    for (const snap of Object.values(canvases)) {
+      for (const n of snap.nodes) {
+        if (n.data.kind === 'custom' && n.data.componentId === componentId) count += 1
+      }
+    }
+    return count
+  },
+
+  placeCustomNode: (componentId, position) => {
+    const manifest = (get().document.componentRegistry ?? []).find((m) => m.id === componentId)
+    if (!manifest) return
+    const data: CustomNodeData = {
+      kind: 'custom',
+      label: manifest.label,
+      description: manifest.description,
+      componentId: manifest.id,
+      config: buildDefaultConfig(manifest),
+    }
+    get().addNode({
+      id: `custom-${Date.now().toString(36)}`,
+      type: nodeTypes.custom,
+      position,
+      data,
+    })
+  },
+
   getProjectPayload: () => {
     const state = get()
     const canvasByGraph = persistActiveCanvas(state)
@@ -789,6 +861,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       businessRuleRegistry: document.businessRuleRegistry ?? [],
       personaRegistry: document.personaRegistry ?? [],
       ragPipelines: document.ragPipelines ?? [],
+      componentRegistry: document.componentRegistry ?? [],
       subgraphs: (document.subgraphs ?? []).map((sg) => ({
         ...sg,
         parentId: sg.parentId ?? (sg.id === MAIN_GRAPH_ID ? null : MAIN_GRAPH_ID),

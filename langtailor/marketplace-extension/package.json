@@ -1,0 +1,55 @@
+{
+  "name": "langtailor-marketplace",
+  "displayName": "LangTailor Marketplace",
+  "description": "Sign in to LangStitch and keep your acquired plugins & connectors installed and up to date.",
+  "version": "0.1.0",
+  "publisher": "langstitch",
+  "license": "MIT",
+  "icon": "icon.png",
+  "homepage": "https://langtailor.langstitch.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vijayptiwari/LangStitch.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["langstitch", "langtailor", "marketplace", "plugins", "connectors"],
+  "main": "./dist/extension.js",
+  "activationEvents": ["onStartupFinished"],
+  "contributes": {
+    "commands": [
+      { "command": "langtailor.marketplace.signIn", "title": "LangStitch: Sign In" },
+      { "command": "langtailor.marketplace.signOut", "title": "LangStitch: Sign Out" },
+      { "command": "langtailor.marketplace.sync", "title": "LangStitch: Sync My Plugins" },
+      { "command": "langtailor.marketplace.openPortal", "title": "LangStitch: Open Marketplace Portal" }
+    ],
+    "configuration": {
+      "title": "LangTailor Marketplace",
+      "properties": {
+        "langtailor.marketplace.apiBaseUrl": {
+          "type": "string",
+          "default": "https://langstitch.com",
+          "description": "Base URL of the LangStitch platform (the API is served under <base>/api)."
+        },
+        "langtailor.marketplace.autoSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically install and update acquired plugins when the IDE starts."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "build": "tsc -p ./",
+    "package": "vsce package --no-dependencies --out ../../dist-langtailor"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.0",
+    "typescript": "~5.8.3"
+  }
+}

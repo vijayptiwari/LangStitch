@@ -60,7 +60,7 @@ export function generateLangsmithJson(doc: GraphDocument): string {
           }
         : {}),
       langstitch: {
-        schema_version: '1.1',
+        schema_version: '1.2',
         generator_version: LANGSTITCH_GENERATOR_VERSION,
         project_name: doc.name,
         python_version: '3.13',
@@ -84,6 +84,7 @@ export function generateLangsmithJson(doc: GraphDocument): string {
           business_rules: (doc.businessRuleRegistry ?? []).map((r) => r.id),
           personas: (doc.personaRegistry ?? []).map((p) => p.id),
           rag_pipelines: (doc.ragPipelines ?? []).map((r) => r.id),
+          components: (doc.componentRegistry ?? []).map((c) => c.id),
           tools: (doc.toolRegistry ?? []).map((t) => t.id),
           agents: (doc.agentRegistry ?? []).map((a) => a.id),
         },

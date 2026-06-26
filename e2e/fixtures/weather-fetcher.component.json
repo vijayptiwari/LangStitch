@@ -1,0 +1,28 @@
+{
+  "langstitchComponent": "1.0",
+  "exportedAt": "2026-06-26T00:00:00.000Z",
+  "manifest": {
+    "schemaVersion": "1.0",
+    "id": "weather_fetcher",
+    "label": "Weather Fetcher",
+    "category": "connector",
+    "description": "Fetches current weather for a city",
+    "ports": [
+      { "id": "in", "label": "Input", "side": "left", "multiplicity": "single" },
+      { "id": "out", "label": "Output", "side": "right", "multiplicity": "single" }
+    ],
+    "configFields": [
+      { "id": "city", "label": "City", "kind": "string", "required": true, "defaultValue": "London" },
+      { "id": "api_key", "label": "API key", "kind": "secret" }
+    ],
+    "theme": { "color": "#22c55e", "colorLight": "#86efac", "icon": "cloud", "typeLabel": "Weather" },
+    "codegen": {
+      "template": "def {{nodeName}}(state: State) -> dict:\n    \"\"\"WEATHER_SENTINEL {{label}}\"\"\"\n    city = {{field.city}}\n    api_key = {{field.api_key}}\n    return {\"{{outputKey}}\": city}\n",
+      "imports": ["import os"],
+      "dependencies": [],
+      "async": false
+    },
+    "author": "e2e",
+    "version": "1.0.0"
+  }
+}

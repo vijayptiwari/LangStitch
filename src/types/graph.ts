@@ -1,3 +1,5 @@
+import type { ComponentManifest } from './component'
+
 export type NodeKind =
   | 'start'
   | 'end'
@@ -9,6 +11,7 @@ export type NodeKind =
   | 'agent'
   | 'rag'
   | 'intent_classifier'
+  | 'custom'
 
 export type StateFieldType = 'str' | 'int' | 'float' | 'bool' | 'list' | 'dict' | 'messages'
 
@@ -208,6 +211,14 @@ export interface EndNodeData extends BaseNodeData {
   kind: 'end'
 }
 
+/** Generic data carrier for any manifest-driven custom component instance (§5.1). */
+export interface CustomNodeData extends BaseNodeData {
+  kind: 'custom'
+  componentId: string
+  config: Record<string, unknown>
+  outputKey?: string
+}
+
 export type StitchNodeData =
   | StartNodeData
   | EndNodeData
@@ -219,6 +230,7 @@ export type StitchNodeData =
   | AgentNodeData
   | RagNodeData
   | IntentClassifierNodeData
+  | CustomNodeData
 
 export interface LifecycleHooks {
   onStartup: string
@@ -380,7 +392,7 @@ export interface SubgraphDefinition {
 }
 
 export interface GraphDocument {
-  version: '1.0' | '1.1'
+  version: '1.0' | '1.1' | '1.2'
   name: string
   description?: string
   stateFields: StateField[]
@@ -396,6 +408,7 @@ export interface GraphDocument {
   businessRuleRegistry: BusinessRuleDefinition[]
   personaRegistry: PersonaDefinition[]
   ragPipelines: RagPipelineConfig[]
+  componentRegistry: ComponentManifest[]
 }
 
 export interface CanvasViewport {

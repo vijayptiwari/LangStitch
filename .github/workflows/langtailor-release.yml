@@ -25,17 +25,21 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Build VSIX
+      - name: Build VSIX bundles
         run: |
           npm ci
           npm run build:webview
+          mkdir -p dist-langtailor
           cd langtailor/extension
           npm install
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             npm version "${{ inputs.version }}" --no-git-tag-version --allow-same-version
           fi
           npm run compile
-          mkdir -p ../../dist-langtailor
+          npx @vscode/vsce package --no-dependencies --out ../../dist-langtailor
+          cd ../marketplace-extension
+          npm install
+          npm run compile
           npx @vscode/vsce package --no-dependencies --out ../../dist-langtailor
 
       - uses: actions/upload-artifact@v4

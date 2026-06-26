@@ -8,6 +8,7 @@ when auth is enabled) to create tables.
 from __future__ import annotations
 
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Iterator
 
 from .config import settings
@@ -47,6 +48,19 @@ def init_db() -> None:
 
     session_factory = _ensure_engine()
     Base.metadata.create_all(bind=session_factory.kw["bind"])
+
+
+def run_migrations() -> None:
+    """Apply Alembic migrations when a database URL is configured."""
+    if not settings.database_url:
+        return
+    ini = Path(__file__).resolve().parent.parent / "alembic.ini"
+    if not ini.is_file():
+        return
+    from alembic import command
+    from alembic.config import Config
+
+    command.upgrade(Config(str(ini)), "head")
 
 
 @contextmanager

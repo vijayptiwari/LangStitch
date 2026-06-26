@@ -1,5 +1,8 @@
 node_modules/
 /test-results/
 /playwright-report/
+/playwright-report-marketplace/
 /blob-report/
 /playwright/.cache/
+/.e2e-marketplace.db
+/.e2e-artifacts/

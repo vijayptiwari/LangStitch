@@ -6,6 +6,7 @@ import { CodePanel } from './CodePanel'
 import { NodePalette } from '../panels/NodePalette'
 import { DesignerPanel } from '../designer/DesignerPanel'
 import { PlatformDrawer } from '../platform/PlatformDrawer'
+import { MarketplacePortal } from '../marketplace/MarketplacePortal'
 import { useGraphStore } from '../../store/graphStore'
 import { createNodeData, nodeTypes, DRAG_MIME } from '../../lib/nodeRegistry'
 import type { NodeKind } from '../../types/graph'
@@ -13,8 +14,10 @@ import type { NodeKind } from '../../types/graph'
 export function AppLayout() {
   const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const addNode = useGraphStore((s) => s.addNode)
+  const placeCustomNode = useGraphStore((s) => s.placeCustomNode)
   const isGraphEmpty = useGraphStore((s) => s.isGraphEmpty)
   const [platformOpen, setPlatformOpen] = useState(false)
+  const [marketplaceOpen, setMarketplaceOpen] = useState(false)
   const [platformInitialTab, setPlatformInitialTab] = useState<
     'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy' | 'eval' | undefined
   >()
@@ -52,8 +55,8 @@ export function AppLayout() {
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault()
-      const kind = event.dataTransfer.getData(DRAG_MIME) as NodeKind
-      if (!kind) return
+      const payload = event.dataTransfer.getData(DRAG_MIME)
+      if (!payload) return
 
       const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect()
       const position = {
@@ -61,6 +64,13 @@ export function AppLayout() {
         y: event.clientY - bounds.top - 24,
       }
 
+      if (payload.startsWith('custom:')) {
+        const componentId = payload.slice('custom:'.length)
+        placeCustomNode(componentId, position)
+        return
+      }
+
+      const kind = payload as NodeKind
       addNode({
         id: `${kind}-${Date.now().toString(36)}`,
         type: nodeTypes[kind],
@@ -68,7 +78,7 @@ export function AppLayout() {
         data: createNodeData(kind),
       })
     },
-    [addNode],
+    [addNode, placeCustomNode],
   )
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -85,7 +95,10 @@ export function AppLayout() {
       >
         <span data-testid="cycle-150-skip-link">Skip to canvas</span>
       </a>
-      <Toolbar onOpenPlatform={() => setPlatformOpen(true)} />
+      <Toolbar
+        onOpenPlatform={() => setPlatformOpen(true)}
+        onOpenMarketplace={() => setMarketplaceOpen(true)}
+      />
       <div className="workspace">
         <aside className="sidebar left">
           <NodePalette />
@@ -113,6 +126,7 @@ export function AppLayout() {
         }}
         initialTab={platformInitialTab}
       />
+      <MarketplacePortal open={marketplaceOpen} onClose={() => setMarketplaceOpen(false)} />
     </div>
   )
 }

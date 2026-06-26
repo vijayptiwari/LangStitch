@@ -1,6 +1,6 @@
 import { Handle, Position } from '@xyflow/react'
 import type { NodeKind } from '../../../types/graph'
-import { getNodeTheme } from '../../../lib/nodeTheme'
+import { getNodeTheme, type NodeTheme } from '../../../lib/nodeTheme'
 import type { StitchNodeData } from '../../../types/graph'
 
 export type StitchShellProps = {
@@ -15,6 +15,12 @@ interface SourceHandle {
   top: string
 }
 
+interface TargetHandle {
+  id: string
+  label: string
+  top: string
+}
+
 export function BaseNodeShell({
   kind,
   title,
@@ -24,6 +30,8 @@ export function BaseNodeShell({
   showTarget = true,
   showSource = true,
   sourceHandles,
+  targetHandles,
+  theme: themeOverride,
 }: {
   kind: NodeKind
   title: string
@@ -33,8 +41,10 @@ export function BaseNodeShell({
   showTarget?: boolean
   showSource?: boolean
   sourceHandles?: SourceHandle[]
+  targetHandles?: TargetHandle[]
+  theme?: NodeTheme
 }) {
-  const theme = getNodeTheme(kind)
+  const theme = themeOverride ?? getNodeTheme(kind)
   const Icon = theme.icon
 
   return (
@@ -52,7 +62,19 @@ export function BaseNodeShell({
       <div className="graph-node__shine" aria-hidden />
       <div className="graph-node__accent-bar" aria-hidden />
 
-      {showTarget && (
+      {targetHandles?.map((h) => (
+        <Handle
+          key={h.id}
+          id={h.id}
+          type="target"
+          position={Position.Left}
+          className="graph-handle graph-handle--target"
+          style={{ top: h.top }}
+          title={h.label}
+        />
+      ))}
+
+      {showTarget && !targetHandles?.length && (
         <Handle
           type="target"
           position={Position.Left}

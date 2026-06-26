@@ -11,9 +11,9 @@ plus the drag-and-drop graph canvas and Python export, in one installable app.
 
 ```
 LangTailor (Code-OSS based desktop IDE)
-└── built-in extension: langtailor-canvas
-    ├── extension host  (extension/src/extension.ts)  — custom editor for *.langstitch.json
-    └── webview         (built from ../src via vite.webview.config.ts) — the React canvas
+└── built-in extensions
+    ├── langtailor-canvas — custom editor for *.langstitch.json
+    └── langtailor-marketplace — sign in, sync acquired plugins/connectors
 ```
 
 The canvas reuses the existing LangStitch React code (`/src`); a Vite build
@@ -48,7 +48,18 @@ npm run build:webview
 cd langtailor/extension
 npm install
 npm run build        # builds webview + compiles extension
-# then press F5 in VS Code (Run "LangTailor Canvas Extension")
+# Then press F5 in VS Code (Run "LangTailor Canvas Extension")
+
+### Marketplace extension (sign-in + plugin sync)
+
+```bash
+cd langtailor/marketplace-extension
+npm install
+npm run build
+# F5 — "LangTailor Marketplace Extension"
+```
+
+Sign in with Google/Microsoft/LinkedIn, then acquired marketplace plugins install and update automatically.
 ```
 
 Open or create a `*.langstitch.json` file to launch the canvas editor.

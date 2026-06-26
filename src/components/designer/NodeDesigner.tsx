@@ -7,6 +7,7 @@ import {
   ROUTER_TEMPLATES,
 } from '../../lib/designerConstants'
 import { Plus, Trash2 } from 'lucide-react'
+import { ManifestConfigForm } from './ManifestConfigForm'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -601,6 +602,10 @@ export function NodeDesigner() {
               <textarea className="textarea code" rows={4} value={data.outputMapping} onChange={(e) => set({ outputMapping: e.target.value })} />
             </Field>
           </Section>
+        )}
+
+        {data.kind === 'custom' && (
+          <ManifestConfigForm nodeId={node.id} data={data} set={set} />
         )}
 
         {(data.kind === 'start' || data.kind === 'end') && (

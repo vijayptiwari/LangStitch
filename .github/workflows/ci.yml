@@ -44,5 +44,8 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
 
+      - name: Run marketplace E2E tests
+        run: npm run test:e2e:marketplace
+
       - name: Run basic agent smoke test
         run: python runtime/basic_agent.py

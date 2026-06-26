@@ -28,9 +28,11 @@ from .auth import (
     reset_current_user_id,
     router as auth_router,
     set_current_user_id,
+    user_id_from_authorization,
 )
 from .config import settings
 from .eval_service import EvalConfigInput, run_eval_job
+from .marketplace import router as marketplace_router
 
 BUILD_TIME = datetime.now(timezone.utc).isoformat()
 
@@ -63,8 +65,26 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# Paths that never require authentication.
-_PUBLIC_AUTH_PREFIXES = ("/api/health", "/api/auth", "/api/openapi.json")
+# Paths that never require authentication at the middleware layer. Marketplace
+# browse is public; its mutating/profile endpoints enforce auth themselves via
+# the request-scoped user id (see server/marketplace.py).
+_PUBLIC_AUTH_PREFIXES = (
+    "/api/health",
+    "/api/auth",
+    "/api/openapi.json",
+    "/api/marketplace",
+)
+
+
+def _bearer_user_id(scope) -> str | None:
+    """Resolve a user id from an Authorization: Bearer header in an ASGI scope."""
+    for key, value in scope.get("headers", []):
+        if key == b"authorization":
+            try:
+                return user_id_from_authorization(value.decode("latin-1"))
+            except Exception:  # noqa: BLE001
+                return None
+    return None
 
 
 class AuthMiddleware:
@@ -81,7 +101,7 @@ class AuthMiddleware:
         path = scope.get("path", "")
         method = scope.get("method", "GET")
         session = scope.get("session") or {}
-        user_id = session.get("user_id")
+        user_id = session.get("user_id") or _bearer_user_id(scope)
         is_api = path.startswith("/api/")
         is_public = any(path.startswith(p) for p in _PUBLIC_AUTH_PREFIXES)
         if is_api and method != "OPTIONS" and not is_public and not user_id:
@@ -109,10 +129,13 @@ if settings.auth_enabled:
         https_only=settings.cookie_secure,
         same_site=settings.cookie_same_site,
         max_age=settings.session_max_age,
+        # Share the session across subdomains (IDE + marketplace) when set.
+        domain=settings.cookie_domain or None,
     )
 
-# With cookie-based sessions we cannot use a wildcard origin; pin to the frontend.
-_cors_origins = [settings.frontend_url] if settings.auth_enabled else ["*"]
+# With cookie-based sessions we cannot use a wildcard origin; pin to the
+# configured sites (IDE + marketplace + any explicit CORS origins).
+_cors_origins = settings.cors_origins if settings.auth_enabled else ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
@@ -122,14 +145,21 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(marketplace_router)
 
 
 @app.on_event("startup")
 def _on_startup() -> None:
     if settings.auth_enabled:
-        from .db import init_db
+        from .db import init_db, run_migrations
+        from .marketplace import seed_marketplace
 
+        run_migrations()
         init_db()
+        try:
+            seed_marketplace()
+        except Exception:  # noqa: BLE001 - seeding is best-effort, never fatal
+            pass
 
 WORKSPACE_ROOT = Path(os.environ.get("LANGSTITCH_WORKSPACE", Path.home() / ".langstitch" / "workspaces"))
 WORKSPACE_ROOT.mkdir(parents=True, exist_ok=True)
@@ -142,6 +172,7 @@ DOCUMENT_KEYS = {
     "version", "name", "description", "stateFields", "subgraphs", "activeSubgraphId",
     "settings", "remoteGraphs", "toolRegistry", "agentRegistry", "mcpServers",
     "skillRegistry", "guardrailRegistry", "businessRuleRegistry", "personaRegistry", "ragPipelines",
+    "componentRegistry",
 }
 
 

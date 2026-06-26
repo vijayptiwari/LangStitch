@@ -14,8 +14,11 @@ services:
         required: false
     environment:
       LANGSTITCH_WORKSPACE: /data/workspaces
+      LANGSTITCH_ARTIFACTS_ROOT: /data/artifacts
+      MYSQL_HOST: db
     volumes:
       - langstitch-workspaces:/data/workspaces
+      - langstitch-artifacts:/data/artifacts
     depends_on:
       - db
     restart: unless-stopped
@@ -48,3 +51,4 @@ services:
 volumes:
   langstitch-workspaces:
   langstitch-mysql:
+  langstitch-artifacts:

@@ -6,12 +6,28 @@
 services:
   api:
     image: ghcr.io/vijayptiwari/langstitch-api:latest
+    # Auth, OAuth, SMTP, DB, and marketplace/subdomain settings come from .env
+    # (see .env.example). For marketplace.langstitch.com set, at minimum:
+    #   LANGSTITCH_AUTH_ENABLED=true
+    #   LANGSTITCH_COOKIE_DOMAIN=.langstitch.com
+    #   LANGSTITCH_COOKIE_SECURE=true
+    #   LANGSTITCH_FRONTEND_URL=https://langstitch.com
+    #   LANGSTITCH_MARKETPLACE_URL=https://marketplace.langstitch.com
+    #   LANGSTITCH_API_BASE_URL=https://langstitch.com   (canonical OAuth callback host)
+    env_file:
+      - path: .env
+        required: false
     environment:
       LANGSTITCH_WORKSPACE: /data/workspaces
+      LANGSTITCH_ARTIFACTS_ROOT: /data/artifacts
     volumes:
       - langstitch-workspaces:/data/workspaces
+      - langstitch-artifacts:/data/artifacts
     restart: unless-stopped
 
+  # One web container serves both langstitch.com and marketplace.langstitch.com;
+  # the SPA boots the marketplace when the Host is marketplace.langstitch.com.
+  # Point both DNS records at whatever fronts this service (LB / TLS proxy).
   web:
     image: ghcr.io/vijayptiwari/langstitch-web:latest
     ports:
@@ -22,3 +38,4 @@ services:
 
 volumes:
   langstitch-workspaces:
+  langstitch-artifacts:

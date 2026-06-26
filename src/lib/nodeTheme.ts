@@ -1,5 +1,9 @@
-import type { NodeKind } from '../types/graph'
+import type { Node } from '@xyflow/react'
+import type { NodeKind, StitchNodeData } from '../types/graph'
+import type { ComponentManifest } from '../types/component'
+import { resolveIcon } from './customComponents'
 import {
+  Box,
   Brain,
   Bot,
   Code2,
@@ -124,10 +128,42 @@ export const NODE_THEMES: Record<NodeKind, NodeTheme> = {
     edgeColor: '#e879f9',
     icon: GitBranch,
   },
+  custom: {
+    kind: 'custom',
+    typeLabel: 'Custom',
+    color: '#7c89ff',
+    colorLight: '#a5b0ff',
+    gradient: 'linear-gradient(135deg, rgba(124, 137, 255, 0.26) 0%, rgba(99, 102, 241, 0.1) 100%)',
+    glow: 'rgba(124, 137, 255, 0.48)',
+    edgeColor: '#7c89ff',
+    icon: Box,
+  },
 }
 
 export function getNodeTheme(kind: NodeKind): NodeTheme {
   return NODE_THEMES[kind]
+}
+
+/**
+ * Resolve the rendered theme for a node. For `custom` nodes, overlay the
+ * manifest theme (color/icon/typeLabel) onto the `custom` base theme.
+ */
+export function getThemeForNode(
+  node: Node<StitchNodeData>,
+  registry?: ComponentManifest[],
+): NodeTheme {
+  const base = NODE_THEMES[node.data.kind]
+  if (node.data.kind !== 'custom') return base
+  const manifest = (registry ?? []).find((m) => m.id === node.data.componentId)
+  if (!manifest) return base
+  return {
+    ...base,
+    color: manifest.theme.color || base.color,
+    colorLight: manifest.theme.colorLight || base.colorLight,
+    edgeColor: manifest.theme.color || base.edgeColor,
+    typeLabel: manifest.theme.typeLabel || base.typeLabel,
+    icon: resolveIcon(manifest.theme.icon),
+  }
 }
 
 export function getNodeColor(kind: string | undefined): string {

@@ -13,6 +13,7 @@ export interface AuthContext {
   enabled: boolean
   providers: AuthProvider[]
   user: AuthUser | null
+  is_admin?: boolean
 }
 
 /**
@@ -26,16 +27,22 @@ export async function fetchAuthContext(): Promise<AuthContext> {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
     })
-    if (!res.ok) return { enabled: false, providers: [], user: null }
+    if (!res.ok) return { enabled: false, providers: [], user: null, is_admin: false }
     return (await res.json()) as AuthContext
   } catch {
-    return { enabled: false, providers: [], user: null }
+    return { enabled: false, providers: [], user: null, is_admin: false }
   }
 }
 
 /** Full-page redirect into the provider's consent screen. */
 export function startLogin(provider: AuthProvider): void {
-  window.location.href = `${API_BASE}/auth/login/${provider}`
+  const params = new URLSearchParams()
+  if (typeof window !== 'undefined') {
+    // Return to whichever site (IDE or marketplace) the login started from.
+    params.set('return_to', window.location.origin + window.location.pathname)
+  }
+  const query = params.toString()
+  window.location.href = `${API_BASE}/auth/login/${provider}${query ? `?${query}` : ''}`
 }
 
 export async function logout(): Promise<void> {

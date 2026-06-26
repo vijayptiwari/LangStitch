@@ -11,9 +11,11 @@ import type {
   SubgraphDefinition,
   ToolDefinition,
 } from '../../types/graph'
+import type { ComponentManifest } from '../../types/component'
 import { slugify } from '../nodeRegistry'
 import { DEFAULT_GRAPH_SETTINGS, mergeGraphSettings } from '../designerConstants'
 import { MAIN_GRAPH_ID } from '../subgraphCanvas'
+import { buildRenderContext, renderTemplate } from './templateEngine'
 
 function stateFieldToPython(field: StateField): string {
   const typeMap: Record<StateField['type'], string> = {
@@ -329,6 +331,7 @@ function generateNodeFunction(
   remoteGraphs: RemoteGraphRef[],
   toolRegistry: ToolDefinition[],
   agentRegistry: AgentDefinition[],
+  componentRegistry: ComponentManifest[] = [],
 ): string {
   const data = node.data
   const fnName = slugify(node.id)
@@ -386,9 +389,44 @@ function generateNodeFunction(
       }
       return `def ${fnName}(state: State) -> dict:\n    """Local subgraph: ${data.subgraphId || 'UNSET'}"""\n    # Compiled subgraph module invoked here\n    subgraph_input = ${data.inputMapping || '{}'}\n    # result = compiled_subgraph.invoke(subgraph_input)\n    return ${data.outputMapping || '{}'}\n`
     }
+    case 'custom': {
+      const manifest = componentRegistry.find((c) => c.id === data.componentId)
+      if (!manifest) {
+        return `def ${fnName}(state: State) -> dict:\n    """Missing component: ${data.componentId}"""\n    return {}\n`
+      }
+      const ctx = buildRenderContext({
+        nodeName: fnName,
+        label: data.label,
+        description: data.description ?? manifest.description ?? data.label,
+        outputKey: data.outputKey ?? '',
+        configFields: manifest.configFields.map((f) => ({ id: f.id, kind: f.kind })),
+        config: data.config ?? {},
+      })
+      const { code } = renderTemplate(manifest.codegen.template, ctx)
+      return code.endsWith('\n') ? code : code + '\n'
+    }
     default:
       return ''
   }
+}
+
+/** Collect, dedupe, and sort custom-component import lines for hoisting. */
+function collectComponentImports(
+  canvases: Record<string, CanvasSnapshot>,
+  componentRegistry: ComponentManifest[],
+): string[] {
+  const imports = new Set<string>()
+  for (const canvas of Object.values(canvases)) {
+    for (const node of canvas.nodes) {
+      if (node.data.kind !== 'custom') continue
+      const manifest = componentRegistry.find((c) => c.id === node.data.componentId)
+      for (const line of manifest?.codegen.imports ?? []) {
+        const trimmed = line.trim()
+        if (trimmed) imports.add(trimmed)
+      }
+    }
+  }
+  return [...imports].sort()
 }
 
 function getNodeName(node: Node<StitchNodeData>): string {
@@ -487,14 +525,19 @@ export function generatePythonCode(
   const toolRegistry = doc.toolRegistry ?? []
   const agentRegistry = doc.agentRegistry ?? []
   const mcpServers = doc.mcpServers ?? []
+  const componentRegistry = doc.componentRegistry ?? []
   const allCanvases = canvasByGraph ?? { [MAIN_GRAPH_ID]: { nodes, edges } }
 
   const functions = Object.entries(allCanvases)
     .flatMap(([, canvas]) =>
-      canvas.nodes.map((n) => generateNodeFunction(n, remoteGraphs, toolRegistry, agentRegistry)),
+      canvas.nodes.map((n) =>
+        generateNodeFunction(n, remoteGraphs, toolRegistry, agentRegistry, componentRegistry),
+      ),
     )
     .filter(Boolean)
     .join('\n')
+
+  const componentImports = collectComponentImports(allCanvases, componentRegistry)
 
   const stateClass = generateStateClass(doc.stateFields)
   const lifecycle = generateLifecycleHooks(doc)
@@ -530,7 +573,7 @@ ${evalDatasetLine ? `${evalDatasetLine}\n` : ''}"""
 
 import os
 from langgraph.graph import StateGraph, START, END
-
+${componentImports.length ? '\n' + componentImports.join('\n') + '\n' : ''}
 ${stateClass}
 
 ${lifecycle}
@@ -598,7 +641,7 @@ export function exportGraphDocument(
 
 export function createDefaultDocument(): GraphDocument {
   return {
-    version: '1.1',
+    version: '1.2',
     name: 'my_langgraph',
     description: 'A LangGraph workflow built with LangStitch',
     stateFields: [
@@ -685,6 +728,7 @@ export function createDefaultDocument(): GraphDocument {
         metadataFilters: '',
       },
     ],
+    componentRegistry: [],
     settings: mergeGraphSettings(),
   }
 }
