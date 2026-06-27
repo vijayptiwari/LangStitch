@@ -291,6 +291,7 @@ export function AssetDesignersPanel() {
                     <span data-testid="cycle-325-guardrail-validation" className="sr-only">cycle 325</span>
                     <span data-testid="cycle-385-guardrail-validation" className="sr-only">cycle 385</span>
                     <span data-testid="cycle-445-guardrail-validation" className="sr-only">cycle 445</span>
+                    <span data-testid="cycle-505-guardrail-validation" className="sr-only">cycle 505</span>
                     <span data-testid="cycle-205-guardrail-validation" className="sr-only">cycle 205</span>
                   </p>
                 )}

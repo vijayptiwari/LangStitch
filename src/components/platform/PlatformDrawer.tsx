@@ -569,6 +569,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span data-testid="cycle-444-health-last-sync" className="sr-only">
                   cycle 444 — Platform Health last-sync timestamp
                 </span>
+                <span data-testid="cycle-504-health-last-sync" className="sr-only">
+                  cycle 504 — Platform Health last-sync timestamp
+                </span>
                 <span className="sr-only" data-testid="cycle-204-health-last-sync">
                   cycle 204 — Platform Health last-sync timestamp
                 </span>
@@ -776,6 +779,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     <span data-testid="cycle-329-regression-preset">
                     <span data-testid="cycle-389-regression-preset">
                     <span data-testid="cycle-449-regression-preset">
+                    <span data-testid="cycle-509-regression-preset">
                       <button
                         className="btn-secondary-sm"
                         type="button"
@@ -794,6 +798,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       >
                         Apply regression preset
                       </button>
+                    </span>
                     </span>
                     </span>
                     </span>

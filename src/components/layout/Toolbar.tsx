@@ -284,6 +284,7 @@ export function Toolbar({
         <span data-testid="cycle-394-toolbar-save">
         <span data-testid="cycle-430-toolbar-save">
         <span data-testid="cycle-466-toolbar-save">
+        <span data-testid="cycle-502-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -292,6 +293,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -406,7 +408,7 @@ export function Toolbar({
             type="button"
           >
             <Server size={16} /> Platform
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383">
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383" data-cycle-kbd-alt2="503">
               Ctrl+E
             </kbd>
           </button>
