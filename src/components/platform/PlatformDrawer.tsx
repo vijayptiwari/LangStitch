@@ -36,7 +36,7 @@ function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const EVAL_HISTORY_LIMIT = 113
+const EVAL_HISTORY_LIMIT = 173
 const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
 const PLATFORM_TAB_KEY = 'langstitch-platform-tab-last-used'
 
@@ -639,7 +639,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -843,6 +843,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     aria-atomic="true"
                     className="sr-only"
                     data-testid="eval-finished-live-region"
+                    data-cycle="174"
                   >
                     {evalFinishedAnnouncement}
                   </div>

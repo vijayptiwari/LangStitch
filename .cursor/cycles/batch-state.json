@@ -1,17 +1,17 @@
 {
   "program": "langstitch-sdlc-2500",
   "totalCycles": 2500,
-  "completedCycles": 170,
-  "currentBatch": 17,
+  "completedCycles": 180,
+  "currentBatch": 18,
   "batchSize": 10,
-  "nextCycleStart": 171,
-  "nextCycleEnd": 180,
+  "nextCycleStart": 181,
+  "nextCycleEnd": 190,
   "autoApprove": true,
   "autoPush": true,
   "uatThreshold": 85,
   "status": "RUNNING",
-  "lastCompletedBatch": 16,
+  "lastCompletedBatch": 17,
   "lastCommit": "pending",
   "startedAt": "2026-06-24T00:00:00Z",
-  "notes": "Batch 16 complete (161-170). Ctrl+D eval shortcut, palette focus ring, export-zip E2E."
+  "notes": "Batch 17 complete (171-180). Eval history limit 173, batch-17 E2E spec."
 }

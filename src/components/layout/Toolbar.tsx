@@ -301,11 +301,13 @@ export function Toolbar({
         {undoDepthLimitNotice && (
           <span data-testid="cycle-80-undo-depth-notice">
             <span data-testid="cycle-128-undo-depth-notice">
+              <span data-testid="cycle-176-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
             </span>
           </span>
@@ -390,7 +392,9 @@ export function Toolbar({
             <h3>Keyboard shortcuts</h3>
             <ul>
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
-              <li><kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer</li>
+              <li data-testid="cycle-175-toggle-platform">
+                <kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer
+              </li>
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
               <li data-testid="cycle-115-alt-h-platform">
                 <kbd>Alt</kbd>+<kbd>H</kbd> — Toggle Platform drawer

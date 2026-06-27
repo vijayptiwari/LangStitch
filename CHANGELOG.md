@@ -10,6 +10,7 @@ All notable changes to LangStitch are documented here.
 - **Cycle 151:** `Alt+L` focuses node palette search with filter input (`e2e/cycles-batch-15.spec.ts`).
 - **Batch 15 (Cycles 151–160):** palette search shortcut, dirty-clears-on-import, docs link tooltip, health reload E2E, empty-graph redo guard, export retry, guardrail char count, snap-to-grid toggle, eval-dataset export warning, export rate-limit 429 (`e2e/cycles-batch-15.spec.ts`).
 - **Batch 16 (Cycles 161–170):** eval dry-run badge marker, high-contrast palette focus ring, `Ctrl+D` opens Eval tab, viewport localStorage, README eval runner docs, export-zip download E2E, platform aria-label, eval section collapse, guardrail search filter, multi-select delete confirm (`e2e/cycles-batch-16.spec.ts`).
+- **Batch 17 (Cycles 171–180):** export manifest eval-dataset, OpenAPI export docs, eval history limit 173, eval live region, shortcuts toggle platform, undo depth notice, CHANGELOG template, toolbar-save E2E, redo persistence, Git copy (`e2e/cycles-batch-17.spec.ts`).
 - **SDK Component Designer** (SDLC Cycle 141): a manifest-driven **Components** designer tab for visually authoring custom nodes/connectors/adaptors — define identity, theme, ports, a typed config-field schema, and a safe Python codegen template with no manual file edits. Custom components appear under **Custom Components** in the palette, drag onto the canvas, and render an auto-generated property form on selection. Components participate in Python export/codegen via their template (imports hoisted/deduped, secrets emit `os.environ.get(...)`), are listed in `langsmith.json` `registries.components` (`schema_version 1.2`), survive the project round-trip, and are portable via single-component `.component.json` export/import with collision handling (replace / import-as-copy). Built-in default nodes are unchanged (additive `'custom'` kind). UAT **ACCEPTED 96/100**; E2E `e2e/sdk-component-designer.spec.ts` (6/6).
 - **LangSmith Eval Runner MVP** (SDLC Cycle 1): Platform drawer **Eval** tab, dataset config, dry-run validation, `POST /api/eval/run`, `eval` section in `langsmith.json`, generated `eval_runner.py`, E2E coverage (`e2e/eval-runner.spec.ts`).
 - SDLC subagents and `langstitch-sdlc-cycle` skill under `.cursor/`.
@@ -54,6 +55,12 @@ Example (Cycle 129):
 
 ```
 - **Batch 12 (Cycles 121–130):** guardrail delete confirm, edge label truncation tooltip, export dry-run eval-dataset, CORS preflight /api/export, eval dataset link in summary, reduce-motion CSS, Ctrl+G toggle minimap, undo depth notice, CHANGELOG cycle 129 template, save-and-reload E2E (`e2e/cycles-batch-12.spec.ts`).
+```
+
+Example (Cycle 177):
+
+```
+- **Batch 17 (Cycles 171–180):** export manifest eval-dataset, OpenAPI /api/export description, eval history limit 173, eval finished live region, shortcuts toggle platform, undo depth notice, CHANGELOG cycle 177 template, toolbar-save E2E, redo last-used persistence, Git output copy (`e2e/cycles-batch-17.spec.ts`).
 ```
 
 Example (Cycle 141):
