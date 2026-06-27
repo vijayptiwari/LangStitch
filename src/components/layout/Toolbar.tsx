@@ -316,6 +316,7 @@ export function Toolbar({
             data-testid="toolbar-platform"
             title={graphEmpty ? 'Platform unavailable on empty graph' : 'Platform (Ctrl+E)'}
             aria-label="Open Platform drawer"
+            data-cycle="167"
             aria-describedby="toolbar-platform-tooltip"
             onClick={onOpenPlatform}
             disabled={graphEmpty}
@@ -399,6 +400,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-139-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node
+              </li>
+              <li data-testid="cycle-163-open-eval-tab">
+                <kbd>Ctrl</kbd>+<kbd>D</kbd> — Open Platform Eval tab (no node selected)
               </li>
               <li data-testid="cycle-151-alt-l-focus-search">
                 <kbd>Alt</kbd>+<kbd>L</kbd> — Focus node palette search

@@ -131,6 +131,7 @@ Git sync, export/import, versioning, Docker build, Helm deploy.
 | `Ctrl+S` | Save project (`.langstitch.json`) |
 | `Ctrl+E` / `Ctrl+K` / `Alt+H` | Toggle Platform drawer |
 | `Alt+G` | Open Platform → Eval tab |
+| `Ctrl+D` | Open Platform → Eval tab (when no node selected) |
 | `Alt+D` | Duplicate selected canvas node |
 | `Ctrl+F` | Focus graph name search |
 | `Ctrl+G` / `Ctrl+M` | Toggle minimap |
@@ -180,11 +181,11 @@ on every push to `main`.
 
 ---
 
-## LangSmith Eval Runner
+## LangSmith Eval Runner <!-- cycle-165 -->
 
 Configure dataset evals from **Platform → Eval** (requires LangSmith enabled under Graph Designer → Observability).
 
-- **Validate config** — dry-run without API key; result panel shows **pass rate**
+- **Validate config** — dry-run without API key; result panel shows **pass rate** and a **Dry-run only** badge when `LANGCHAIN_API_KEY` is unset on the platform API
 - **Run eval** — requires `LANGCHAIN_API_KEY` on the platform API host
 - Export includes `eval` and **`eval-dataset`** metadata in `langsmith.json`, plus `eval_runner.py` for CI
 

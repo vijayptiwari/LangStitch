@@ -16,6 +16,7 @@ export function AppLayout() {
   const addNode = useGraphStore((s) => s.addNode)
   const placeCustomNode = useGraphStore((s) => s.placeCustomNode)
   const isGraphEmpty = useGraphStore((s) => s.isGraphEmpty)
+  const selectedNodeId = useGraphStore((s) => s.selectedNodeId)
   const [platformOpen, setPlatformOpen] = useState(false)
   const [marketplaceOpen, setMarketplaceOpen] = useState(false)
   const [platformInitialTab, setPlatformInitialTab] = useState<
@@ -47,10 +48,22 @@ export function AppLayout() {
         setPlatformInitialTab('eval')
         setPlatformOpen(true)
       }
+      // cycle 163 — Ctrl+D opens Eval when no node is selected (duplicate uses Ctrl+D with selection)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'd' &&
+        !e.shiftKey &&
+        !e.altKey &&
+        !selectedNodeId
+      ) {
+        e.preventDefault()
+        setPlatformInitialTab('eval')
+        setPlatformOpen(true)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [isGraphEmpty])
+  }, [isGraphEmpty, selectedNodeId])
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {

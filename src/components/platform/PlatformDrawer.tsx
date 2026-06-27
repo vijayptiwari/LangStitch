@@ -675,7 +675,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               </p>
               {langsmithApiKeyConfigured === false && (
                 <span className="platform-badge warn" data-testid="eval-dry-run-badge">
-                  Dry-run only — LANGCHAIN_API_KEY not configured on platform API
+                  <span data-testid="cycle-161-eval-dry-run">
+                    Dry-run only — LANGCHAIN_API_KEY not configured on platform API
+                  </span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -688,6 +690,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     type="button"
                     className="platform-section-toggle"
                     data-testid="eval-section-toggle"
+                    data-cycle="168"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >
