@@ -65,6 +65,12 @@ export function NodePalette() {
           searchRef.current?.focus()
           searchRef.current?.select()
         }
+        // cycle 691 — Alt+P focuses palette search when no node is selected
+        if (key === 'p' && !useGraphStore.getState().selectedNodeId) {
+          e.preventDefault()
+          searchRef.current?.focus()
+          searchRef.current?.select()
+        }
       }
     }
     window.addEventListener('keydown', onKey)

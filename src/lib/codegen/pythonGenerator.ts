@@ -586,7 +586,7 @@ export function generatePythonCode(
 
   const settings = doc.settings ?? DEFAULT_GRAPH_SETTINGS
   const evalCfg = settings.eval
-  // cycles 87, 147, 207, 267, 327, 387, 447, 507, 567, 627 — eval-dataset comment header in generated Python module docstring
+  // cycles 87, 147, 207, 267, 327, 387, 447, 507, 567, 627, 687 — eval-dataset comment header in generated Python module docstring
   const evalDatasetLine =
     evalCfg?.enabled && (evalCfg.datasetName || evalCfg.datasetId)
       ? `Eval dataset: ${evalCfg.datasetName || evalCfg.datasetId}`

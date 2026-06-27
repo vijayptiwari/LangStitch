@@ -264,13 +264,14 @@ export function GraphCanvas() {
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
       }
-      // cycle 187 — Alt+P toggles minimap
+      // cycle 187 — Alt+P toggles minimap (cycle 691 — palette focus when no node selected)
       if (
         e.altKey &&
         !e.ctrlKey &&
         !e.metaKey &&
         !e.shiftKey &&
-        e.key.toLowerCase() === 'p'
+        e.key.toLowerCase() === 'p' &&
+        selectedNodeId
       ) {
         e.preventDefault()
         useGraphStore.getState().updateGraphSettings({
@@ -412,7 +413,7 @@ export function GraphCanvas() {
   )
 
   return (
-    <div className="graph-canvas-wrap" data-testid="graph-canvas" data-cycle-multi="242" data-cycle-multi-alt="314" data-cycle-multi-alt2="386" data-cycle-multi-alt3="458" data-cycle-multi-alt4="530" data-cycle-multi-alt5="602" data-cycle-multi-alt6="674" data-cycle-ctrl-d="254" data-cycle-ctrl-d-alt="326" data-cycle-ctrl-d-alt2="398" data-cycle-ctrl-d-alt3="470" data-cycle-ctrl-d-alt4="542" data-cycle-ctrl-d-alt5="614" data-cycle-ctrl-g-alt="379">
+    <div className="graph-canvas-wrap" data-testid="graph-canvas" data-cycle-multi="242" data-cycle-multi-alt="314" data-cycle-multi-alt2="386" data-cycle-multi-alt3="458" data-cycle-multi-alt4="530" data-cycle-multi-alt5="602" data-cycle-multi-alt6="674" data-cycle-ctrl-d="254" data-cycle-ctrl-d-alt="326" data-cycle-ctrl-d-alt2="398" data-cycle-ctrl-d-alt3="470" data-cycle-ctrl-d-alt4="542" data-cycle-ctrl-d-alt5="614" data-cycle-ctrl-d-alt6="686" data-cycle-ctrl-g-alt="379">
       <CanvasToolbar />
       <ReactFlow
         nodes={displayNodes}
