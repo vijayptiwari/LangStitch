@@ -270,6 +270,7 @@ export function Toolbar({
         <span data-testid="cycle-286-toolbar-save">
         <span data-testid="cycle-310-save-reload">
         <span data-testid="cycle-322-toolbar-save">
+        <span data-testid="cycle-358-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -278,6 +279,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -463,6 +465,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-295-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer
+              </li>
+              <li data-testid="cycle-355-toggle-platform">
+                <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer (cycle 355)
               </li>
               <li data-testid="cycle-223-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab
