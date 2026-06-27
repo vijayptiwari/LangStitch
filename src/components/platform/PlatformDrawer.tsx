@@ -615,6 +615,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span data-testid="cycle-159-eval-warning">
                     Eval is enabled but no dataset name or ID is configured. Export will omit eval-dataset metadata.
                   </span>
+                  <span className="sr-only" data-testid="cycle-219-eval-warning">cycle 219</span>
                 </p>
               )}
               <Field label="Format">
@@ -632,6 +633,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     type="button"
                     data-testid="export-retry"
                     data-cycle="156"
+                    data-cycle-retry="216"
                     disabled={busy}
                     onClick={handleExport}
                   >

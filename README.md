@@ -70,6 +70,17 @@ Author your own **custom components** (nodes/connectors/adaptors) visually — n
 
 Built-in nodes are unchanged — the component system is fully additive.
 
+### Platform API <!-- cycle-213 -->
+
+The FastAPI server in `server/` powers **Platform → Git, Export, Import, Build, Deploy, and Eval**. Run locally via Docker Compose (`http://localhost:8080`) or point the IDE at `http://127.0.0.1:8787` during Playwright/CI.
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/health` | Version, build metadata, `node-count`, LangSmith key status |
+| `POST /api/export` | ZIP bundle (Python / Spring / full) with `export-manifest.json` |
+| `POST /api/eval/run` | LangSmith dataset eval against exported graph |
+| `POST /api/agent/run` | Smoke-run agent from workspace |
+
 ### Platform API health
 
 `GET /api/health` returns `node-count` (number of nodes in the active graph document) alongside version and build metadata — useful for smoke checks and monitoring.

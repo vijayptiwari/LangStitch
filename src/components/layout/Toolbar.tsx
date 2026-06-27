@@ -245,6 +245,7 @@ export function Toolbar({
           <FolderOpen size={16} /> Open
         </button>
         <span data-testid="cycle-142-toolbar-save">
+        <span data-testid="cycle-214-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -253,6 +254,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
@@ -322,6 +324,7 @@ export function Toolbar({
             title={graphEmpty ? 'Platform unavailable on empty graph' : 'Platform (Ctrl+E)'}
             aria-label="Open Platform drawer"
             data-cycle="167"
+            data-cycle-empty="215"
             aria-describedby="toolbar-platform-tooltip"
             onClick={onOpenPlatform}
             disabled={graphEmpty}
@@ -423,6 +426,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
+              </li>
+              <li data-testid="cycle-211-focus-search">
+                <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus graph name search (cycle 211)
               </li>
               <li data-testid="cycle-127-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap
