@@ -635,6 +635,28 @@ if __name__ == "__main__":
 `
 }
 
+/**
+ * Serialize a React Flow edge for persistence. Keeps the visual fields
+ * (`animated`, `style`, `markerEnd`, `type`) so the moving dashed connector and
+ * per-source colour survive a save → reload round-trip.
+ */
+function serializeEdge(edge: Edge): Partial<Edge> {
+  const { id, source, target, sourceHandle, targetHandle, label, animated, style, markerEnd, type } =
+    edge
+  return {
+    id,
+    source,
+    target,
+    sourceHandle,
+    targetHandle,
+    label,
+    animated,
+    style,
+    markerEnd,
+    type,
+  }
+}
+
 export function exportGraphDocument(
   doc: GraphDocument,
   nodes: Node<StitchNodeData>[],
@@ -651,27 +673,13 @@ export function exportGraphDocument(
           id,
           {
             nodes: canvas.nodes.map(({ id: nid, type, position, data }) => ({ id: nid, type, position, data })),
-            edges: canvas.edges.map(({ id: eid, source, target, sourceHandle, targetHandle, label }) => ({
-              id: eid,
-              source,
-              target,
-              sourceHandle,
-              targetHandle,
-              label,
-            })),
+            edges: canvas.edges.map(serializeEdge),
           },
         ]),
       ),
       navigationPath: navigationPath ?? [doc.activeSubgraphId || MAIN_GRAPH_ID],
       nodes: nodes.map(({ id, type, position, data }) => ({ id, type, position, data })),
-      edges: edges.map(({ id, source, target, sourceHandle, targetHandle, label }) => ({
-        id,
-        source,
-        target,
-        sourceHandle,
-        targetHandle,
-        label,
-      })),
+      edges: edges.map(serializeEdge),
     },
     null,
     2,

@@ -40,7 +40,6 @@ import {
   syncCanvas,
 } from '../lib/subgraphCanvas'
 import { mergeComponentRegistry } from '../lib/customComponents'
-import { migrateProjectNodes } from '../lib/migrateNodeData'
 import { saveViewport, loadViewport } from '../lib/viewportStorage'
 
 function isCanvasLocked(state: { document: GraphDocument }): boolean {
@@ -78,6 +77,32 @@ function styledEdge(
     animated: true,
     style: { stroke: color, strokeWidth: 2.5 },
   }
+}
+
+/**
+ * Ensure every edge carries the animated dashed connector and a per-source
+ * stroke colour. Edges that already have both are returned untouched; older
+ * saves (which persisted neither) get them re-derived from the source node kind.
+ */
+function normalizeEdgeStyling(
+  nodes: Node<StitchNodeData>[] | undefined,
+  edges: Edge[] | undefined,
+): Edge[] {
+  if (!edges) return []
+  const kindBySource = new Map(
+    (nodes ?? []).map((n) => [n.id, n.data?.kind as StitchNodeData['kind'] | undefined]),
+  )
+  return edges.map((edge) => {
+    const hasStroke = Boolean((edge.style as { stroke?: string } | undefined)?.stroke)
+    if (edge.animated && hasStroke) return edge
+    const kind = kindBySource.get(edge.source)
+    const color = kind ? getNodeTheme(kind).edgeColor : '#94a3b8'
+    return {
+      ...edge,
+      animated: edge.animated ?? true,
+      style: hasStroke ? edge.style : { stroke: color, strokeWidth: 2.5 },
+    }
+  })
 }
 
 function buildPathToGraph(
@@ -919,9 +944,13 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       navigationPath = navigationPath ?? (p as typeof navigationPath)
     }
 
-    const migrated = migrateProjectNodes(canvasByGraph, nodes)
-    canvasByGraph = migrated.canvasByGraph ?? canvasByGraph
-    nodes = migrated.nodes ?? nodes
+    // NOTE: we deliberately do NOT migrate dedicated node kinds (llm, tool,
+    // router, …) to generic custom nodes on load. That conversion dropped the
+    // router branch ids, so edges keyed by `sourceHandle: 'b1'` lost their
+    // target handle and disappeared, and it rendered every node with the
+    // generic field list instead of the rich per-kind component. The whole app
+    // (palette, initial graph, reset, codegen) works on the dedicated shapes,
+    // so loaded projects keep them too — round-trip stays lossless.
 
     const doc: GraphDocument = {
       ...createDefaultDocument(),
@@ -962,6 +991,16 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       }
     }
     canvasByGraph = mergedCanvas
+
+    // Re-apply edge styling (animated dashed connector + per-source colour) for
+    // projects saved before these fields were persisted, so older files don't
+    // load with plain static edges.
+    canvasByGraph = Object.fromEntries(
+      Object.entries(canvasByGraph).map(([id, snap]) => [
+        id,
+        { ...snap, edges: normalizeEdgeStyling(snap.nodes, snap.edges) },
+      ]),
+    )
 
     const active = canvasByGraph[activeId] ?? canvasByGraph[MAIN_GRAPH_ID]
 
