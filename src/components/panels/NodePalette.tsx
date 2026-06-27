@@ -59,6 +59,12 @@ export function NodePalette() {
           searchRef.current?.focus()
           searchRef.current?.select()
         }
+        // cycle 511 — Alt+E focuses palette search when no node is selected
+        if (key === 'e' && !useGraphStore.getState().selectedNodeId) {
+          e.preventDefault()
+          searchRef.current?.focus()
+          searchRef.current?.select()
+        }
       }
     }
     window.addEventListener('keydown', onKey)
@@ -94,6 +100,7 @@ export function NodePalette() {
         className="input palette-search-input"
         data-testid="palette-search-input"
         data-cycle-focus="331"
+        data-cycle-focus-alt="511"
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}

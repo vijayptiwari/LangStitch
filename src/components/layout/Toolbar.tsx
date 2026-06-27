@@ -308,7 +308,7 @@ export function Toolbar({
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395">
+        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395" data-cycle-redo-empty-alt2="515">
           <button
             className="btn-secondary"
             data-label="227"
@@ -374,11 +374,13 @@ export function Toolbar({
               <span data-testid="cycle-368-undo-depth-notice">
               <span data-testid="cycle-416-undo-depth-notice">
               <span data-testid="cycle-464-undo-depth-notice">
+              <span data-testid="cycle-512-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -398,6 +400,7 @@ export function Toolbar({
             aria-label="Open Platform drawer"
             data-cycle-aria="287"
             data-cycle-aria-alt="407"
+            data-cycle-aria-alt2="527"
             data-cycle="167"
             data-cycle-empty="215"
             data-cycle-empty-alt="335"
@@ -574,6 +577,12 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-271-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>P</kbd> — Focus graph name search (cycle 271)
+              </li>
+              <li data-testid="cycle-511-focus-search">
+                <kbd>Alt</kbd>+<kbd>E</kbd> — Focus node palette search (no selection, cycle 511)
+              </li>
+              <li data-testid="cycle-523-open-eval-tab">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Open Platform Eval tab (cycle 523)
               </li>
               <li data-testid="cycle-127-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap

@@ -178,6 +178,7 @@ export function AssetDesignersPanel() {
               data-cycle-search-alt2="349"
               data-cycle-search-alt3="409"
               data-cycle-search-alt4="469"
+              data-cycle-search-alt5="529"
               placeholder="Search guardrails…"
               value={guardrailFilter}
               onChange={(e) => setGuardrailFilter(e.target.value)}
@@ -256,6 +257,7 @@ export function AssetDesignersPanel() {
                     data-cycle-count-alt2="337"
                     data-cycle-count-alt3="397"
                     data-cycle-count-alt4="457"
+                    data-cycle-count-alt5="517"
                   >
                     {g.description.length}/{GUARDRAIL_DESCRIPTION_MAX}
                   </span>

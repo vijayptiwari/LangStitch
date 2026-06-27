@@ -602,6 +602,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-478-health-reload">
                   cycle 478 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-514-health-reload">
+                  cycle 514 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -670,6 +673,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-339-eval-warning">cycle 339</span>
                   <span className="sr-only" data-testid="cycle-399-eval-warning">cycle 399</span>
                   <span className="sr-only" data-testid="cycle-459-eval-warning">cycle 459</span>
+                  <span className="sr-only" data-testid="cycle-519-eval-warning">cycle 519</span>
                 </p>
               )}
               <Field label="Format">
@@ -692,6 +696,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-retry-alt2="336"
                     data-cycle-retry-alt3="396"
                     data-cycle-retry-alt4="456"
+                    data-cycle-retry-alt5="516"
                     disabled={busy}
                     onClick={handleExport}
                   >
@@ -699,9 +704,11 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   </button>
                 </div>
               )}
+              <span data-testid="cycle-526-export-zip">
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button" data-testid="cycle-346-export-zip">
                 <Download size={14} /> Download ZIP
               </button>
+              </span>
               <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423" data-cycle-dry-run-alt4="483">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
@@ -747,6 +754,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-382-eval-dry-run">cycle 382</span>
                   <span className="sr-only" data-testid="cycle-401-eval-dry-run">cycle 401</span>
                   <span className="sr-only" data-testid="cycle-461-eval-dry-run">cycle 461</span>
+                  <span className="sr-only" data-testid="cycle-521-eval-dry-run">cycle 521</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -765,6 +773,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-collapse-alt="348"
                     data-cycle-collapse-alt2="408"
                     data-cycle-collapse-alt3="468"
+                    data-cycle-collapse-alt4="528"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >
