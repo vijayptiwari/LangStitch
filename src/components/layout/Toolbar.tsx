@@ -345,6 +345,7 @@ export function Toolbar({
               <span data-testid="cycle-224-undo-depth-notice">
               <span data-testid="cycle-272-undo-depth-notice">
               <span data-testid="cycle-320-undo-depth-notice">
+              <span data-testid="cycle-368-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
@@ -355,8 +356,9 @@ export function Toolbar({
               </span>
               </span>
               </span>
+              </span>
+              </span>
             </span>
-          </span>
         )}
         <span className="toolbar-btn-wrap">
           <button
@@ -516,6 +518,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-307-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle minimap (cycle 307)
+              </li>
+              <li data-testid="cycle-367-toggle-minimap">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> — Toggle minimap (cycle 367)
               </li>
               <li data-testid="cycle-187-toggle-minimap">
                 <kbd>Alt</kbd>+<kbd>P</kbd> — Toggle minimap

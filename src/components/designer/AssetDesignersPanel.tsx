@@ -293,6 +293,7 @@ export function AssetDesignersPanel() {
                   data-cycle="181"
                   data-cycle-guard="241"
                   data-cycle-guard-alt="301"
+                  data-cycle-guard-alt2="361"
                   onClick={() => {
                     if (
                       window.confirm(

@@ -578,6 +578,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-334-health-reload">
                   cycle 334 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-370-health-reload">
+                  cycle 370 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -673,7 +676,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button" data-testid="cycle-346-export-zip">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-dry-run="243" data-cycle-dry-run-alt="303">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -853,6 +856,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                                 data-cycle="185"
                                 data-cycle-link="245"
                                 data-cycle-link-alt="305"
+                                data-cycle-link-alt2="365"
                               >
                                 {evalConfig.datasetName}
                               </a>

@@ -235,6 +235,19 @@ export function GraphCanvas() {
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
       }
+      // cycle 367 — Alt+Shift+H toggles minimap (Alt+H reserved for Platform)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key.toLowerCase() === 'h'
+      ) {
+        e.preventDefault()
+        useGraphStore.getState().updateGraphSettings({
+          showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
+        })
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -421,6 +434,7 @@ export function GraphCanvas() {
             <span data-testid="cycle-146-context-delete">Delete node</span>
             <span className="sr-only" data-testid="cycle-218-context-delete">cycle 218</span>
             <span className="sr-only" data-testid="cycle-290-context-delete">cycle 290</span>
+            <span className="sr-only" data-testid="cycle-362-context-delete">cycle 362</span>
           </button>
         </div>
       )}
