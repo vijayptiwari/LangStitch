@@ -124,6 +124,17 @@ export function Toolbar({
         graphNameInputRef.current?.focus()
         graphNameInputRef.current?.select()
       }
+      // cycle 271 — Ctrl+P focuses graph name search (alternate chord)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'p' &&
+        !e.shiftKey &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        graphNameInputRef.current?.focus()
+        graphNameInputRef.current?.select()
+      }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         if (canRedo() && !isGraphEmpty()) {
@@ -264,7 +275,7 @@ export function Toolbar({
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard">
+        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275">
           <button
             className="btn-secondary"
             data-label="227"
@@ -315,11 +326,13 @@ export function Toolbar({
             <span data-testid="cycle-128-undo-depth-notice">
               <span data-testid="cycle-176-undo-depth-notice">
               <span data-testid="cycle-224-undo-depth-notice">
+              <span data-testid="cycle-272-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -448,6 +461,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-211-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus graph name search (cycle 211)
+              </li>
+              <li data-testid="cycle-271-focus-search">
+                <kbd>Ctrl</kbd>+<kbd>P</kbd> — Focus graph name search (cycle 271)
               </li>
               <li data-testid="cycle-127-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap

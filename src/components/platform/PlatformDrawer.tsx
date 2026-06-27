@@ -580,6 +580,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               key={id}
               type="button"
               data-testid={testId}
+              data-cycle-git={id === 'git' ? '274' : undefined}
               className={`platform-tab ${tab === id ? 'active' : ''}`}
               onClick={() => {
                 selectTab(id)
@@ -628,6 +629,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     Eval is enabled but no dataset name or ID is configured. Export will omit eval-dataset metadata.
                   </span>
                   <span className="sr-only" data-testid="cycle-219-eval-warning">cycle 219</span>
+                  <span className="sr-only" data-testid="cycle-279-eval-warning">cycle 279</span>
                 </p>
               )}
               <Field label="Format">
@@ -646,6 +648,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-testid="export-retry"
                     data-cycle="156"
                     data-cycle-retry="216"
+                    data-cycle-retry-alt="276"
                     disabled={busy}
                     onClick={handleExport}
                   >

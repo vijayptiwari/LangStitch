@@ -240,6 +240,7 @@ export function AssetDesignersPanel() {
                     data-testid={`guardrail-description-count-${g.id}`}
                     data-cycle="157"
                     data-cycle-count="217"
+                    data-cycle-count-alt="277"
                   >
                     {g.description.length}/{GUARDRAIL_DESCRIPTION_MAX}
                   </span>
