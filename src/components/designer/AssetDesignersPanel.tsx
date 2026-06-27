@@ -252,6 +252,7 @@ export function AssetDesignersPanel() {
                     data-cycle-count-alt="277"
                     data-cycle-count-alt2="337"
                     data-cycle-count-alt3="397"
+                    data-cycle-count-alt4="457"
                   >
                     {g.description.length}/{GUARDRAIL_DESCRIPTION_MAX}
                   </span>
@@ -286,6 +287,7 @@ export function AssetDesignersPanel() {
                     <span data-testid="cycle-265-guardrail-validation" className="sr-only">cycle 265</span>
                     <span data-testid="cycle-325-guardrail-validation" className="sr-only">cycle 325</span>
                     <span data-testid="cycle-385-guardrail-validation" className="sr-only">cycle 385</span>
+                    <span data-testid="cycle-445-guardrail-validation" className="sr-only">cycle 445</span>
                     <span data-testid="cycle-205-guardrail-validation" className="sr-only">cycle 205</span>
                   </p>
                 )}

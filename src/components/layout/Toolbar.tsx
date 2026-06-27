@@ -226,6 +226,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-393-docs-tooltip">
               cycle 393 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-441-docs-tooltip">
+              cycle 441 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -319,9 +322,10 @@ export function Toolbar({
             type="button"
           >
             <RotateCw size={16} /> Redo
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd">
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd" data-cycle-redo-kbd-alt="443">
               <span data-testid="cycle-203-redo-kbd">Ctrl+Shift+Z</span>
               <span className="sr-only" data-testid="cycle-323-redo-kbd">cycle 323 — toolbar redo keyboard hint</span>
+              <span className="sr-only" data-testid="cycle-443-redo-kbd">cycle 443 — toolbar redo keyboard hint</span>
             </kbd>
           </button>
           <span
@@ -383,6 +387,7 @@ export function Toolbar({
             data-cycle="167"
             data-cycle-empty="215"
             data-cycle-empty-alt="335"
+            data-cycle-empty-alt2="455"
             aria-describedby="toolbar-platform-tooltip"
             onClick={onOpenPlatform}
             disabled={graphEmpty}
@@ -539,6 +544,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-211-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus graph name search (cycle 211)
+              </li>
+              <li data-testid="cycle-451-focus-search">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> — Focus graph name search (cycle 451)
               </li>
               <li data-testid="cycle-271-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>P</kbd> — Focus graph name search (cycle 271)

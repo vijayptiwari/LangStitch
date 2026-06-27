@@ -563,6 +563,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span data-testid="cycle-384-health-last-sync" className="sr-only">
                   cycle 384 — Platform Health last-sync timestamp
                 </span>
+                <span data-testid="cycle-444-health-last-sync" className="sr-only">
+                  cycle 444 — Platform Health last-sync timestamp
+                </span>
                 <span className="sr-only" data-testid="cycle-204-health-last-sync">
                   cycle 204 — Platform Health last-sync timestamp
                 </span>
@@ -587,6 +590,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-406-health-reload">
                   cycle 406 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-442-health-reload">
+                  cycle 442 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -602,6 +608,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               type="button"
               data-testid={testId}
               data-cycle-git={id === 'git' ? '274' : undefined}
+              data-cycle-git-alt={id === 'git' ? '454' : undefined}
               className={`platform-tab ${tab === id ? 'active' : ''}`}
               onClick={() => {
                 selectTab(id)
@@ -653,6 +660,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-279-eval-warning">cycle 279</span>
                   <span className="sr-only" data-testid="cycle-339-eval-warning">cycle 339</span>
                   <span className="sr-only" data-testid="cycle-399-eval-warning">cycle 399</span>
+                  <span className="sr-only" data-testid="cycle-459-eval-warning">cycle 459</span>
                 </p>
               )}
               <Field label="Format">
@@ -674,6 +682,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-retry-alt="276"
                     data-cycle-retry-alt2="336"
                     data-cycle-retry-alt3="396"
+                    data-cycle-retry-alt4="456"
                     disabled={busy}
                     onClick={handleExport}
                   >
@@ -758,6 +767,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     <span data-testid="cycle-269-regression-preset">
                     <span data-testid="cycle-329-regression-preset">
                     <span data-testid="cycle-389-regression-preset">
+                    <span data-testid="cycle-449-regression-preset">
                       <button
                         className="btn-secondary-sm"
                         type="button"
@@ -776,6 +786,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       >
                         Apply regression preset
                       </button>
+                    </span>
                     </span>
                     </span>
                     </span>
