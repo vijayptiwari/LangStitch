@@ -11,7 +11,7 @@
   "uatThreshold": 85,
   "status": "RUNNING",
   "lastCompletedBatch": 36,
-  "lastCommit": "pending",
+  "lastCommit": "d566711",
   "startedAt": "2026-06-24T00:00:00Z",
   "notes": "Batch 36 complete (361-370). batch-36 E2E spec."
 }
