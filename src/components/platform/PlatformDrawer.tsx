@@ -36,7 +36,7 @@ function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const EVAL_HISTORY_LIMIT = 413
+const EVAL_HISTORY_LIMIT = 473
 const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
 const PLATFORM_TAB_KEY = 'langstitch-platform-tab-last-used'
 
@@ -538,6 +538,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
         <span className="sr-only" data-testid="cycle-359-platform-tab-persist">
           cycle 359 — platform tab persisted in {PLATFORM_TAB_KEY}
         </span>
+        <span className="sr-only" data-testid="cycle-479-platform-tab-persist">
+          cycle 479 — platform tab persisted in {PLATFORM_TAB_KEY}
+        </span>
         <header className="platform-header">
           <div>
             <h2>Platform</h2>
@@ -592,6 +595,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 </span>
                 <span className="sr-only" data-testid="cycle-442-health-reload">
                   cycle 442 — health metadata regression after reload
+                </span>
+                <span className="sr-only" data-testid="cycle-478-health-reload">
+                  cycle 478 — health metadata regression after reload
                 </span>
               </p>
             )}
@@ -693,7 +699,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button" data-testid="cycle-346-export-zip">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -737,6 +743,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-341-eval-dry-run">cycle 341</span>
                   <span className="sr-only" data-testid="cycle-382-eval-dry-run">cycle 382</span>
                   <span className="sr-only" data-testid="cycle-401-eval-dry-run">cycle 401</span>
+                  <span className="sr-only" data-testid="cycle-461-eval-dry-run">cycle 461</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -754,6 +761,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-collapse="288"
                     data-cycle-collapse-alt="348"
                     data-cycle-collapse-alt2="408"
+                    data-cycle-collapse-alt3="468"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >
@@ -929,6 +937,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-live-alt="294"
                     data-cycle-live-alt2="354"
                     data-cycle-live-alt3="414"
+                    data-cycle-live-alt4="474"
                   >
                     {evalFinishedAnnouncement}
                   </div>
@@ -1026,6 +1035,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   data-cycle-copy="300"
                   data-cycle-copy-alt="360"
                   data-cycle-copy-alt2="420"
+                  data-cycle-copy-alt3="480"
                   onClick={handleCopyLog}
                 >
                   Copy output

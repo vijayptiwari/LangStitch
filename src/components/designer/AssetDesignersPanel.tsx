@@ -177,6 +177,7 @@ export function AssetDesignersPanel() {
               data-cycle-search-alt="289"
               data-cycle-search-alt2="349"
               data-cycle-search-alt3="409"
+              data-cycle-search-alt4="469"
               placeholder="Search guardrails…"
               value={guardrailFilter}
               onChange={(e) => setGuardrailFilter(e.target.value)}
