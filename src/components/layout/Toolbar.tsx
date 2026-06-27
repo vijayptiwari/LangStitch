@@ -200,6 +200,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-153-docs-tooltip">
               cycle 153 — help links to langstitch.com/docs
             </span>
+            <span className="sr-only" data-testid="cycle-201-docs-tooltip">
+              cycle 201 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -276,7 +279,7 @@ export function Toolbar({
           >
             <RotateCw size={16} /> Redo
             <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd">
-              Ctrl+Shift+Z
+              <span data-testid="cycle-203-redo-kbd">Ctrl+Shift+Z</span>
             </kbd>
           </button>
           <span

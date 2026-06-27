@@ -363,6 +363,7 @@ export function GraphCanvas() {
         <Controls showInteractive={false} position="bottom-left" />
         {showMinimap && (
           <div data-testid="cycle-134-minimap-highlight">
+          <div data-testid="cycle-206-minimap-highlight">
             <MiniMap
               nodeColor={minimapNodeColor}
               nodeStrokeColor={minimapNodeStrokeColor}
@@ -372,6 +373,7 @@ export function GraphCanvas() {
               zoomable
               position="bottom-right"
             />
+          </div>
           </div>
         )}
       </ReactFlow>

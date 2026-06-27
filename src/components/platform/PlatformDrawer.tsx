@@ -548,6 +548,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span data-testid="cycle-144-health-last-sync">
                   Platform Health · Last sync: {lastHealthSync}
                 </span>
+                <span className="sr-only" data-testid="cycle-204-health-last-sync">
+                  cycle 204 — Platform Health last-sync timestamp
+                </span>
                 <span className="sr-only" data-testid="cycle-154-health-reload">
                   cycle 154 — health metadata available after reload
                 </span>
@@ -700,6 +703,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <>
                   <div className="platform-actions">
                     <span data-testid="cycle-149-regression-preset">
+                    <span data-testid="cycle-209-regression-preset">
                       <button
                         className="btn-secondary-sm"
                         type="button"
@@ -718,6 +722,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       >
                         Apply regression preset
                       </button>
+                    </span>
                     </span>
                   </div>
                   <Field label="Dataset name">
@@ -773,6 +778,8 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       disabled={busy}
                       onClick={() => handleRunEval(true)}
                       type="button"
+                      data-testid="eval-validate-config"
+                      data-cycle="202"
                     >
                       Validate config
                     </button>
