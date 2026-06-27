@@ -36,7 +36,7 @@ function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const EVAL_HISTORY_LIMIT = 173
+const EVAL_HISTORY_LIMIT = 233
 const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
 const PLATFORM_TAB_KEY = 'langstitch-platform-tab-last-used'
 
@@ -532,6 +532,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
   return (
     <div className="platform-overlay" onClick={onClose} role="presentation">
       <div className="platform-drawer" data-testid="platform-drawer" onClick={(e) => e.stopPropagation()} role="dialog">
+        <span className="sr-only" data-testid="cycle-239-platform-tab-persist">
+          cycle 239 — platform tab persisted in {PLATFORM_TAB_KEY}
+        </span>
         <header className="platform-header">
           <div>
             <h2>Platform</h2>
@@ -647,7 +650,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -859,6 +862,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     className="sr-only"
                     data-testid="eval-finished-live-region"
                     data-cycle="174"
+                    data-cycle-live="234"
                   >
                     {evalFinishedAnnouncement}
                   </div>
@@ -944,6 +948,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   className="btn-secondary-sm"
                   type="button"
                   data-testid="git-output-copy"
+                  data-cycle="240"
                   onClick={handleCopyLog}
                 >
                   Copy output

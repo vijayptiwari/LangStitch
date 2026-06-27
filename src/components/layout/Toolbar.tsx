@@ -393,7 +393,7 @@ export function Toolbar({
         />
       </div>
       {showShortcuts && (
-        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" onClick={() => setShowShortcuts(false)}>
+        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" onClick={() => setShowShortcuts(false)}>
           <div data-testid="cycle-138-focus-trap">
           <div data-testid="cycle-198-focus-trap">
           <div
@@ -407,6 +407,9 @@ export function Toolbar({
               <li><kbd>Ctrl</kbd>+<kbd>S</kbd> — Save project</li>
               <li data-testid="cycle-175-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer
+              </li>
+              <li data-testid="cycle-235-toggle-platform">
+                <kbd>Ctrl</kbd>+<kbd>L</kbd> — Toggle Platform drawer
               </li>
               <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
               <li data-testid="cycle-115-alt-h-platform">

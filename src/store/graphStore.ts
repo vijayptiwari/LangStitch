@@ -107,7 +107,7 @@ function persistActiveCanvas(state: {
   return synced
 }
 
-/** Zustand store for graph document, canvas state, undo/redo, and project I/O (cycle 93 JSDoc; cycle 141 JSDoc). */
+/** Zustand store for graph document, canvas state, undo/redo, and project I/O (cycle 93 JSDoc; cycle 141; cycle 237). */
 interface GraphStore {
   document: GraphDocument
   canvasByGraph: Record<string, CanvasSnapshot>
