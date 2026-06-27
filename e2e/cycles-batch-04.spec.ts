@@ -21,8 +21,8 @@ test.describe('SDLC Batch 4 — cycles 41–50', () => {
     expect(parseFloat(outline)).toBeGreaterThanOrEqual(2)
   })
 
-  test('cycle-43: Alt+G opens Platform Eval tab', async ({ page }) => {
-    await page.keyboard.press('Alt+g')
+  test('cycle-43: Alt+K opens Platform Eval tab', async ({ page }) => {
+    await page.keyboard.press('Alt+k')
     await expect(page.getByTestId('platform-drawer')).toBeVisible()
     await expect(page.getByTestId('eval-panel')).toBeVisible()
   })

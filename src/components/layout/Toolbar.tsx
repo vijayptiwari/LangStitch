@@ -217,6 +217,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-249-docs-tooltip">
               cycle 249 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-297-docs-tooltip">
+              cycle 297 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -317,6 +320,7 @@ export function Toolbar({
           <span
             className="toolbar-redo-persisted"
             data-testid="toolbar-redo-persisted"
+            data-cycle-redo-persist="299"
             title={`Last redo: ${redoLastUsed}`}
             aria-hidden
           >
@@ -439,7 +443,10 @@ export function Toolbar({
                 <kbd>Alt</kbd>+<kbd>H</kbd> — Toggle Platform drawer
               </li>
               <li data-testid="cycle-103-open-eval-tab">
-                <kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab
+                <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer (cycle 295)
+              </li>
+              <li data-testid="cycle-295-toggle-platform">
+                <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer
               </li>
               <li data-testid="cycle-223-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab

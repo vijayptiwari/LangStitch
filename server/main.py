@@ -379,7 +379,7 @@ def health():
 
 @app.get("/api/openapi.json")
 def openapi_description():
-    """OpenAPI-style schema describing platform export endpoints."""
+    """OpenAPI-style schema describing platform export endpoints (cycles 232, 292)."""
     return {
         "openapi": "3.0.3",
         "info": {

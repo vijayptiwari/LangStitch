@@ -57,8 +57,9 @@ export function AppLayout() {
       }
       if (e.altKey && e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault()
-        setPlatformInitialTab('eval')
-        setPlatformOpen(true)
+        if (!isGraphEmpty()) {
+          setPlatformOpen((open) => !open)
+        }
       }
       // cycle 223 — Alt+K opens Platform Eval tab
       if (e.altKey && e.key.toLowerCase() === 'k' && !e.ctrlKey && !e.metaKey) {
