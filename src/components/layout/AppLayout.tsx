@@ -121,6 +121,19 @@ export function AppLayout() {
           setPlatformOpen(true)
         }
       }
+      // cycle 655 — Alt+Shift+K toggles Platform drawer (Alt+L reserved for palette search)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'k' &&
+        !e.ctrlKey &&
+        !e.metaKey
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformOpen((open) => !open)
+        }
+      }
       // cycle 163 — Ctrl+D opens Eval when no node is selected (duplicate uses Ctrl+D with selection)
       if (
         (e.ctrlKey || e.metaKey) &&

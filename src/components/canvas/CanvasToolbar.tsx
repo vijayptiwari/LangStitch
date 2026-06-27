@@ -40,6 +40,7 @@ export function CanvasToolbar() {
         data-cycle-snap-alt3="446"
         data-cycle-snap-alt4="518"
         data-cycle-snap-alt5="590"
+        data-cycle-snap-alt6="662"
         title="Snap nodes to grid (cycle 158)"
         aria-pressed={snapToGrid}
         onClick={() => updateGraphSettings({ snapToGrid: !snapToGrid })}

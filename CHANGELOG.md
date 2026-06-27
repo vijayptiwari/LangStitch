@@ -5,6 +5,8 @@ All notable changes to LangStitch are documented here.
 ## [Unreleased]
 
 ### Added
+- **Batch 66 (Cycles 661–670):** guardrail delete confirm, snap-to-grid toggle, export dry-run eval-dataset, CORS preflight export, eval dataset link, reduce-motion CSS, Ctrl+Shift+D minimap shortcut, merge viewport on import, graphStore JSDoc, save-and-reload E2E (`e2e/cycles-batch-66.spec.ts`).
+- **Batch 65 (Cycles 651–660):** export manifest eval-dataset, OpenAPI export docs, eval history limit 653, eval live region, Alt+Shift+K platform toggle, undo depth notice, CHANGELOG cycle 657 template, health reload E2E, redo persistence, Git copy (`e2e/cycles-batch-65.spec.ts`).
 - **Batch 64 (Cycles 641–650):** eval dry-run badge, palette focus ring, Ctrl+Shift+E eval tab, viewport localStorage, README eval runner, toolbar-save E2E, platform aria-label, eval section collapse, guardrail search, context delete (`e2e/cycles-batch-64.spec.ts`).
 - **Batch 63 (Cycles 631–640):** Ctrl+Shift+G focus search, dirty-clears-on-import, docs tooltip, platform git tab E2E, empty-graph redo guard, export retry, guardrail char count, minimap highlight, eval-dataset warning, export rate-limit 429 (`e2e/cycles-batch-63.spec.ts`).
 - **Batch 62 (Cycles 621–630):** graphStore JSDoc, health reload E2E, platform Ctrl+E hint, health last-sync, guardrail validation, edge truncation, Python eval-dataset header, API X-Request-ID, regression eval preset, skip-to-canvas link (`e2e/cycles-batch-62.spec.ts`).
@@ -78,6 +80,12 @@ Example (Cycle 369):
 
 ```
 - **Batch 36 (Cycles 361–370):** guardrail delete confirm, context menu delete, export dry-run eval-dataset, CORS preflight export, eval dataset link, reduce-motion CSS, Alt+Shift+H minimap, undo depth notice, CHANGELOG cycle 369 template, health reload E2E (`e2e/cycles-batch-36.spec.ts`).
+```
+
+Example (Cycle 657):
+
+```
+- **Batch 65 (Cycles 651–660):** export manifest eval-dataset, OpenAPI export docs, eval history limit 653, eval live region, Alt+Shift+K platform toggle, undo depth notice, CHANGELOG cycle 657 template, health reload E2E, redo persistence, Git copy (`e2e/cycles-batch-65.spec.ts`).
 ```
 
 Example (Cycle 609):

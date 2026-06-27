@@ -251,6 +251,19 @@ export function GraphCanvas() {
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
       }
+      // cycle 667 — Ctrl+Shift+D toggles minimap (Ctrl+D reserved for duplicate/eval)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'd' &&
+        !e.altKey &&
+        !selectedNodeId
+      ) {
+        e.preventDefault()
+        useGraphStore.getState().updateGraphSettings({
+          showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
+        })
+      }
       // cycle 187 — Alt+P toggles minimap
       if (
         e.altKey &&

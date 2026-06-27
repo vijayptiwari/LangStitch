@@ -299,6 +299,7 @@ export function Toolbar({
         <span data-testid="cycle-286-toolbar-save">
         <span data-testid="cycle-310-save-reload">
         <span data-testid="cycle-490-save-reload">
+        <span data-testid="cycle-670-save-reload">
         <span data-testid="cycle-322-toolbar-save">
         <span data-testid="cycle-358-toolbar-save">
         <span data-testid="cycle-394-toolbar-save">
@@ -317,6 +318,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -391,6 +393,7 @@ export function Toolbar({
             data-cycle-redo-persist="299"
             data-cycle-redo-persist-alt="419"
             data-cycle-redo-persist-alt2="539"
+            data-cycle-redo-persist-alt3="659"
             title={`Last redo: ${redoLastUsed}`}
             aria-hidden
           >
@@ -410,11 +413,13 @@ export function Toolbar({
               <span data-testid="cycle-512-undo-depth-notice">
               <span data-testid="cycle-560-undo-depth-notice">
               <span data-testid="cycle-608-undo-depth-notice">
+              <span data-testid="cycle-656-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -565,6 +570,9 @@ export function Toolbar({
               <li data-testid="cycle-535-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer (cycle 535)
               </li>
+              <li data-testid="cycle-655-toggle-platform">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> — Toggle Platform drawer (cycle 655; Alt+L reserved for palette)
+              </li>
               <li data-testid="cycle-595-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer (cycle 595)
               </li>
@@ -660,6 +668,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-607-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 607)
+              </li>
+              <li data-testid="cycle-667-toggle-minimap">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> — Toggle minimap (cycle 667; Ctrl+D reserved for duplicate)
               </li>
               <li data-testid="cycle-247-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 247)
