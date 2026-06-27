@@ -684,6 +684,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* cycle 186 — respect reduce-motion for UI transitions */
   *,
   *::before,
   *::after {

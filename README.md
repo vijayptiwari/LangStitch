@@ -135,6 +135,7 @@ Git sync, export/import, versioning, Docker build, Helm deploy.
 | `Alt+D` | Duplicate selected canvas node |
 | `Ctrl+F` | Focus graph name search |
 | `Ctrl+G` / `Ctrl+M` | Toggle minimap |
+| `Alt+P` | Toggle minimap |
 | `Ctrl+Shift+Z` | Redo last reset |
 | `?` | Open keyboard shortcuts help |
 

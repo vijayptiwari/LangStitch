@@ -188,6 +188,18 @@ export function GraphCanvas() {
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
       }
+      // cycle 187 — Alt+P toggles minimap
+      if (
+        e.altKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key.toLowerCase() === 'p'
+      ) {
+        e.preventDefault()
+        useGraphStore.getState().updateGraphSettings({
+          showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
+        })
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)

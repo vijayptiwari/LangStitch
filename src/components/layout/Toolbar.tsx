@@ -417,6 +417,9 @@ export function Toolbar({
               <li data-testid="cycle-127-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap
               </li>
+              <li data-testid="cycle-187-toggle-minimap">
+                <kbd>Alt</kbd>+<kbd>P</kbd> — Toggle minimap
+              </li>
               <li><kbd>Ctrl</kbd>+<kbd>M</kbd> — Toggle minimap (legacy)</li>
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>

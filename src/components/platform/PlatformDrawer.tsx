@@ -802,6 +802,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                                 target="_blank"
                                 rel="noreferrer"
                                 data-testid="eval-result-dataset-link"
+                                data-cycle="185"
                               >
                                 {evalConfig.datasetName}
                               </a>
