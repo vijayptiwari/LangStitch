@@ -284,12 +284,60 @@ graph = app.build_graph()           # compiles to a LangGraph StateGraph
 result = app.invoke({"messages": [{"role": "user", "content": "hi"}]})
 ```
 
+## Tracing, logging & LangSmith
+
+Optional observability via `langstitch.tracing` (install `pip install "langstitch[tracing]"`).
+
+### Configuration
+
+```yaml
+# application.yaml
+tracing:
+  enabled: true
+  project: my-agent-project
+  log_format: json          # text | json
+  register_on_build: true   # upsert LangSmith project on build_graph()
+  trace_nodes: true
+```
+
+Environment variables (`LANGSMITH_API_KEY`, `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_PROJECT`) are applied automatically when tracing is enabled.
+
+### Register a graph with LangSmith
+
+```python
+from langstitch import LangStitchApp, configure_tracing, register_graph
+
+configure_tracing()
+app = LangStitchApp.bootstrap()
+app.build_graph()   # registers entrypoint when tracing.register_on_build is true
+print(app.info()["registered_graphs"])
+```
+
+CLI:
+
+```bash
+langstitch register              # register entrypoint graph (needs app package)
+langstitch register --describe-only   # metadata only, no LangGraph compile
+```
+
+### Runtime agent smoke test
+
+The repo ships `runtime/basic_agent.py` — a minimal SDK graph with optional LangSmith registration:
+
+```bash
+python runtime/basic_agent.py
+# {"ok": true, "tracing": {"registered": true, ...}}
+```
+
 ## CLI
 
 ```text
 langstitch new <name> [--dir PATH] [--force]   scaffold a project
 langstitch info [--root PATH]                   load config + list components
 langstitch run [--root PATH] [--host] [--port]  start the API server
+langstitch register [--root PATH] [--describe-only]  LangSmith graph registration
+langstitch compile                              application.yaml -> application.json
+langstitch get <json.path>                      resolve config path
 langstitch version
 ```
 

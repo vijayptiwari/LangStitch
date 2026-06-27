@@ -548,6 +548,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span data-testid="cycle-144-health-last-sync">
                   Platform Health · Last sync: {lastHealthSync}
                 </span>
+                <span className="sr-only" data-testid="cycle-154-health-reload">
+                  cycle 154 — health metadata available after reload
+                </span>
               </p>
             )}
           </div>
@@ -606,7 +609,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <p className="platform-hint">Export as Python LangGraph, Spring Boot gateway, or full bundle with Helm chart.</p>
               {exportEvalDatasetWarning && (
                 <p className="platform-hint warn" data-testid="export-eval-dataset-warning">
-                  Eval is enabled but no dataset name or ID is configured. Export will omit eval-dataset metadata.
+                  <span data-testid="cycle-159-eval-warning">
+                    Eval is enabled but no dataset name or ID is configured. Export will omit eval-dataset metadata.
+                  </span>
                 </p>
               )}
               <Field label="Format">
@@ -623,6 +628,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     className="btn-secondary"
                     type="button"
                     data-testid="export-retry"
+                    data-cycle="156"
                     disabled={busy}
                     onClick={handleExport}
                   >

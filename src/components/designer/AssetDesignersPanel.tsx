@@ -231,7 +231,11 @@ export function AssetDesignersPanel() {
                     maxLength={GUARDRAIL_DESCRIPTION_MAX}
                     onChange={(e) => updateGuardrailDefinition(g.id, { description: e.target.value })}
                   />
-                  <span className="field-char-count" data-testid={`guardrail-description-count-${g.id}`}>
+                  <span
+                    className="field-char-count"
+                    data-testid={`guardrail-description-count-${g.id}`}
+                    data-cycle="157"
+                  >
                     {g.description.length}/{GUARDRAIL_DESCRIPTION_MAX}
                   </span>
                 </Field>

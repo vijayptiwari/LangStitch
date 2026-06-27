@@ -33,7 +33,8 @@ export function CanvasToolbar() {
         type="button"
         className={`canvas-toolbar-btn ${snapToGrid ? 'active' : ''}`}
         data-testid="canvas-snap-toggle"
-        title="Snap nodes to grid"
+        data-cycle="158"
+        title="Snap nodes to grid (cycle 158)"
         aria-pressed={snapToGrid}
         onClick={() => updateGraphSettings({ snapToGrid: !snapToGrid })}
       >

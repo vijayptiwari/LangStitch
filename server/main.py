@@ -42,6 +42,7 @@ _export_timestamps: dict[str, list[float]] = defaultdict(list)
 
 
 def check_export_rate_limit(project_id: str) -> None:
+    """Rate-limit /api/export (cycle 160 — friendly 429 message)."""
     now = time.time()
     window = _export_timestamps[project_id]
     _export_timestamps[project_id] = [t for t in window if now - t < EXPORT_RATE_WINDOW_SEC]

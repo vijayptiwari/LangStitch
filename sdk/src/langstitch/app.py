@@ -102,9 +102,12 @@ class LangStitchApp:
         return get_logger(name or self.config.name)
 
     def info(self) -> Dict[str, Any]:
+        from .tracing import registered_graphs
+
         return {
             "app": self.config.name,
             "version": self.config.version,
             "root": str(self.config.root),
             "components": self.registry.summary(),
+            "registered_graphs": registered_graphs(),
         }

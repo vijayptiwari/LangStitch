@@ -193,10 +193,13 @@ export function Toolbar({
               rel="noreferrer"
               className="help-docs-link"
               data-testid="help-docs-link-core"
-              title="Open LangStitch documentation"
+              title="Open LangStitch documentation (cycle 153)"
             >
               Docs
             </a>
+            <span className="sr-only" data-testid="cycle-153-docs-tooltip">
+              cycle 153 — help links to langstitch.com/docs
+            </span>
           </div>
         </div>
       </div>
@@ -251,7 +254,7 @@ export function Toolbar({
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <span className="toolbar-btn-wrap">
+        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard">
           <button
             className="btn-secondary"
             data-testid="toolbar-redo"
@@ -364,6 +367,7 @@ export function Toolbar({
         <input
           ref={fileInputRef}
           type="file"
+          data-testid="toolbar-open-input"
           accept=".langstitch.json,application/json"
           hidden
           onChange={(e) => {

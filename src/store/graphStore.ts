@@ -381,6 +381,7 @@ function applyCanvasUpdate(
   edges: Edge[],
   markDirty = true,
 ) {
+  if (_suppressDirty) markDirty = false
   const state = get()
   const id = state.document.activeSubgraphId
   set({
@@ -390,6 +391,9 @@ function applyCanvasUpdate(
     ...(markDirty ? { isDirty: true } : {}),
   })
 }
+
+let _importEpoch = 0
+let _suppressDirty = false
 
 export const useGraphStore = create<GraphStore>((set, get) => ({
   document: createDefaultDocument(),
@@ -889,6 +893,8 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   },
 
   loadProject: (payload) => {
+    const epoch = ++_importEpoch
+    _suppressDirty = true
     type LoadPayload = Parameters<GraphStore['loadProject']>[0] & Record<string, unknown>
     const raw = payload as LoadPayload
 
@@ -968,8 +974,19 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       annotations: active.annotations ?? [],
       selectedNodeId: null,
       designerTab: 'graph',
-      isDirty: false,
+      isDirty: false, // cycle 152 — successful import/load clears dirty flag
     })
+    // React Flow may emit node-change events while mounting imported nodes; keep clean.
+    const reaffirmClean = () => {
+      if (_importEpoch === epoch) set({ isDirty: false })
+    }
+    queueMicrotask(reaffirmClean)
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(reaffirmClean)
+    }
+    setTimeout(() => {
+      if (_importEpoch === epoch) _suppressDirty = false
+    }, 300)
   },
 
   resetProject: () => {
