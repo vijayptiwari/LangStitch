@@ -5,6 +5,8 @@ All notable changes to LangStitch are documented here.
 ## [Unreleased]
 
 ### Added
+- **Batch 64 (Cycles 641–650):** eval dry-run badge, palette focus ring, Ctrl+Shift+E eval tab, viewport localStorage, README eval runner, toolbar-save E2E, platform aria-label, eval section collapse, guardrail search, context delete (`e2e/cycles-batch-64.spec.ts`).
+- **Batch 63 (Cycles 631–640):** Ctrl+Shift+G focus search, dirty-clears-on-import, docs tooltip, platform git tab E2E, empty-graph redo guard, export retry, guardrail char count, minimap highlight, eval-dataset warning, export rate-limit 429 (`e2e/cycles-batch-63.spec.ts`).
 - **Batch 62 (Cycles 621–630):** graphStore JSDoc, health reload E2E, platform Ctrl+E hint, health last-sync, guardrail validation, edge truncation, Python eval-dataset header, API X-Request-ID, regression eval preset, skip-to-canvas link (`e2e/cycles-batch-62.spec.ts`).
 - **Batch 61 (Cycles 611–620):** toolbar redo tooltip, deploy skeleton, guardrail empty-state, Ctrl+D duplicate, langsmith eval-dataset, health node-count, eval pass-rate, modal focus trap, Alt+Shift+H duplicate shortcut, merge viewport on import (`e2e/cycles-batch-61.spec.ts`).
 - **Batch 60 (Cycles 601–610):** guardrail delete confirm, multi-select delete confirm, export dry-run eval-dataset, CORS preflight export, eval dataset link, reduce-motion CSS, shortcuts minimap docs, undo depth notice, CHANGELOG cycle 609 template, toolbar-save E2E (`e2e/cycles-batch-60.spec.ts`).

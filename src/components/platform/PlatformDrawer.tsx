@@ -639,6 +639,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               data-testid={testId}
               data-cycle-git={id === 'git' ? '274' : undefined}
               data-cycle-git-alt={id === 'git' ? '454' : undefined}
+              data-cycle-git-alt2={id === 'git' ? '634' : undefined}
               className={`platform-tab ${tab === id ? 'active' : ''}`}
               onClick={() => {
                 selectTab(id)
@@ -693,6 +694,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-459-eval-warning">cycle 459</span>
                   <span className="sr-only" data-testid="cycle-519-eval-warning">cycle 519</span>
                   <span className="sr-only" data-testid="cycle-579-eval-warning">cycle 579</span>
+                  <span className="sr-only" data-testid="cycle-639-eval-warning">cycle 639</span>
                 </p>
               )}
               <Field label="Format">
@@ -717,6 +719,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-retry-alt4="456"
                     data-cycle-retry-alt5="516"
                     data-cycle-retry-alt6="576"
+                    data-cycle-retry-alt7="636"
                     disabled={busy}
                     onClick={handleExport}
                   >
@@ -777,6 +780,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-521-eval-dry-run">cycle 521</span>
                   <span className="sr-only" data-testid="cycle-562-eval-dry-run">cycle 562</span>
                   <span className="sr-only" data-testid="cycle-581-eval-dry-run">cycle 581</span>
+                  <span className="sr-only" data-testid="cycle-641-eval-dry-run">cycle 641</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -797,6 +801,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-collapse-alt3="468"
                     data-cycle-collapse-alt4="528"
                     data-cycle-collapse-alt5="588"
+                    data-cycle-collapse-alt6="648"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >

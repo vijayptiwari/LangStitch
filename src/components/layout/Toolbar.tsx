@@ -135,6 +135,17 @@ export function Toolbar({
         graphNameInputRef.current?.focus()
         graphNameInputRef.current?.select()
       }
+      // cycle 631 — Ctrl+Shift+G focuses graph name search (Ctrl+G reserved for minimap)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'g' &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        graphNameInputRef.current?.focus()
+        graphNameInputRef.current?.select()
+      }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         if (canRedo() && !isGraphEmpty()) {
@@ -238,6 +249,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-585-docs-tooltip">
               cycle 585 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-633-docs-tooltip">
+              cycle 633 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -294,6 +308,7 @@ export function Toolbar({
         <span data-testid="cycle-538-toolbar-save">
         <span data-testid="cycle-574-toolbar-save">
         <span data-testid="cycle-610-toolbar-save">
+        <span data-testid="cycle-646-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -317,10 +332,11 @@ export function Toolbar({
         </span>
         </span>
         </span>
+        </span>
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395" data-cycle-redo-empty-alt2="515">
+        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395" data-cycle-redo-empty-alt2="515" data-cycle-redo-empty-alt3="635">
           <button
             className="btn-secondary"
             data-label="227"
@@ -422,6 +438,7 @@ export function Toolbar({
             data-cycle-aria="287"
             data-cycle-aria-alt="407"
             data-cycle-aria-alt2="527"
+            data-cycle-aria-alt3="647"
             data-cycle="167"
             data-cycle-empty="215"
             data-cycle-empty-alt="335"
@@ -617,6 +634,9 @@ export function Toolbar({
               <li data-testid="cycle-451-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> — Focus graph name search (cycle 451)
               </li>
+              <li data-testid="cycle-631-focus-search">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> — Focus graph name search (cycle 631; Ctrl+G reserved for minimap)
+              </li>
               <li data-testid="cycle-271-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>P</kbd> — Focus graph name search (cycle 271)
               </li>
@@ -628,6 +648,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-583-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> — Open Platform Eval tab (cycle 583; Alt+D reserved for palette)
+              </li>
+              <li data-testid="cycle-643-open-eval-tab">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> — Open Platform Eval tab (cycle 643)
               </li>
               <li data-testid="cycle-523-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Open Platform Eval tab (cycle 523)

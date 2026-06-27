@@ -108,6 +108,19 @@ export function AppLayout() {
           setPlatformOpen(true)
         }
       }
+      // cycle 643 — Ctrl+Shift+E opens Platform Eval tab
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'e' &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformInitialTab('eval')
+          setPlatformOpen(true)
+        }
+      }
       // cycle 163 — Ctrl+D opens Eval when no node is selected (duplicate uses Ctrl+D with selection)
       if (
         (e.ctrlKey || e.metaKey) &&
