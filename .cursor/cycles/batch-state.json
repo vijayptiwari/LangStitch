@@ -11,7 +11,7 @@
   "uatThreshold": 85,
   "status": "RUNNING",
   "lastCompletedBatch": 17,
-  "lastCommit": "pending",
+  "lastCommit": "9e31201",
   "startedAt": "2026-06-24T00:00:00Z",
   "notes": "Batch 17 complete (171-180). Eval history limit 173, batch-17 E2E spec."
 }
