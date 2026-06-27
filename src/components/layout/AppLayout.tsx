@@ -94,6 +94,20 @@ export function AppLayout() {
           setPlatformOpen(true)
         }
       }
+      // cycle 583 — Alt+Shift+D opens Platform Eval tab (Alt+D reserved for palette search)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'd' &&
+        !e.ctrlKey &&
+        !e.metaKey
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformInitialTab('eval')
+          setPlatformOpen(true)
+        }
+      }
       // cycle 163 — Ctrl+D opens Eval when no node is selected (duplicate uses Ctrl+D with selection)
       if (
         (e.ctrlKey || e.metaKey) &&

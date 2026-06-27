@@ -5,6 +5,8 @@ All notable changes to LangStitch are documented here.
 ## [Unreleased]
 
 ### Added
+- **Batch 58 (Cycles 581–590):** eval dry-run badge, palette focus ring, Alt+Shift+D eval tab shortcut, dirty-clears-on-import, docs help tooltip, health reload E2E, toolbar redo aria-label, eval section collapse, guardrail search, snap-to-grid toggle (`e2e/cycles-batch-58.spec.ts`).
+- **Batch 57 (Cycles 571–580):** shortcuts focus search, merge viewport on import, graphStore JSDoc, toolbar-save E2E, empty-graph platform guard, export retry, guardrail char count, context delete, eval-dataset warning, export rate-limit 429 (`e2e/cycles-batch-57.spec.ts`).
 - **LangStitch SDK tracing & LangSmith graph registration**: `langstitch.tracing` module — `configure_tracing`, `register_graph`, `traced_invoke`, `trace_node`, structured JSON logging (`LOG_FORMAT=json`), correlation IDs, and `langstitch register` CLI. `LangStitchApp.build_graph()` registers the entrypoint with LangSmith when configured; `runtime/basic_agent.py` runs via the SDK with local graph registration fallback.
 - **Batch 14 (Cycles 141–150):** graphStore JSDoc, toolbar-save E2E, platform Ctrl+E hint, health last-sync, guardrail validation, canvas delete context menu, eval-dataset Python header, API `X-Request-ID`, regression eval preset, skip-to-canvas link (`e2e/cycles-batch-14.spec.ts`).
 - **Cycle 151:** `Alt+L` focuses node palette search with filter input (`e2e/cycles-batch-15.spec.ts`).

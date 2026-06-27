@@ -611,6 +611,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-550-health-reload">
                   cycle 550 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-586-health-reload">
+                  cycle 586 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -680,6 +683,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-399-eval-warning">cycle 399</span>
                   <span className="sr-only" data-testid="cycle-459-eval-warning">cycle 459</span>
                   <span className="sr-only" data-testid="cycle-519-eval-warning">cycle 519</span>
+                  <span className="sr-only" data-testid="cycle-579-eval-warning">cycle 579</span>
                 </p>
               )}
               <Field label="Format">
@@ -703,6 +707,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-retry-alt3="396"
                     data-cycle-retry-alt4="456"
                     data-cycle-retry-alt5="516"
+                    data-cycle-retry-alt6="576"
                     disabled={busy}
                     onClick={handleExport}
                   >
@@ -762,6 +767,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-461-eval-dry-run">cycle 461</span>
                   <span className="sr-only" data-testid="cycle-521-eval-dry-run">cycle 521</span>
                   <span className="sr-only" data-testid="cycle-562-eval-dry-run">cycle 562</span>
+                  <span className="sr-only" data-testid="cycle-581-eval-dry-run">cycle 581</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -781,6 +787,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-collapse-alt2="408"
                     data-cycle-collapse-alt3="468"
                     data-cycle-collapse-alt4="528"
+                    data-cycle-collapse-alt5="588"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >

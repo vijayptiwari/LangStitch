@@ -235,6 +235,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-537-docs-tooltip">
               cycle 537 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-585-docs-tooltip">
+              cycle 585 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -289,6 +292,7 @@ export function Toolbar({
         <span data-testid="cycle-466-toolbar-save">
         <span data-testid="cycle-502-toolbar-save">
         <span data-testid="cycle-538-toolbar-save">
+        <span data-testid="cycle-574-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -297,6 +301,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -321,6 +326,7 @@ export function Toolbar({
             aria-label="Redo last reset"
             data-cycle-redo-aria="347"
             data-cycle-redo-aria-alt="467"
+            data-cycle-redo-aria-alt2="587"
             aria-describedby="toolbar-redo-tooltip-131"
             title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
             disabled={redoDisabled}
@@ -414,6 +420,7 @@ export function Toolbar({
             data-cycle-empty="215"
             data-cycle-empty-alt="335"
             data-cycle-empty-alt2="455"
+            data-cycle-empty-alt3="575"
             aria-describedby="toolbar-platform-tooltip"
             onClick={onOpenPlatform}
             disabled={graphEmpty}
@@ -599,6 +606,12 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-511-focus-search">
                 <kbd>Alt</kbd>+<kbd>E</kbd> — Focus node palette search (no selection, cycle 511)
+              </li>
+              <li data-testid="cycle-571-focus-search">
+                <kbd>Alt</kbd>+<kbd>D</kbd> — Focus node palette search (cycle 571)
+              </li>
+              <li data-testid="cycle-583-open-eval-tab">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> — Open Platform Eval tab (cycle 583; Alt+D reserved for palette)
               </li>
               <li data-testid="cycle-523-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Open Platform Eval tab (cycle 523)

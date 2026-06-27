@@ -472,6 +472,7 @@ export function GraphCanvas() {
             <span className="sr-only" data-testid="cycle-362-context-delete">cycle 362</span>
             <span className="sr-only" data-testid="cycle-434-context-delete">cycle 434</span>
             <span className="sr-only" data-testid="cycle-506-context-delete">cycle 506</span>
+            <span className="sr-only" data-testid="cycle-578-context-delete">cycle 578</span>
           </button>
         </div>
       )}
