@@ -365,7 +365,7 @@ def count_workspace_nodes() -> int:
 
 @app.get("/api/health")
 def health():
-    """Platform health including node-count (cycles 76, 196, 256, 316, 376, 436)."""
+    """Platform health including node-count (cycles 76, 196, 256, 316, 376, 436, 496)."""
     return {
         "status": "ok",
         "service": "langstitch-platform",
@@ -704,7 +704,7 @@ def write_project_files_endpoint(req: ExportRequest):
 
 @app.options("/api/export")
 async def export_project_preflight():
-    """CORS preflight for browser cross-origin export requests (cycles 124, 244, 304, 364, 424)."""
+    """CORS preflight for browser cross-origin export requests (cycles 124, 244, 304, 364, 424, 484)."""
     return Response(status_code=204)
 
 

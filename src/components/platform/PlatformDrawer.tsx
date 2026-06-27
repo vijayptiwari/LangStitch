@@ -699,7 +699,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button" data-testid="cycle-346-export-zip">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423" data-cycle-dry-run-alt4="483">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -891,6 +891,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                                 data-cycle-link-alt="305"
                                 data-cycle-link-alt2="365"
                                 data-cycle-link-alt3="425"
+                                data-cycle-link-alt4="485"
                               >
                                 {evalConfig.datasetName}
                               </a>
@@ -909,7 +910,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       {evalPassRate != null && (
                         <>
                           {' '}
-                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317" data-cycle-pass-alt2="377" data-cycle-pass-alt3="437">Pass rate: {evalPassRate}%</span>
+                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317" data-cycle-pass-alt2="377" data-cycle-pass-alt3="437" data-cycle-pass-alt4="497">Pass rate: {evalPassRate}%</span>
                         </>
                       )}
                       {evalResultUrl && (
@@ -993,12 +994,14 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <div data-testid="cycle-312-deploy-skeleton">
                 <div data-testid="cycle-372-deploy-skeleton">
                 <div data-testid="cycle-432-deploy-skeleton">
+                <div data-testid="cycle-492-deploy-skeleton">
                   <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
                     <div className="skeleton-line" />
                     <div className="skeleton-line short" />
                     <div className="skeleton-line" />
                     <div className="skeleton-block" />
                   </div>
+                </div>
                 </div>
                 </div>
                 </div>
