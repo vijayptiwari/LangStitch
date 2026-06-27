@@ -28,7 +28,9 @@ jobs:
         run: npm ci
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: |
+          pip install -r server/requirements.txt
+          pip install ./sdk
 
       - name: Typecheck and build
         run: npm run build

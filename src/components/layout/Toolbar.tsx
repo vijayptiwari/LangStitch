@@ -392,11 +392,11 @@ export function Toolbar({
             <RotateCw size={16} /> Redo
             <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd" data-cycle-redo-kbd-alt="443" data-cycle-redo-kbd-alt2="563" data-cycle-redo-kbd-alt3="683">
               <span data-testid="cycle-203-redo-kbd">Ctrl+Shift+Z</span>
-              <span className="sr-only" data-testid="cycle-323-redo-kbd">cycle 323 — toolbar redo keyboard hint</span>
-              <span className="sr-only" data-testid="cycle-443-redo-kbd">cycle 443 — toolbar redo keyboard hint</span>
-              <span className="sr-only" data-testid="cycle-563-redo-kbd">cycle 563 — toolbar redo keyboard hint</span>
-              <span className="sr-only" data-testid="cycle-683-redo-kbd">cycle 683 — toolbar redo keyboard hint</span>
             </kbd>
+            <span className="sr-only" data-testid="cycle-323-redo-kbd">cycle 323 — toolbar redo keyboard hint</span>
+            <span className="sr-only" data-testid="cycle-443-redo-kbd">cycle 443 — toolbar redo keyboard hint</span>
+            <span className="sr-only" data-testid="cycle-563-redo-kbd">cycle 563 — toolbar redo keyboard hint</span>
+            <span className="sr-only" data-testid="cycle-683-redo-kbd">cycle 683 — toolbar redo keyboard hint</span>
           </button>
           <span
             id="toolbar-redo-tooltip-131"

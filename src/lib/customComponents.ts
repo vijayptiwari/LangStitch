@@ -61,7 +61,7 @@ export interface CustomPaletteItem {
 
 export function customPaletteItems(registry: ComponentManifest[] | undefined): CustomPaletteItem[] {
   return (registry ?? [])
-    .filter((m) => m.category === 'node')
+    .filter((m) => !BUILTIN_IDS.has(m.id))
     .map((m) => ({
       componentId: m.id,
       label: m.label,

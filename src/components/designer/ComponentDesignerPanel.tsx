@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Download, Plus, Trash2, Upload } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import { ICON_NAMES, resolveIcon, buildDefaultConfig } from '../../lib/customComponents'
+import { BUILTIN_IDS } from '../../lib/builtinManifests'
 import {
   validateManifest,
   serializeComponent,
@@ -429,6 +430,9 @@ export function ComponentDesignerPanel() {
   const [importError, setImportError] = useState<string | null>(null)
 
   const existingIds = registry.map((m) => m.id)
+  // Built-in manifests power the canvas nodes but are not user-authored, so the
+  // Component Designer only lists/edits custom components (see SDK NFR-1).
+  const userManifests = registry.filter((m) => !BUILTIN_IDS.has(m.id))
 
   const handleAdd = () => {
     addComponentManifest(makeNewManifest(existingIds))
@@ -512,7 +516,7 @@ export function ComponentDesignerPanel() {
           </div>
         )}
 
-        {registry.length === 0 && (
+        {userManifests.length === 0 && (
           <div className="designer-empty" data-testid="component-empty-hint">
             <div className="designer-empty-icon">◈</div>
             <h3>No custom components yet</h3>
@@ -520,7 +524,7 @@ export function ComponentDesignerPanel() {
           </div>
         )}
 
-        {registry.map((manifest) => (
+        {userManifests.map((manifest) => (
           <ComponentEditor key={manifest.id} manifest={manifest} />
         ))}
       </div>
