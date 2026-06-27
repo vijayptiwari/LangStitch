@@ -67,6 +67,20 @@ export function AppLayout() {
         setPlatformInitialTab('eval')
         setPlatformOpen(true)
       }
+      // cycle 403 — Alt+Shift+L opens Platform Eval tab (Alt+L reserved for palette search)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'l' &&
+        !e.ctrlKey &&
+        !e.metaKey
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformInitialTab('eval')
+          setPlatformOpen(true)
+        }
+      }
       // cycle 163 — Ctrl+D opens Eval when no node is selected (duplicate uses Ctrl+D with selection)
       if (
         (e.ctrlKey || e.metaKey) &&

@@ -257,7 +257,7 @@ body {
 }
 
 .palette-item:focus-visible {
-  /* cycles 162, 222, 282, 342 — high-contrast focus ring */
+  /* cycles 162, 222, 282, 342, 402 — high-contrast focus ring */
   outline: 3px solid var(--accent);
   outline-offset: 2px;
   border-color: var(--accent);

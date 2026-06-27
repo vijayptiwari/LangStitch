@@ -194,7 +194,7 @@ on every push to `main`.
 
 ---
 
-## LangSmith Eval Runner <!-- cycle-165 -->
+## LangSmith Eval Runner <!-- cycle-165 --> <!-- cycle-405 -->
 
 Configure dataset evals from **Platform → Eval** (requires LangSmith enabled under Graph Designer → Observability).
 

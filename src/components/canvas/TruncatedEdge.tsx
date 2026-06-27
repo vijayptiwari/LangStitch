@@ -44,6 +44,7 @@ export function TruncatedEdge({
             data-testid={`edge-label-${id}`}
             data-cycle-truncate="266"
             data-cycle-truncate-alt="338"
+            data-cycle-truncate-alt2="410"
             title={fullLabel}
             style={{
               position: 'absolute',

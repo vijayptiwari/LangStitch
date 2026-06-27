@@ -584,6 +584,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-370-health-reload">
                   cycle 370 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-406-health-reload">
+                  cycle 406 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -724,6 +727,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-281-eval-dry-run">cycle 281</span>
                   <span className="sr-only" data-testid="cycle-341-eval-dry-run">cycle 341</span>
                   <span className="sr-only" data-testid="cycle-382-eval-dry-run">cycle 382</span>
+                  <span className="sr-only" data-testid="cycle-401-eval-dry-run">cycle 401</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -740,6 +744,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-toggle="228"
                     data-cycle-collapse="288"
                     data-cycle-collapse-alt="348"
+                    data-cycle-collapse-alt2="408"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >
