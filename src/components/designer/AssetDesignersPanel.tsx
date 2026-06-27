@@ -215,9 +215,11 @@ export function AssetDesignersPanel() {
                 <div data-testid="cycle-493-guardrails-empty-hint">
                 <div data-testid="cycle-553-guardrails-empty-hint">
                 <div data-testid="cycle-613-guardrails-empty-hint">
+                <div data-testid="cycle-673-guardrails-empty-hint">
                   <div className="designer-empty-icon">🛡</div>
                   <h3>No guardrails yet</h3>
                   <p>Add input/output guardrails here. They export to the guardrails/ module in your Python project.</p>
+                </div>
                 </div>
                 </div>
                 </div>

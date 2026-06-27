@@ -483,6 +483,9 @@ export function Toolbar({
             <span data-testid="cycle-623-platform-hint" className="sr-only">
               Batch 62 cycle 623 platform keyboard hint
             </span>
+            <span data-testid="cycle-671-platform-tooltip" data-cycle-platform-alt3="671" className="sr-only">
+              Batch 67 cycle 671 platform tooltip
+            </span>
           </span>
         </span>
         <button
@@ -527,6 +530,7 @@ export function Toolbar({
       </div>
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" data-cycle-alt2="598" onClick={() => setShowShortcuts(false)}>
+          <div data-testid="cycle-678-focus-trap">
           <div data-testid="cycle-378-focus-trap">
           <div data-testid="cycle-438-focus-trap">
           <div data-testid="cycle-498-focus-trap">
@@ -621,6 +625,9 @@ export function Toolbar({
               <li data-testid="cycle-619-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> — Duplicate selected node (cycle 619; Alt+H reserved for Platform)
               </li>
+              <li data-testid="cycle-679-duplicate-node">
+                <kbd>Ctrl</kbd>+<kbd>D</kbd> — Duplicate selected node (cycle 679; no node selected opens Eval)
+              </li>
               <li data-testid="cycle-163-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Open Platform Eval tab (no node selected)
               </li>
@@ -697,6 +704,7 @@ export function Toolbar({
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
           </div>
           </div>
           </div>

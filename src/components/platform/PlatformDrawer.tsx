@@ -963,7 +963,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       {evalPassRate != null && (
                         <>
                           {' '}
-                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317" data-cycle-pass-alt2="377" data-cycle-pass-alt3="437" data-cycle-pass-alt4="497" data-cycle-pass-alt5="557" data-cycle-pass-alt6="617">Pass rate: {evalPassRate}%</span>
+                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317" data-cycle-pass-alt2="377" data-cycle-pass-alt3="437" data-cycle-pass-alt4="497" data-cycle-pass-alt5="557" data-cycle-pass-alt6="617" data-cycle-pass-alt7="677">Pass rate: {evalPassRate}%</span>
                         </>
                       )}
                       {evalResultUrl && (
@@ -1053,12 +1053,14 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <div data-testid="cycle-492-deploy-skeleton">
                 <div data-testid="cycle-552-deploy-skeleton">
                 <div data-testid="cycle-612-deploy-skeleton">
+                <div data-testid="cycle-672-deploy-skeleton">
                   <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
                     <div className="skeleton-line" />
                     <div className="skeleton-line short" />
                     <div className="skeleton-line" />
                     <div className="skeleton-block" />
                   </div>
+                </div>
                 </div>
                 </div>
                 </div>
