@@ -133,6 +133,7 @@ Git sync, export/import, versioning, Docker build, Helm deploy.
 | `Alt+G` | Open Platform → Eval tab |
 | `Ctrl+D` | Open Platform → Eval tab (when no node selected) |
 | `Alt+D` | Duplicate selected canvas node |
+| `Ctrl+H` | Duplicate selected canvas node |
 | `Ctrl+F` | Focus graph name search |
 | `Ctrl+G` / `Ctrl+M` | Toggle minimap |
 | `Alt+P` | Toggle minimap |

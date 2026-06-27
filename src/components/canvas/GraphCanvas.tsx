@@ -179,6 +179,17 @@ export function GraphCanvas() {
         e.preventDefault()
         duplicateSelectedNode()
       }
+      // cycle 199 — Ctrl+H duplicates selected node
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'h' &&
+        !e.shiftKey &&
+        !e.altKey &&
+        selectedNodeId
+      ) {
+        e.preventDefault()
+        duplicateSelectedNode()
+      }
       if (
         (e.ctrlKey || e.metaKey) &&
         (e.key.toLowerCase() === 'm' || e.key.toLowerCase() === 'g')
