@@ -219,7 +219,7 @@ interface GraphStore {
 
   /**
    * Load a project from disk or import.
-   * Merges imported viewport with localStorage when the import omits viewport data (cycles 44, 140, 212, 236, 284, 332).
+   * Merges imported viewport with localStorage when the import omits viewport data (cycles 44, 140, 212, 236, 284, 332, 380).
    */
   loadProject: (payload: {
     document: GraphDocument

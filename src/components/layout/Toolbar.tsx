@@ -322,9 +322,11 @@ export function Toolbar({
             className="toolbar-btn-tooltip"
             data-testid="cycle-131-redo-tooltip"
             data-cycle-redo="251"
+            data-cycle-redo-alt="371"
             role="tooltip"
           >
             Redo last reset — cycle 131 (Ctrl+Shift+Z)
+            <span className="sr-only" data-testid="cycle-371-redo-tooltip">cycle 371</span>
           </span>
         </span>
         {redoLastUsed && (
@@ -439,6 +441,7 @@ export function Toolbar({
       </div>
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" onClick={() => setShowShortcuts(false)}>
+          <div data-testid="cycle-378-focus-trap">
           <div data-testid="cycle-318-focus-trap">
           <div data-testid="cycle-138-focus-trap">
           <div data-testid="cycle-198-focus-trap">
@@ -492,6 +495,9 @@ export function Toolbar({
               <li data-testid="cycle-319-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>E</kbd>, <kbd>Alt</kbd>+<kbd>D</kbd>, <kbd>Ctrl</kbd>+<kbd>H</kbd> — Duplicate selected node (cycle 319)
               </li>
+              <li data-testid="cycle-379-duplicate-node">
+                <kbd>Ctrl</kbd>+<kbd>G</kbd> — Duplicate selected node (cycle 379)
+              </li>
               <li data-testid="cycle-163-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Open Platform Eval tab (no node selected)
               </li>
@@ -529,6 +535,7 @@ export function Toolbar({
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
           </div>
           </div>
           </div>
