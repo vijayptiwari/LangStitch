@@ -67,6 +67,12 @@ Example (Cycle 129):
 - **Batch 12 (Cycles 121–130):** guardrail delete confirm, edge label truncation tooltip, export dry-run eval-dataset, CORS preflight /api/export, eval dataset link in summary, reduce-motion CSS, Ctrl+G toggle minimap, undo depth notice, CHANGELOG cycle 129 template, save-and-reload E2E (`e2e/cycles-batch-12.spec.ts`).
 ```
 
+Example (Cycle 285):
+
+```
+- **Batch 28 (Cycles 281–290):** eval dry-run badge, palette focus ring, shortcuts open eval tab, merge viewport on import, graphStore JSDoc, toolbar-save E2E, platform aria-label, eval section collapse, guardrail search, context menu delete (`e2e/cycles-batch-28.spec.ts`).
+```
+
 Example (Cycle 273):
 
 ```

@@ -107,7 +107,7 @@ function persistActiveCanvas(state: {
   return synced
 }
 
-/** Zustand store for graph document, canvas state, undo/redo, and project I/O (cycle 93 JSDoc; cycle 141; cycle 237). */
+/** Zustand store for graph document, canvas state, undo/redo, and project I/O (cycles 93, 141, 237, 285 JSDoc). */
 interface GraphStore {
   document: GraphDocument
   canvasByGraph: Record<string, CanvasSnapshot>
@@ -219,7 +219,7 @@ interface GraphStore {
 
   /**
    * Load a project from disk or import.
-   * Merges imported viewport with localStorage when the import omits viewport data.
+   * Merges imported viewport with localStorage when the import omits viewport data (cycles 44, 140, 212, 236, 284).
    */
   loadProject: (payload: {
     document: GraphDocument

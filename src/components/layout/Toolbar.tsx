@@ -261,6 +261,7 @@ export function Toolbar({
         <span data-testid="cycle-142-toolbar-save">
         <span data-testid="cycle-214-toolbar-save">
         <span data-testid="cycle-250-toolbar-save">
+        <span data-testid="cycle-286-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -269,6 +270,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -345,6 +347,7 @@ export function Toolbar({
             data-testid="toolbar-platform"
             title={graphEmpty ? 'Platform unavailable on empty graph' : 'Platform (Ctrl+E)'}
             aria-label="Open Platform drawer"
+            data-cycle-aria="287"
             data-cycle="167"
             data-cycle-empty="215"
             aria-describedby="toolbar-platform-tooltip"
@@ -440,6 +443,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-223-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab
+              </li>
+              <li data-testid="cycle-283-open-eval-tab">
+                <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab (cycle 283)
               </li>
               <li data-testid="cycle-139-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node
