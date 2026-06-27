@@ -974,7 +974,7 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       annotations: active.annotations ?? [],
       selectedNodeId: null,
       designerTab: 'graph',
-      isDirty: false, // cycles 152, 248, 296, 344, 392, 440, 488, 536, 584, 632, 680 — successful import/load clears dirty flag
+      isDirty: false, // cycles 152, 248, 296, 344, 392, 440, 488, 536, 584, 632, 680, 728 — successful import/load clears dirty flag
     })
     // React Flow may emit node-change events while mounting imported nodes; keep clean.
     const reaffirmClean = () => {

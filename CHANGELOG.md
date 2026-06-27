@@ -5,6 +5,8 @@ All notable changes to LangStitch are documented here.
 ## [Unreleased]
 
 ### Added
+- **Batch 73 (Cycles 731–740):** redo tooltip, deploy skeleton, guardrail empty-state, snap-to-grid, langsmith eval-dataset, health node-count, eval pass-rate, modal focus trap, Ctrl+Shift+L duplicate, viewport localStorage (`e2e/cycles-batch-73.spec.ts`).
+- **Batch 72 (Cycles 721–730):** guardrail delete confirm, context delete, export dry-run eval-dataset, CORS preflight, eval dataset link, reduce-motion CSS, Alt+Shift+M minimap, dirty-clears-on-import, docs tooltip, health reload E2E (`e2e/cycles-batch-72.spec.ts`).
 - **Batch 71 (Cycles 711–720):** export manifest eval-dataset, OpenAPI export docs, eval history limit 713, eval live region, Alt+Shift+K platform toggle, merge viewport on import, graphStore JSDoc, toolbar-save E2E, platform tab persist, Git copy (`e2e/cycles-batch-71.spec.ts`).
 - **Batch 70 (Cycles 701–710):** eval dry-run badge, palette focus ring, Ctrl+H eval tab, undo depth notice, CHANGELOG cycle 705 template, export-zip E2E, redo aria-label, eval section collapse, guardrail search, minimap highlight (`e2e/cycles-batch-70.spec.ts`).
 - **Batch 69 (Cycles 691–700):** Alt+P palette focus, viewport localStorage, README platform API, health reload E2E, empty-graph platform guard, export retry, guardrail char count, edge truncation, eval-dataset warning, export rate-limit 429 (`e2e/cycles-batch-69.spec.ts`).

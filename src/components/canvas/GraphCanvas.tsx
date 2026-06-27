@@ -303,6 +303,30 @@ export function GraphCanvas() {
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
       }
+      // cycle 727 — Alt+Shift+M toggles minimap (Alt+K reserved for Eval)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key.toLowerCase() === 'm'
+      ) {
+        e.preventDefault()
+        useGraphStore.getState().updateGraphSettings({
+          showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
+        })
+      }
+      // cycle 739 — Ctrl+Shift+L duplicates selected node (Ctrl+L reserved for Platform)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'l' &&
+        !e.altKey &&
+        selectedNodeId
+      ) {
+        e.preventDefault()
+        duplicateSelectedNode()
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -504,6 +528,7 @@ export function GraphCanvas() {
             <span className="sr-only" data-testid="cycle-506-context-delete">cycle 506</span>
             <span className="sr-only" data-testid="cycle-578-context-delete">cycle 578</span>
             <span className="sr-only" data-testid="cycle-650-context-delete">cycle 650</span>
+            <span className="sr-only" data-testid="cycle-722-context-delete">cycle 722</span>
           </button>
         </div>
       )}

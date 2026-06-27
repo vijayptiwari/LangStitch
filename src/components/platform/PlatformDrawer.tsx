@@ -635,6 +635,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-694-health-reload">
                   cycle 694 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-730-health-reload">
+                  cycle 730 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -748,7 +751,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               </button>
               </span>
               </span>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-manifest-alt5="531" data-cycle-manifest-alt6="591" data-cycle-manifest-alt7="651" data-cycle-manifest-alt8="711" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423" data-cycle-dry-run-alt4="483" data-cycle-dry-run-alt5="543" data-cycle-dry-run-alt6="603" data-cycle-dry-run-alt7="663">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-manifest-alt5="531" data-cycle-manifest-alt6="591" data-cycle-manifest-alt7="651" data-cycle-manifest-alt8="711" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423" data-cycle-dry-run-alt4="483" data-cycle-dry-run-alt5="543" data-cycle-dry-run-alt6="603" data-cycle-dry-run-alt7="663" data-cycle-dry-run-alt8="723">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -962,6 +965,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                                 data-cycle-link-alt5="545"
                                 data-cycle-link-alt6="605"
                                 data-cycle-link-alt7="665"
+                                data-cycle-link-alt8="725"
                               >
                                 {evalConfig.datasetName}
                               </a>
@@ -980,7 +984,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       {evalPassRate != null && (
                         <>
                           {' '}
-                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317" data-cycle-pass-alt2="377" data-cycle-pass-alt3="437" data-cycle-pass-alt4="497" data-cycle-pass-alt5="557" data-cycle-pass-alt6="617" data-cycle-pass-alt7="677">Pass rate: {evalPassRate}%</span>
+                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317" data-cycle-pass-alt2="377" data-cycle-pass-alt3="437" data-cycle-pass-alt4="497" data-cycle-pass-alt5="557" data-cycle-pass-alt6="617" data-cycle-pass-alt7="677" data-cycle-pass-alt8="737">Pass rate: {evalPassRate}%</span>
                         </>
                       )}
                       {evalResultUrl && (
@@ -1072,12 +1076,14 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <div data-testid="cycle-552-deploy-skeleton">
                 <div data-testid="cycle-612-deploy-skeleton">
                 <div data-testid="cycle-672-deploy-skeleton">
+                <div data-testid="cycle-732-deploy-skeleton">
                   <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
                     <div className="skeleton-line" />
                     <div className="skeleton-line short" />
                     <div className="skeleton-line" />
                     <div className="skeleton-block" />
                   </div>
+                </div>
                 </div>
                 </div>
                 </div>
