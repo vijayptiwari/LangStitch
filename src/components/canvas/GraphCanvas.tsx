@@ -166,6 +166,18 @@ export function GraphCanvas() {
         selectedNodeId &&
         !e.altKey
       ) {
+        // cycle 254 — Ctrl+D duplicates selected node (Eval uses Ctrl+D when nothing selected)
+        e.preventDefault()
+        duplicateSelectedNode()
+      }
+      if (
+        e.altKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key.toLowerCase() === 'e' &&
+        selectedNodeId
+      ) {
+        // cycle 259 — Alt+E duplicates selected node
         e.preventDefault()
         duplicateSelectedNode()
       }
@@ -321,7 +333,7 @@ export function GraphCanvas() {
   )
 
   return (
-    <div className="graph-canvas-wrap" data-testid="graph-canvas" data-cycle-multi="242">
+    <div className="graph-canvas-wrap" data-testid="graph-canvas" data-cycle-multi="242" data-cycle-ctrl-d="254">
       <CanvasToolbar />
       <ReactFlow
         nodes={displayNodes}

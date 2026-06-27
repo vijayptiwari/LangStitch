@@ -58,6 +58,7 @@ export function generateLangsmithJson(doc: GraphDocument): string {
       },
       ...(hasEvalDataset
         ? {
+            // cycles 75, 135, 195, 255 — eval-dataset metadata in langsmith.json export
             'eval-dataset': {
               enabled: true,
               dataset_name: ev?.datasetName ?? '',

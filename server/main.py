@@ -365,6 +365,7 @@ def count_workspace_nodes() -> int:
 
 @app.get("/api/health")
 def health():
+    """Platform health including node-count (cycles 76, 196, 256)."""
     return {
         "status": "ok",
         "service": "langstitch-platform",
