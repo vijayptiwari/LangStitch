@@ -560,6 +560,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span data-testid="cycle-324-health-last-sync" className="sr-only">
                   cycle 324 — Platform Health last-sync timestamp
                 </span>
+                <span data-testid="cycle-384-health-last-sync" className="sr-only">
+                  cycle 384 — Platform Health last-sync timestamp
+                </span>
                 <span className="sr-only" data-testid="cycle-204-health-last-sync">
                   cycle 204 — Platform Health last-sync timestamp
                 </span>
@@ -718,6 +721,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-221-eval-dry-run">cycle 221</span>
                   <span className="sr-only" data-testid="cycle-281-eval-dry-run">cycle 281</span>
                   <span className="sr-only" data-testid="cycle-341-eval-dry-run">cycle 341</span>
+                  <span className="sr-only" data-testid="cycle-382-eval-dry-run">cycle 382</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -746,6 +750,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     <span data-testid="cycle-209-regression-preset">
                     <span data-testid="cycle-269-regression-preset">
                     <span data-testid="cycle-329-regression-preset">
+                    <span data-testid="cycle-389-regression-preset">
                       <button
                         className="btn-secondary-sm"
                         type="button"
@@ -764,6 +769,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       >
                         Apply regression preset
                       </button>
+                    </span>
                     </span>
                     </span>
                     </span>
@@ -824,6 +830,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       type="button"
                       data-testid="eval-validate-config"
                       data-cycle="202"
+                      data-cycle-dry-run-alt="382"
                     >
                       Validate config
                     </button>

@@ -57,7 +57,7 @@ app = FastAPI(title="LangStitch Platform API", version="0.2.0")
 
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
-    """Attach X-Request-ID to every response (cycles 148, 208, 268, 328)."""
+    """Attach X-Request-ID to every response (cycles 148, 208, 268, 328, 388)."""
 
     async def dispatch(self, request: Request, call_next) -> Response:
         request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())

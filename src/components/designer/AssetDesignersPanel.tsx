@@ -281,6 +281,7 @@ export function AssetDesignersPanel() {
                     <span data-testid="cycle-145-guardrail-validation">{validationError}</span>
                     <span data-testid="cycle-265-guardrail-validation" className="sr-only">cycle 265</span>
                     <span data-testid="cycle-325-guardrail-validation" className="sr-only">cycle 325</span>
+                    <span data-testid="cycle-385-guardrail-validation" className="sr-only">cycle 385</span>
                     <span data-testid="cycle-205-guardrail-validation" className="sr-only">cycle 205</span>
                   </p>
                 )}

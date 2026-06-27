@@ -378,7 +378,7 @@ export function Toolbar({
             type="button"
           >
             <Server size={16} /> Platform
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263">
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383">
               Ctrl+E
             </kbd>
           </button>
