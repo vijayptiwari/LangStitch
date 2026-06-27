@@ -46,10 +46,19 @@ export function NodePalette() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.altKey && e.key.toLowerCase() === 'l' && !e.ctrlKey && !e.metaKey) {
-        e.preventDefault()
-        searchRef.current?.focus()
-        searchRef.current?.select()
+      if (e.altKey && !e.ctrlKey && !e.metaKey) {
+        const key = e.key.toLowerCase()
+        if (key === 'l') {
+          e.preventDefault()
+          searchRef.current?.focus()
+          searchRef.current?.select()
+        }
+        // cycle 331 — Alt+D focuses palette search when no node is selected
+        if (key === 'd' && !useGraphStore.getState().selectedNodeId) {
+          e.preventDefault()
+          searchRef.current?.focus()
+          searchRef.current?.select()
+        }
       }
     }
     window.addEventListener('keydown', onKey)
@@ -84,10 +93,11 @@ export function NodePalette() {
         ref={searchRef}
         className="input palette-search-input"
         data-testid="palette-search-input"
+        data-cycle-focus="331"
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Filter nodes… (Alt+L)"
+        placeholder="Filter nodes… (Alt+L, Alt+D)"
         aria-label="Filter node palette"
       />
       <div className="palette-list">

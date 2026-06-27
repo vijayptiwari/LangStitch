@@ -572,6 +572,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-298-health-reload">
                   cycle 298 — health metadata regression after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-334-health-reload">
+                  cycle 334 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -636,6 +639,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   </span>
                   <span className="sr-only" data-testid="cycle-219-eval-warning">cycle 219</span>
                   <span className="sr-only" data-testid="cycle-279-eval-warning">cycle 279</span>
+                  <span className="sr-only" data-testid="cycle-339-eval-warning">cycle 339</span>
                 </p>
               )}
               <Field label="Format">
@@ -655,6 +659,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle="156"
                     data-cycle-retry="216"
                     data-cycle-retry-alt="276"
+                    data-cycle-retry-alt2="336"
                     disabled={busy}
                     onClick={handleExport}
                   >

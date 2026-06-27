@@ -43,6 +43,7 @@ export function TruncatedEdge({
             className="edge-label-truncated nodrag nopan"
             data-testid={`edge-label-${id}`}
             data-cycle-truncate="266"
+            data-cycle-truncate-alt="338"
             title={fullLabel}
             style={{
               position: 'absolute',

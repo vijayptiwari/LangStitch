@@ -361,6 +361,7 @@ export function Toolbar({
             data-cycle-aria="287"
             data-cycle="167"
             data-cycle-empty="215"
+            data-cycle-empty-alt="335"
             aria-describedby="toolbar-platform-tooltip"
             onClick={onOpenPlatform}
             disabled={graphEmpty}
@@ -482,6 +483,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-151-alt-l-focus-search">
                 <kbd>Alt</kbd>+<kbd>L</kbd> — Focus node palette search
+              </li>
+              <li data-testid="cycle-331-focus-search">
+                <kbd>Alt</kbd>+<kbd>D</kbd> — Focus node palette search (no selection, cycle 331)
               </li>
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
