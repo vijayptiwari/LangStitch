@@ -135,7 +135,7 @@ MCP Studio, tool/agent registry, remote graphs, A2A, LangSmith, Langfuse, struct
 ### Platform panel
 Git sync, export/import, versioning, Docker build, Helm deploy.
 
-### Keyboard shortcuts <!-- cycle-357 -->
+### Keyboard shortcuts <!-- cycle-357 --> <!-- cycle-597 -->
 
 | Shortcut | Action |
 |----------|--------|

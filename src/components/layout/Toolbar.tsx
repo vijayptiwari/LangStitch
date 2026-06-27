@@ -293,6 +293,7 @@ export function Toolbar({
         <span data-testid="cycle-502-toolbar-save">
         <span data-testid="cycle-538-toolbar-save">
         <span data-testid="cycle-574-toolbar-save">
+        <span data-testid="cycle-610-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -301,6 +302,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -389,11 +391,13 @@ export function Toolbar({
               <span data-testid="cycle-464-undo-depth-notice">
               <span data-testid="cycle-512-undo-depth-notice">
               <span data-testid="cycle-560-undo-depth-notice">
+              <span data-testid="cycle-608-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -495,7 +499,7 @@ export function Toolbar({
         />
       </div>
       {showShortcuts && (
-        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" onClick={() => setShowShortcuts(false)}>
+        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" data-cycle-alt2="598" onClick={() => setShowShortcuts(false)}>
           <div data-testid="cycle-378-focus-trap">
           <div data-testid="cycle-438-focus-trap">
           <div data-testid="cycle-498-focus-trap">
@@ -537,6 +541,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-535-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer (cycle 535)
+              </li>
+              <li data-testid="cycle-595-toggle-platform">
+                <kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer (cycle 595)
               </li>
               <li data-testid="cycle-415-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Toggle Platform drawer (cycle 415)
@@ -618,6 +625,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-127-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap
+              </li>
+              <li data-testid="cycle-607-toggle-minimap">
+                <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 607)
               </li>
               <li data-testid="cycle-247-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 247)

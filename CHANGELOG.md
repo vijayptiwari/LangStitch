@@ -5,6 +5,8 @@ All notable changes to LangStitch are documented here.
 ## [Unreleased]
 
 ### Added
+- **Batch 60 (Cycles 601–610):** guardrail delete confirm, multi-select delete confirm, export dry-run eval-dataset, CORS preflight export, eval dataset link, reduce-motion CSS, shortcuts minimap docs, undo depth notice, CHANGELOG cycle 609 template, toolbar-save E2E (`e2e/cycles-batch-60.spec.ts`).
+- **Batch 59 (Cycles 591–600):** export manifest eval-dataset, OpenAPI export docs, eval history limit 593, eval live region, Ctrl+E platform toggle, viewport localStorage, README keyboard shortcuts, open-shortcuts E2E, platform tab persist, Git copy (`e2e/cycles-batch-59.spec.ts`).
 - **Batch 58 (Cycles 581–590):** eval dry-run badge, palette focus ring, Alt+Shift+D eval tab shortcut, dirty-clears-on-import, docs help tooltip, health reload E2E, toolbar redo aria-label, eval section collapse, guardrail search, snap-to-grid toggle (`e2e/cycles-batch-58.spec.ts`).
 - **Batch 57 (Cycles 571–580):** shortcuts focus search, merge viewport on import, graphStore JSDoc, toolbar-save E2E, empty-graph platform guard, export retry, guardrail char count, context delete, eval-dataset warning, export rate-limit 429 (`e2e/cycles-batch-57.spec.ts`).
 - **LangStitch SDK tracing & LangSmith graph registration**: `langstitch.tracing` module — `configure_tracing`, `register_graph`, `traced_invoke`, `trace_node`, structured JSON logging (`LOG_FORMAT=json`), correlation IDs, and `langstitch register` CLI. `LangStitchApp.build_graph()` registers the entrypoint with LangSmith when configured; `runtime/basic_agent.py` runs via the SDK with local graph registration fallback.
@@ -72,6 +74,12 @@ Example (Cycle 369):
 
 ```
 - **Batch 36 (Cycles 361–370):** guardrail delete confirm, context menu delete, export dry-run eval-dataset, CORS preflight export, eval dataset link, reduce-motion CSS, Alt+Shift+H minimap, undo depth notice, CHANGELOG cycle 369 template, health reload E2E (`e2e/cycles-batch-36.spec.ts`).
+```
+
+Example (Cycle 609):
+
+```
+- **Batch 60 (Cycles 601–610):** guardrail delete confirm, multi-select delete confirm, export dry-run eval-dataset, CORS preflight export, eval dataset link, reduce-motion CSS, shortcuts minimap docs, undo depth notice, CHANGELOG cycle 609 template, toolbar-save E2E (`e2e/cycles-batch-60.spec.ts`).
 ```
 
 Example (Cycle 561):

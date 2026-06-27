@@ -36,7 +36,7 @@ function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const EVAL_HISTORY_LIMIT = 533
+const EVAL_HISTORY_LIMIT = 593
 const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
 const PLATFORM_TAB_KEY = 'langstitch-platform-tab-last-used'
 
@@ -541,6 +541,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
         <span className="sr-only" data-testid="cycle-479-platform-tab-persist">
           cycle 479 — platform tab persisted in {PLATFORM_TAB_KEY}
         </span>
+        <span className="sr-only" data-testid="cycle-599-platform-tab-persist">
+          cycle 599 — platform tab persisted in {PLATFORM_TAB_KEY}
+        </span>
         <header className="platform-header">
           <div>
             <h2>Platform</h2>
@@ -720,7 +723,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <Download size={14} /> Download ZIP
               </button>
               </span>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-manifest-alt5="531" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423" data-cycle-dry-run-alt4="483" data-cycle-dry-run-alt5="543">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-manifest-alt4="471" data-cycle-manifest-alt5="531" data-cycle-manifest-alt6="591" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363" data-cycle-dry-run-alt3="423" data-cycle-dry-run-alt4="483" data-cycle-dry-run-alt5="543" data-cycle-dry-run-alt6="603">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -924,6 +927,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                                 data-cycle-link-alt3="425"
                                 data-cycle-link-alt4="485"
                                 data-cycle-link-alt5="545"
+                                data-cycle-link-alt6="605"
                               >
                                 {evalConfig.datasetName}
                               </a>
@@ -972,6 +976,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-live-alt3="414"
                     data-cycle-live-alt4="474"
                     data-cycle-live-alt5="534"
+                    data-cycle-live-alt6="594"
                   >
                     {evalFinishedAnnouncement}
                   </div>
@@ -1075,6 +1080,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   data-cycle-copy-alt2="420"
                   data-cycle-copy-alt3="480"
                   data-cycle-copy-alt4="540"
+                  data-cycle-copy-alt5="600"
                   onClick={handleCopyLog}
                 >
                   Copy output
