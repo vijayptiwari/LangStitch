@@ -145,17 +145,17 @@ test.describe('SDLC Batch 5 — cycles 51–60', () => {
     await expect(live).toHaveAttribute('aria-live', 'polite')
   })
 
-  test('cycle-55: Ctrl+K toggles platform drawer', async ({ page }) => {
+  test('cycle-55: Ctrl+E toggles platform drawer', async ({ page }) => {
     await expect(page.getByTestId('platform-drawer')).toHaveCount(0)
-    await page.keyboard.press('Control+k')
+    await page.keyboard.press('Control+e')
     await expect(page.getByTestId('platform-drawer')).toBeVisible()
-    await page.keyboard.press('Control+k')
+    await page.keyboard.press('Control+e')
     await expect(page.getByTestId('platform-drawer')).toHaveCount(0)
   })
 
-  test('cycle-55: shortcuts modal documents Ctrl+K', async ({ page }) => {
+  test('cycle-55: shortcuts modal documents Ctrl+E platform', async ({ page }) => {
     await page.getByTestId('toolbar-shortcuts').click()
-    await expect(page.getByTestId('shortcuts-modal')).toContainText(/Ctrl.*K.*Platform/i)
+    await expect(page.getByTestId('shortcuts-modal')).toContainText(/Ctrl.*E.*Platform/i)
   })
 
   test('cycle-56: dirty flag clears after successful import', async ({ page }) => {

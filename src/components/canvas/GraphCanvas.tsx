@@ -211,6 +211,18 @@ export function GraphCanvas() {
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
       }
+      // cycle 307 — Ctrl+K toggles minimap
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'k' &&
+        !e.shiftKey &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        useGraphStore.getState().updateGraphSettings({
+          showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
+        })
+      }
       // cycle 187 — Alt+P toggles minimap
       if (
         e.altKey &&

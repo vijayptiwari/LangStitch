@@ -265,6 +265,7 @@ export function Toolbar({
         <span data-testid="cycle-214-toolbar-save">
         <span data-testid="cycle-250-toolbar-save">
         <span data-testid="cycle-286-toolbar-save">
+        <span data-testid="cycle-310-save-reload">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -273,6 +274,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -438,7 +440,7 @@ export function Toolbar({
               <li data-testid="cycle-235-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>L</kbd> — Toggle Platform drawer
               </li>
-              <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle Platform drawer</li>
+              <li><kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle minimap (cycle 307)</li>
               <li data-testid="cycle-115-alt-h-platform">
                 <kbd>Alt</kbd>+<kbd>H</kbd> — Toggle Platform drawer
               </li>
@@ -483,6 +485,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-247-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 247)
+              </li>
+              <li data-testid="cycle-307-toggle-minimap">
+                <kbd>Ctrl</kbd>+<kbd>K</kbd> — Toggle minimap (cycle 307)
               </li>
               <li data-testid="cycle-187-toggle-minimap">
                 <kbd>Alt</kbd>+<kbd>P</kbd> — Toggle minimap

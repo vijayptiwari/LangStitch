@@ -287,6 +287,7 @@ export function AssetDesignersPanel() {
                   data-testid={`guardrail-remove-${g.id}`}
                   data-cycle="181"
                   data-cycle-guard="241"
+                  data-cycle-guard-alt="301"
                   onClick={() => {
                     if (
                       window.confirm(

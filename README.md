@@ -85,7 +85,7 @@ The FastAPI server in `server/` powers **Platform → Git, Export, Import, Build
 
 `GET /api/health` returns `node-count` (number of nodes in the active graph document) alongside version and build metadata — useful for smoke checks and monitoring.
 
-### RAG nodes
+### RAG nodes <!-- cycle-309 -->
 
 LangStitch models retrieval-augmented generation as first-class canvas and export assets:
 

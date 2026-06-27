@@ -704,7 +704,7 @@ def write_project_files_endpoint(req: ExportRequest):
 
 @app.options("/api/export")
 async def export_project_preflight():
-    """CORS preflight for browser cross-origin export requests (cycles 124, 244)."""
+    """CORS preflight for browser cross-origin export requests (cycles 124, 244, 304)."""
     return Response(status_code=204)
 
 

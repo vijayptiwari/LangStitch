@@ -4,7 +4,7 @@ export function viewportStorageKey(projectName: string): string {
   return `langstitch-viewport-${projectName || 'My Workflow Graph'}`
 }
 
-/** Prefix for viewport keys persisted in localStorage (cycles 68, 164, 212, 260). */
+/** Prefix for viewport keys persisted in localStorage (cycles 68, 164, 212, 260, 308). */
 export const VIEWPORT_STORAGE_PREFIX = 'langstitch-viewport-'
 
 export function loadViewport(projectName: string): CanvasViewport | null {

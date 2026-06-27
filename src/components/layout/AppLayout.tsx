@@ -31,12 +31,6 @@ export function AppLayout() {
           setPlatformOpen((open) => !open)
         }
       }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault()
-        if (!isGraphEmpty()) {
-          setPlatformOpen((open) => !open)
-        }
-      }
       // cycle 235 — Ctrl+L toggles Platform drawer
       if (
         (e.ctrlKey || e.metaKey) &&

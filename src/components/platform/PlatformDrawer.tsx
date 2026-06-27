@@ -662,7 +662,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-dry-run="243">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-dry-run="243" data-cycle-dry-run-alt="303">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -837,6 +837,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                                 data-testid="eval-result-dataset-link"
                                 data-cycle="185"
                                 data-cycle-link="245"
+                                data-cycle-link-alt="305"
                               >
                                 {evalConfig.datasetName}
                               </a>
