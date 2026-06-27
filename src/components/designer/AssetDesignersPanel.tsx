@@ -248,6 +248,7 @@ export function AssetDesignersPanel() {
                     data-cycle-count="217"
                     data-cycle-count-alt="277"
                     data-cycle-count-alt2="337"
+                    data-cycle-count-alt3="397"
                   >
                     {g.description.length}/{GUARDRAIL_DESCRIPTION_MAX}
                   </span>

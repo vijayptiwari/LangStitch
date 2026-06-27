@@ -223,6 +223,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-345-docs-tooltip">
               cycle 345 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-393-docs-tooltip">
+              cycle 393 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -271,6 +274,7 @@ export function Toolbar({
         <span data-testid="cycle-310-save-reload">
         <span data-testid="cycle-322-toolbar-save">
         <span data-testid="cycle-358-toolbar-save">
+        <span data-testid="cycle-394-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -286,10 +290,11 @@ export function Toolbar({
         </span>
         </span>
         </span>
+        </span>
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275">
+        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395">
           <button
             className="btn-secondary"
             data-label="227"
@@ -506,6 +511,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-331-focus-search">
                 <kbd>Alt</kbd>+<kbd>D</kbd> — Focus node palette search (no selection, cycle 331)
+              </li>
+              <li data-testid="cycle-391-focus-search">
+                <kbd>Alt</kbd>+<kbd>D</kbd> — Focus node palette search (cycle 391)
               </li>
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)

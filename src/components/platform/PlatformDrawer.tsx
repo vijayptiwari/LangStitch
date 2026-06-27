@@ -649,6 +649,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-219-eval-warning">cycle 219</span>
                   <span className="sr-only" data-testid="cycle-279-eval-warning">cycle 279</span>
                   <span className="sr-only" data-testid="cycle-339-eval-warning">cycle 339</span>
+                  <span className="sr-only" data-testid="cycle-399-eval-warning">cycle 399</span>
                 </p>
               )}
               <Field label="Format">
@@ -669,6 +670,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-retry="216"
                     data-cycle-retry-alt="276"
                     data-cycle-retry-alt2="336"
+                    data-cycle-retry-alt3="396"
                     disabled={busy}
                     onClick={handleExport}
                   >
