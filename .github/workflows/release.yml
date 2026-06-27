@@ -25,7 +25,7 @@ jobs:
           cache: npm
 
       - name: Install and build
-        run: npm ci && npm run build
+        run: npm ci && npm run build && npm run build:webview
 
       - name: Package release archive
         run: |
@@ -43,9 +43,18 @@ jobs:
           files: |
             langstitch-source.tar.gz
           body: |
-            ## Run LangStitch in 2 steps
+            ## Get LangStitch
 
-            ### Option A — Docker (full Platform + UI)
+            ### Option A — Canvas extension (`.vsix` / Open VSX)
+            ```bash
+            codium --install-extension langstitch.langtailor-canvas
+            ```
+            Or download the `.vsix` from the **langtailor-v*** release assets and install via **Extensions → Install from VSIX…**
+
+            ### Option B — LangTailor desktop IDE
+            Download portable builds from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or the latest **langtailor-v*** GitHub Release (Windows / macOS).
+
+            ### Option C — Docker (local Platform API stack)
             ```bash
             git clone https://github.com/vijayptiwari/LangStitch.git
             cd LangStitch
@@ -53,10 +62,9 @@ jobs:
             ```
             Open **http://localhost:8080**
 
-            ### Option B — Hosted (canvas, no install)
-            Open **https://langstitch.com/** (live try) or **https://langstitch.com/app/** (full IDE)
-
-            ### Option C — GitHub Codespaces
-            Click **Code → Create codespace on main** — LangStitch starts automatically.
+            ### Option D — Local development
+            ```bash
+            npm install && pip install -r server/requirements.txt && npm start
+            ```
 
             See [documentation](https://langstitch.com/docs/) for details.

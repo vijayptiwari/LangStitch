@@ -4,8 +4,7 @@
 **VS Code / Code-OSS** (Electron, open source) with the LangStitch visual canvas
 built in. Targets: **Windows x64**, **macOS x64**, **macOS arm64**.
 
-It is the desktop successor to the web-hosted LangStitch IDE: a full code editor
-plus the drag-and-drop graph canvas and Python export, in one installable app.
+It is the primary LangStitch distribution: a full code editor plus the drag-and-drop graph canvas and Python export, in one installable app — or install the **langtailor-canvas** VSX extension in your existing editor.
 
 ## Architecture
 

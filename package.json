@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "LangStitch — visual drag-and-drop IDE for LangGraph development",
+  "description": "LangStitch — visual LangGraph IDE (downloadable VSX + LangTailor desktop)",
   "scripts": {
     "dev": "vite",
     "start": "concurrently -k -n api,web -c blue,green \"npm run dev:api\" \"npm run dev\"",

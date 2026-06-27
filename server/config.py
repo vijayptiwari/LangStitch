@@ -3,7 +3,7 @@
 All settings come from environment variables so the same image runs in dev,
 Docker, and production. Authentication is OFF by default — when disabled the
 platform behaves exactly as before (single shared workspace, no login), which
-keeps the static GitHub Pages demo and local dev working with zero setup.
+keeps local dev and extension-backed workflows working with zero setup.
 """
 
 from __future__ import annotations

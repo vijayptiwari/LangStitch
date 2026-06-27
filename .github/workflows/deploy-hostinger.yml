@@ -1,18 +1,14 @@
 name: Deploy to Hostinger
 
-# Builds every public site and uploads them to Hostinger shared hosting over FTPS.
-# One upload to public_html/ serves all hosts because each subdomain's document
-# root is a sub-folder created in hPanel:
-#   langstitch.com           -> public_html/            (marketing + /app IDE + /docs)
-#   langtailor.langstitch.com-> public_html/langtailor/ (download page)
+# Builds public marketing/docs/marketplace sites and uploads to Hostinger shared hosting over FTPS.
+# The LangStitch canvas is NOT deployed as a browser app — distribute via VSIX / LangTailor instead.
+#
+#   langstitch.com           -> public_html/            (marketing + /docs/)
+#   langtailor.langstitch.com-> public_html/langtailor/ (download + VSIX instructions)
 #   sdk.langstitch.com       -> public_html/sdk/        (SDK landing)
 #   marketplace.langstitch.com -> public_html/marketplace/ (marketplace SPA)
 #
 # Required repo secrets:  FTP_SERVER, FTP_USERNAME, FTP_PASSWORD
-#   The FTP account MUST be created for the langstitch.com website in hPanel and
-#   scoped to that site's document root (domains/langstitch.com/public_html). A
-#   generic account FTP root often lands in a different public_html tree, so
-#   uploads succeed but the live site still shows Hostinger's default page.
 # Optional repo variables: FTP_PUBLIC_DIR (default ./),
 #                          PLATFORM_API_BASE (e.g. https://api.langstitch.com/api)
 
@@ -44,35 +40,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build IDE (served at /app/)
-        run: npm run build -- --mode pages
-
       - name: Assemble site root
         run: |
-          # Marketing site, langtailor/, sdk/, assets, sitemap, robots -> site root.
+          mkdir -p dist
           cp -r site/. dist/
-          # Documentation at /docs/.
           mkdir -p dist/docs
           cp -r docs/. dist/docs/
-          # GitHub Pages custom-domain marker is not used on Hostinger.
           rm -f dist/CNAME
-          # SPA fallback so deep links into the IDE resolve to its index.html.
-          cat > dist/app/.htaccess <<'HTACCESS'
-          Options -MultiViews
-          RewriteEngine On
-          RewriteBase /app/
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule . index.html [L]
-          HTACCESS
 
       - name: Build marketplace SPA (served at marketplace subdomain root)
         env:
           VITE_APP_MODE: marketplace
           VITE_PLATFORM_API: ${{ vars.PLATFORM_API_BASE || '/api' }}
         run: |
-          # base defaults to '/' (non-pages mode) so assets resolve at the
-          # subdomain root; force marketplace mode regardless of host.
           npx vite build --outDir dist/marketplace --emptyOutDir
           cat > dist/marketplace/.htaccess <<'HTACCESS'
           Options -MultiViews

@@ -4,49 +4,57 @@
 
 [![CI](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml)
 [![Deploy to Hostinger](https://github.com/vijayptiwari/LangStitch/actions/workflows/deploy-hostinger.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/deploy-hostinger.yml)
+[![LangTailor Extension](https://github.com/vijayptiwari/LangStitch/actions/workflows/langtailor-extension.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/langtailor-extension.yml)
 [![Publish Docker](https://github.com/vijayptiwari/LangStitch/actions/workflows/publish-docker.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/publish-docker.yml)
 
 | Link | URL |
 |------|-----|
-| **Product site (live try)** | [langstitch.com](https://langstitch.com/) |
-| **Full IDE** | [langstitch.com/app/](https://langstitch.com/app/) |
-| **Try page** | [langstitch.com/try.html](https://langstitch.com/try.html) |
+| **Product site** | [langstitch.com](https://langstitch.com/) |
+| **LangTailor (desktop IDE)** | [langtailor.langstitch.com](https://langtailor.langstitch.com/) |
+| **Canvas extension (Open VSX)** | [langstitch.langtailor-canvas](https://open-vsx.org/extension/langstitch/langtailor-canvas) |
 | **Documentation** | [langstitch.com/docs/](https://langstitch.com/docs/) |
+| **GitHub Releases (VSIX + portable)** | [Releases](https://github.com/vijayptiwari/LangStitch/releases) |
 
 ---
 
-## Try LangStitch live
+## Get LangStitch
 
-Open the **[product site](https://langstitch.com/)** — it embeds the IDE so you can try the canvas with zero install. For full screen, use **[Open IDE](https://langstitch.com/app/)**.
+LangStitch ships as a **downloadable VS Code extension (`.vsix`)** and as **LangTailor** — a portable desktop IDE (Code-OSS + preinstalled extensions). There is no hosted browser IDE.
 
-> Platform API features (Git, export, agent run) require Docker or local dev below.
-
----
-
-## Run in 1–2 steps
-
-### Docker (full stack)
+### Option A — Install the canvas extension (recommended)
 
 ```bash
-git clone https://github.com/vijayptiwari/LangStitch.git
-cd LangStitch
-docker compose -f docker-compose.prod.yml up
+# Open VSX (VSCodium, Gitpod, Theia, etc.)
+codium --install-extension langstitch.langtailor-canvas
+
+# Or download the .vsix from GitHub Releases and install locally:
+# VS Code / VSCodium → Extensions → ⋯ → Install from VSIX…
 ```
 
-Open **http://localhost:8080** — UI + Platform API.
+Open any `*.langstitch.json` file to launch the visual canvas custom editor.
 
-### Local dev
+### Option B — LangTailor desktop (full IDE)
+
+Download a portable build for **Windows** or **macOS** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases)** (`langtailor-v*` tags). LangTailor bundles the canvas extension, marketplace sync, and a full code editor.
+
+### Option C — Contribute / run locally
+
+For development and CI, run the canvas and Platform API on your machine:
 
 ```bash
 git clone https://github.com/vijayptiwari/LangStitch.git && cd LangStitch
 npm install && pip install -r server/requirements.txt && npm start
 ```
 
-Open **http://localhost:5173**
+Open **http://localhost:5173** (UI) and **http://127.0.0.1:8787** (Platform API).
 
-### GitHub Codespaces
+### Docker (Platform API + local UI for dev)
 
-**Code → Create codespace on main** — LangStitch installs and starts automatically.
+```bash
+docker compose -f docker-compose.prod.yml up
+```
+
+Open **http://localhost:8080** — local stack only; not a public hosted IDE.
 
 ---
 
@@ -72,7 +80,7 @@ Built-in nodes are unchanged — the component system is fully additive.
 
 ### Platform API <!-- cycle-213 --> <!-- cycle-453 --> <!-- cycle-693 -->
 
-The FastAPI server in `server/` powers **Platform → Git, Export, Import, Build, Deploy, and Eval**. Run locally via Docker Compose (`http://localhost:8080`) or point the IDE at `http://127.0.0.1:8787` during Playwright/CI.
+The FastAPI server in `server/` powers **Platform → Git, Export, Import, Build, Deploy, and Eval**. Run locally via Docker Compose (`http://localhost:8080`) or point the extension at `http://127.0.0.1:8787` during Playwright/CI.
 
 | Endpoint | Purpose |
 |----------|---------|
@@ -118,7 +126,7 @@ Use **Platform → Export** (or toolbar **Save** for `.langstitch.json` only):
 
 All node types are **Component Designer manifests** (built-in + marketplace/custom connectors). Export also supports **diagram JPEG/PNG** from the canvas controls panel.
 
-LangStitch remembers your last export format per project in the browser session. Re-import via **Platform → Import** (`.langstitch.json` or exported ZIP).
+LangStitch remembers your last export format per project in the editor session. Re-import via **Platform → Import** (`.langstitch.json` or exported ZIP).
 
 ### Python export (langstitch SDK)
 Multi-module ZIP using the **langstitch** Python SDK (`langstitch[graph,server]`). Includes `app/server.py` with `@langstitch_graph_server`, `deploy/helm/<slug>/`, and **`langsmith.json`** for IDE re-import.
@@ -157,29 +165,24 @@ Press **?** in the IDE or use the toolbar help button for the full list.
 
 ## Production hosting (Hostinger)
 
-The public sites are served from Hostinger shared hosting, split across subdomains.
-A single FTP upload to `public_html/` covers every host because each subdomain's
-document root is a sub-folder created in hPanel:
+Public **marketing**, **documentation**, **LangTailor download**, **SDK**, and **marketplace** sites are deployed to Hostinger. The canvas is **not** hosted as a browser app at `/app/` — use the **VSIX** or **LangTailor** builds instead.
 
 ```
-langstitch.com               → public_html/             Product landing + /app IDE + /docs
-langtailor.langstitch.com    → public_html/langtailor/  Desktop IDE download page
+langstitch.com               → public_html/             Product landing + /docs/
+langtailor.langstitch.com    → public_html/langtailor/  Desktop IDE + VSIX download page
 sdk.langstitch.com           → public_html/sdk/         Python SDK landing
 marketplace.langstitch.com   → public_html/marketplace/ Marketplace SPA
 ```
 
-Built and deployed by [`.github/workflows/deploy-hostinger.yml`](.github/workflows/deploy-hostinger.yml)
-on every push to `main`.
+Built and deployed by [`.github/workflows/deploy-hostinger.yml`](.github/workflows/deploy-hostinger.yml) on every push to `main`.
 
 | Setting | Where | Value |
 |---------|-------|-------|
-| `FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` | repo **Secrets** | Hostinger FTP credentials (hPanel → Files → FTP Accounts) |
+| `FTP_SERVER` / `FTP_USERNAME` / `FTP_PASSWORD` | repo **Secrets** | Hostinger FTP credentials |
 | `FTP_PUBLIC_DIR` | repo **Variables** *(optional)* | FTP path to the web root, default `public_html/` |
-| `PLATFORM_API_BASE` | repo **Variables** *(optional)* | marketplace/IDE API base, e.g. `https://api.langstitch.com/api` |
+| `PLATFORM_API_BASE` | repo **Variables** *(optional)* | marketplace API base, e.g. `https://api.langstitch.com/api` |
 
-> Shared hosting is static-only: the marketplace **frontend** is served here, but its
-> FastAPI backend (`server/`) must run elsewhere (VPS / container host) and be pointed
-> at via `PLATFORM_API_BASE`.
+> Shared hosting is static-only: marketplace **frontend** is served here; the FastAPI backend (`server/`) runs on a VPS/container host.
 
 ---
 
@@ -187,10 +190,13 @@ on every push to `main`.
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| [**Deploy to Hostinger**](.github/workflows/deploy-hostinger.yml) | Push to `main` | Build all sites + FTPS upload |
-| [**Publish Docker**](.github/workflows/publish-docker.yml) | Push to `main` / tags | GHCR images (API / marketplace backend) |
+| [**Deploy to Hostinger**](.github/workflows/deploy-hostinger.yml) | Push to `main` | Build marketing/docs/marketplace sites + FTPS upload |
+| [**LangTailor extension**](.github/workflows/langtailor-extension.yml) | Push (extension paths) | Build webview + package `.vsix` artifact |
+| [**LangTailor Open VSX**](.github/workflows/langtailor-openvsx.yml) | Release / manual | Publish `langstitch.langtailor-canvas` to Open VSX |
+| [**LangTailor release**](.github/workflows/langtailor-release.yml) | Tag `langtailor-v*` | VSIX + Windows/macOS portable zips |
+| [**Publish Docker**](.github/workflows/publish-docker.yml) | Push to `main` / tags | GHCR `langstitch-api` image |
 | [**CI**](.github/workflows/ci.yml) | Push / PR | Build, E2E, agent smoke |
-| [**Release**](.github/workflows/release.yml) | Tag `v*` / manual | GitHub Release + archive |
+| [**Release**](.github/workflows/release.yml) | Tag `v*` / manual | GitHub Release + source archive |
 
 ---
 
@@ -224,9 +230,11 @@ npm run agent:run
 LangStitch/
 ├── site/             Public sites: landing + langtailor/ + sdk/ subdomain pages
 ├── docs/             Documentation site
-├── src/              React IDE
+├── langtailor/       Desktop IDE overlay + VS Code extensions
+├── src/              React canvas (shared: extension webview + local dev)
+├── src/webview/      VS Code webview entry + bridge
 ├── server/           FastAPI platform API
-├── docker/           Dockerfiles + nginx
+├── docker/           Dockerfiles + nginx (local dev stack)
 ├── runtime/          Runnable basic_agent.py
 ├── e2e/              Playwright tests
 └── deploy/helm/      Kubernetes chart

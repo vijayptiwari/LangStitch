@@ -21,9 +21,8 @@
     <div class="nav-links">
       <a href="#guide">SDK guide</a>
       <a href="#components">Components</a>
-      <a href="../langtailor/">LangTailor</a>
-      <a href="https://marketplace.langstitch.com">Marketplace</a>
-      <a href="../app/">Open IDE</a>
+      <a href="https://langtailor.langstitch.com">LangTailor</a>
+      <a href="https://open-vsx.org/extension/langstitch/langtailor-canvas">VSX</a>
       <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
     </div>
   </nav>
@@ -32,10 +31,10 @@
     <div class="hero-inner">
       <p class="eyebrow">Documentation</p>
       <h1>LangStitch docs</h1>
-      <p class="lead">Visual LangGraph IDE — canvas, asset designers, Python 3.13 export, and platform deployment.</p>
+      <p class="lead">Visual LangGraph IDE — canvas, asset designers, Python 3.13 export, and platform deployment. Install via downloadable VSX or LangTailor desktop.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="../app/">Open IDE</a>
-        <a class="btn btn-secondary" href="../try.html">Try page</a>
+        <a class="btn btn-primary" href="https://langtailor.langstitch.com">Download VSX</a>
+        <a class="btn btn-secondary" href="https://open-vsx.org/extension/langstitch/langtailor-canvas">Open VSX</a>
         <a class="btn btn-secondary" href="../">Product home</a>
       </div>
     </div>
@@ -46,9 +45,9 @@
       <h2>Quick start</h2>
       <div class="grid">
         <article class="card card-highlight">
-          <h3>Try live (0 install)</h3>
-          <p>Product home embeds the IDE. Open full screen for the best experience.</p>
-          <a class="btn btn-primary" href="../app/">Open IDE →</a>
+          <h3>Install the canvas extension</h3>
+          <p>Download the <code>.vsix</code> from GitHub Releases or install from Open VSX. Open any <code>*.langstitch.json</code> file to design graphs.</p>
+          <a class="btn btn-primary" href="https://langtailor.langstitch.com">Download VSX →</a>
         </article>
         <article class="card card-highlight">
           <h3>Docker (full stack)</h3>
@@ -621,9 +620,10 @@ python -m &lt;package&gt;</code></pre>
     <section id="ci">
       <h2>GitHub Actions</h2>
       <ul class="doc-list">
-        <li><strong>Deploy GitHub Pages</strong> — product site + live IDE at <code>/app/</code> + docs</li>
+        <li><strong>Deploy to Hostinger</strong> — marketing site + docs + LangTailor download page (no hosted browser IDE)</li>
         <li><strong>CI</strong> — build, Playwright E2E, agent smoke tests</li>
-        <li><strong>Publish Docker</strong> — <code>ghcr.io/vijayptiwari/langstitch-web</code> &amp; <code>langstitch-api</code></li>
+        <li><strong>LangTailor extension</strong> — package <code>.vsix</code> and publish to Open VSX</li>
+        <li><strong>Publish Docker</strong> — <code>ghcr.io/vijayptiwari/langstitch-api</code></li>
         <li><strong>Release</strong> — tagged releases with source archives</li>
       </ul>
     </section>
@@ -641,7 +641,7 @@ npm run agent:run</code></pre>
       LangStitch · MIT ·
       <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a> ·
       <a href="../">Home</a> ·
-      <a href="../app/">IDE</a> ·
+      <a href="https://langtailor.langstitch.com">Download VSX</a> ·
       <a href="../langtailor/">LangTailor</a> ·
       <a href="https://marketplace.langstitch.com">Marketplace</a>
     </p>

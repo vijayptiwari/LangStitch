@@ -4,6 +4,9 @@ All notable changes to LangStitch are documented here.
 
 ## [Unreleased]
 
+### Changed
+- **Distribution pivot:** Removed hosted browser IDE (`langstitch.com/app/`). LangStitch is now distributed via **downloadable VSX** (`langstitch.langtailor-canvas` on Open VSX) and **LangTailor** desktop builds. Marketing site, docs, and deploy workflow updated; `deploy-hostinger.yml` no longer builds `/app/`; `publish-docker.yml` ships API image only.
+
 ### Added
 - **Batch 77 (Cycles 771–780):** export manifest eval-dataset, OpenAPI export docs, eval history limit 773, eval live region, Ctrl+Shift+O platform toggle, dirty-clears-on-import, docs tooltip, open-shortcuts E2E, redo persistence, Git copy (`e2e/cycles-batch-77.spec.ts`).
 - **Batch 76 (Cycles 761–770):** eval dry-run badge, palette focus ring, Alt+Shift+E eval tab, merge viewport on import, graphStore JSDoc, health reload E2E, platform aria-label, eval collapse, guardrail search, edge truncation (`e2e/cycles-batch-76.spec.ts`).
