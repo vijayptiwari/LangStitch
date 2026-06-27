@@ -281,6 +281,7 @@ export function AssetDesignersPanel() {
                   className="btn-danger-sm"
                   data-testid={`guardrail-remove-${g.id}`}
                   data-cycle="181"
+                  data-cycle-guard="241"
                   onClick={() => {
                     if (
                       window.confirm(

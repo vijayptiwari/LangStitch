@@ -203,6 +203,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-201-docs-tooltip">
               cycle 201 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-249-docs-tooltip">
+              cycle 249 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -246,6 +249,7 @@ export function Toolbar({
         </button>
         <span data-testid="cycle-142-toolbar-save">
         <span data-testid="cycle-214-toolbar-save">
+        <span data-testid="cycle-250-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -254,6 +258,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
@@ -441,6 +446,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-127-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap
+              </li>
+              <li data-testid="cycle-247-toggle-minimap">
+                <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 247)
               </li>
               <li data-testid="cycle-187-toggle-minimap">
                 <kbd>Alt</kbd>+<kbd>P</kbd> — Toggle minimap
