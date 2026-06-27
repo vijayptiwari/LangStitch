@@ -18,8 +18,8 @@ export interface AuthContext {
 
 /**
  * Ask the API whether auth is enabled, which providers exist, and who (if
- * anyone) is logged in. If the API is unreachable (e.g. the static GitHub Pages
- * demo) we treat auth as disabled so the app stays usable.
+ * anyone) is logged in. If the API is unreachable (e.g. VSX webview without a
+ * platform backend) we treat auth as disabled so the canvas stays usable.
  */
 export async function fetchAuthContext(): Promise<AuthContext> {
   try {

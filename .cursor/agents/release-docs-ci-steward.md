@@ -31,7 +31,7 @@ If UAT is **NOT ACCEPTED** or score **< 85**, hand back to **feature-implementer
 
 | Repo | Path (local) | Workflows to keep green |
 |------|----------------|-------------------------|
-| **LangStitch** | `lg-canvas` / `LangStitch` | `CI`, `Deploy GitHub Pages`, `Publish Docker images` |
+| **LangStitch** | `lg-canvas` / `LangStitch` | `CI`, `Deploy to Hostinger`, `Publish Docker images`, `LangTailor Extension` |
 | **Portfolio** | `vijayptiwari.github.io` | `pages build and deployment` |
 
 Update **portfolio** when LangStitch changes are **user-visible** (features, links, product copy, compare page, no iframe/live-embed regressions). Skip portfolio for internal-only refactors.
@@ -123,7 +123,8 @@ Before commit, run touched-repo checks:
 
 ```bash
 npm ci
-npm run build -- --mode pages   # if site/app changed
+npm run build                   # if canvas/webview changed
+npm run build:webview           # if extension webview changed
 npm run test:e2e                # if UI/flows changed
 ```
 
@@ -160,7 +161,7 @@ Repeat for portfolio repo if updated.
 
 LangStitch workflows on push to `main`:
 - **CI** — build + E2E
-- **Deploy GitHub Pages** — product site + app + docs
+- **Deploy to Hostinger** — marketing site + docs + LangTailor download (no hosted `/app/` IDE)
 - **Publish Docker images** — GHCR
 
 All three must be **success** before declaring done. On failure:
@@ -193,13 +194,14 @@ Optional: `workflow_dispatch` for Pages/Docker if user needs re-run without empt
 | Repo | Workflow | Run | Status |
 |------|----------|-----|--------|
 | LangStitch | CI | url | success |
-| LangStitch | Deploy GitHub Pages | url | success |
+| LangStitch | Deploy to Hostinger | url | success |
 | LangStitch | Publish Docker | url | success |
 | Portfolio | pages | url | success |
 
 ## Live URLs to verify
-- https://vijayptiwari.github.io/LangStitch/
-- https://vijayptiwari.github.io/
+- https://langstitch.com/
+- https://open-vsx.org/extension/langstitch/langtailor-canvas
+- https://langtailor.langstitch.com/
 
 ## Verdict
 **RELEASE READY** | **BLOCKED** — reason
@@ -217,7 +219,7 @@ When LangStitch ships user-facing changes, verify portfolio consistency:
 
 - [ ] Product hub card copy matches LangStitch site
 - [ ] No embedded IDE iframe unless product policy restored
-- [ ] Links: product site, `/app/`, GitHub, docs
+- [ ] Links: product site, Open VSX extension, LangTailor download, GitHub, docs
 - [ ] `#langstitch` section reflects current positioning
 - [ ] README LangStitch section matches (no outdated "live try embed" if removed)
 
@@ -228,7 +230,7 @@ When LangStitch ships user-facing changes, verify portfolio consistency:
 | Failure type | Steward action |
 |--------------|----------------|
 | E2E timeout/flake | Re-run once; if persistent, file DEF to feature-implementer |
-| Pages build (missing file in dist) | Fix `pages.yml` assemble step or site paths |
+| Hostinger deploy (missing file in dist) | Fix `deploy-hostinger.yml` assemble step or site paths |
 | Docker publish | Fix Dockerfile/workflow; not feature scope → escalate |
 | Portfolio pages | Fix HTML/CSS/sitemap |
 
