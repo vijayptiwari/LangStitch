@@ -262,6 +262,7 @@ export function Toolbar({
         <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard">
           <button
             className="btn-secondary"
+            data-label="227"
             data-testid="toolbar-redo"
             aria-label="Redo last reset"
             aria-describedby="toolbar-redo-tooltip-131"
@@ -307,11 +308,13 @@ export function Toolbar({
           <span data-testid="cycle-80-undo-depth-notice">
             <span data-testid="cycle-128-undo-depth-notice">
               <span data-testid="cycle-176-undo-depth-notice">
+              <span data-testid="cycle-224-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
             </span>
@@ -411,6 +414,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-103-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Open Platform Eval tab
+              </li>
+              <li data-testid="cycle-223-open-eval-tab">
+                <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab
               </li>
               <li data-testid="cycle-139-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node

@@ -554,6 +554,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span className="sr-only" data-testid="cycle-154-health-reload">
                   cycle 154 — health metadata available after reload
                 </span>
+                <span className="sr-only" data-testid="cycle-226-health-reload">
+                  cycle 226 — health metadata regression after reload
+                </span>
               </p>
             )}
           </div>
@@ -683,6 +686,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span data-testid="cycle-161-eval-dry-run">
                     Dry-run only — LANGCHAIN_API_KEY not configured on platform API
                   </span>
+                  <span className="sr-only" data-testid="cycle-221-eval-dry-run">cycle 221</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -696,6 +700,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     className="platform-section-toggle"
                     data-testid="eval-section-toggle"
                     data-cycle="168"
+                    data-cycle-toggle="228"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >

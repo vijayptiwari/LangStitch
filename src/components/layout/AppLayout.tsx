@@ -48,6 +48,12 @@ export function AppLayout() {
         setPlatformInitialTab('eval')
         setPlatformOpen(true)
       }
+      // cycle 223 — Alt+K opens Platform Eval tab
+      if (e.altKey && e.key.toLowerCase() === 'k' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        setPlatformInitialTab('eval')
+        setPlatformOpen(true)
+      }
       // cycle 163 — Ctrl+D opens Eval when no node is selected (duplicate uses Ctrl+D with selection)
       if (
         (e.ctrlKey || e.metaKey) &&

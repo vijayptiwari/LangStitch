@@ -141,7 +141,7 @@ Git sync, export/import, versioning, Docker build, Helm deploy.
 |----------|--------|
 | `Ctrl+S` | Save project (`.langstitch.json`) |
 | `Ctrl+E` / `Ctrl+K` / `Alt+H` | Toggle Platform drawer |
-| `Alt+G` | Open Platform → Eval tab |
+| `Alt+G` / `Alt+K` | Open Platform → Eval tab |
 | `Ctrl+D` | Open Platform → Eval tab (when no node selected) |
 | `Alt+D` | Duplicate selected canvas node |
 | `Ctrl+H` | Duplicate selected canvas node |
