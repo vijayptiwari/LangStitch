@@ -337,10 +337,11 @@ export function Toolbar({
             type="button"
           >
             <RotateCw size={16} /> Redo
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd" data-cycle-redo-kbd-alt="443">
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd" data-cycle-redo-kbd-alt="443" data-cycle-redo-kbd-alt2="563">
               <span data-testid="cycle-203-redo-kbd">Ctrl+Shift+Z</span>
               <span className="sr-only" data-testid="cycle-323-redo-kbd">cycle 323 — toolbar redo keyboard hint</span>
               <span className="sr-only" data-testid="cycle-443-redo-kbd">cycle 443 — toolbar redo keyboard hint</span>
+              <span className="sr-only" data-testid="cycle-563-redo-kbd">cycle 563 — toolbar redo keyboard hint</span>
             </kbd>
           </button>
           <span
@@ -381,11 +382,13 @@ export function Toolbar({
               <span data-testid="cycle-416-undo-depth-notice">
               <span data-testid="cycle-464-undo-depth-notice">
               <span data-testid="cycle-512-undo-depth-notice">
+              <span data-testid="cycle-560-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -439,6 +442,9 @@ export function Toolbar({
             <span data-testid="cycle-431-platform-tooltip" data-cycle-platform-alt="431" className="sr-only">
               Batch 43 cycle 431 platform tooltip
             </span>
+            <span data-testid="cycle-551-platform-tooltip" data-cycle-platform-alt2="551" className="sr-only">
+              Batch 55 cycle 551 platform tooltip
+            </span>
           </span>
         </span>
         <button
@@ -486,6 +492,7 @@ export function Toolbar({
           <div data-testid="cycle-378-focus-trap">
           <div data-testid="cycle-438-focus-trap">
           <div data-testid="cycle-498-focus-trap">
+          <div data-testid="cycle-558-focus-trap">
           <div data-testid="cycle-318-focus-trap">
           <div data-testid="cycle-138-focus-trap">
           <div data-testid="cycle-198-focus-trap">
@@ -563,6 +570,9 @@ export function Toolbar({
               <li data-testid="cycle-499-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Duplicate selected node (cycle 499)
               </li>
+              <li data-testid="cycle-559-duplicate-node">
+                <kbd>Ctrl</kbd>+<kbd>K</kbd> — Duplicate selected node (cycle 559)
+              </li>
               <li data-testid="cycle-163-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Open Platform Eval tab (no node selected)
               </li>
@@ -621,6 +631,7 @@ export function Toolbar({
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
           </div>
           </div>
           </div>

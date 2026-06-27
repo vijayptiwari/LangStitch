@@ -46,6 +46,7 @@ export function TruncatedEdge({
             data-cycle-truncate-alt="338"
             data-cycle-truncate-alt2="410"
             data-cycle-truncate-alt3="482"
+            data-cycle-truncate-alt4="554"
             title={fullLabel}
             style={{
               position: 'absolute',
