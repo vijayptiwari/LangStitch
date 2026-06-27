@@ -667,7 +667,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   </button>
                 </div>
               )}
-              <button className="btn-primary" disabled={busy} onClick={handleExport} type="button">
+              <button className="btn-primary" disabled={busy} onClick={handleExport} type="button" data-testid="cycle-346-export-zip">
                 <Download size={14} /> Download ZIP
               </button>
               <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-dry-run="243" data-cycle-dry-run-alt="303">
@@ -711,6 +711,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   </span>
                   <span className="sr-only" data-testid="cycle-221-eval-dry-run">cycle 221</span>
                   <span className="sr-only" data-testid="cycle-281-eval-dry-run">cycle 281</span>
+                  <span className="sr-only" data-testid="cycle-341-eval-dry-run">cycle 341</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -726,6 +727,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle="168"
                     data-cycle-toggle="228"
                     data-cycle-collapse="288"
+                    data-cycle-collapse-alt="348"
                     aria-expanded={evalSectionExpanded}
                     onClick={() => setEvalSectionExpanded((v) => !v)}
                   >

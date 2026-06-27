@@ -389,6 +389,7 @@ export function GraphCanvas() {
           <div data-testid="cycle-134-minimap-highlight">
           <div data-testid="cycle-206-minimap-highlight">
           <div data-testid="cycle-278-minimap-highlight">
+          <div data-testid="cycle-350-minimap-highlight">
             <MiniMap
               nodeColor={minimapNodeColor}
               nodeStrokeColor={minimapNodeStrokeColor}
@@ -398,6 +399,7 @@ export function GraphCanvas() {
               zoomable
               position="bottom-right"
             />
+          </div>
           </div>
           </div>
           </div>

@@ -25,10 +25,16 @@ export function AppLayout() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e' && !e.shiftKey && !e.altKey) {
         e.preventDefault()
         if (!isGraphEmpty()) {
-          setPlatformOpen((open) => !open)
+          // cycle 343 — Ctrl+E opens Platform Eval tab when drawer is closed
+          if (!platformOpen) {
+            setPlatformInitialTab('eval')
+            setPlatformOpen(true)
+          } else {
+            setPlatformOpen(false)
+          }
         }
       }
       // cycle 235 — Ctrl+L toggles Platform drawer
@@ -76,7 +82,7 @@ export function AppLayout() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [isGraphEmpty, selectedNodeId])
+  }, [isGraphEmpty, selectedNodeId, platformOpen])
 
   const onDrop = useCallback(
     (event: React.DragEvent) => {

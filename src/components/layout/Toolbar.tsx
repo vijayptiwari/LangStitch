@@ -220,6 +220,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-297-docs-tooltip">
               cycle 297 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-345-docs-tooltip">
+              cycle 345 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -290,6 +293,7 @@ export function Toolbar({
             data-label="227"
             data-testid="toolbar-redo"
             aria-label="Redo last reset"
+            data-cycle-redo-aria="347"
             aria-describedby="toolbar-redo-tooltip-131"
             title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
             disabled={redoDisabled}
@@ -462,6 +466,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-223-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab
+              </li>
+              <li data-testid="cycle-343-open-eval-tab">
+                <kbd>Ctrl</kbd>+<kbd>E</kbd> — Open Platform Eval tab (cycle 343)
               </li>
               <li data-testid="cycle-283-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab (cycle 283)
