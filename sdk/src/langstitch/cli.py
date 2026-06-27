@@ -102,6 +102,25 @@ def _cmd_version(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_register(args: argparse.Namespace) -> int:
+    try:
+        _bootstrap_project(args.root)
+    except ModuleNotFoundError:
+        print("error: no 'app' package found. Run inside a LangStitch project.", file=sys.stderr)
+        return 1
+    from .app import LangStitchApp
+    from .tracing import registered_graphs
+
+    app = LangStitchApp.bootstrap(args.root)
+    app.build_graph(compile=not args.describe_only)
+    records = registered_graphs()
+    if not records:
+        print("error: no graphs registered.", file=sys.stderr)
+        return 1
+    print(json.dumps(records, indent=2, default=str))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="langstitch", description="LangStitch SDK CLI")
     parser.add_argument("-V", "--version", action="version", version=f"langstitch {__version__}")
@@ -133,6 +152,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_get.add_argument("path", help="JSON path, e.g. server.port or external_services.payments.auth.type")
     p_get.add_argument("--root", help="project root (default: cwd)")
     p_get.set_defaults(func=_cmd_get)
+
+    p_register = sub.add_parser("register", help="register entrypoint graph with LangSmith (when configured)")
+    p_register.add_argument("--root", help="project root (default: cwd)")
+    p_register.add_argument(
+        "--describe-only",
+        action="store_true",
+        help="record graph structure without compiling (no langgraph required)",
+    )
+    p_register.set_defaults(func=_cmd_register)
 
     p_ver = sub.add_parser("version", help="print the SDK version")
     p_ver.set_defaults(func=_cmd_version)

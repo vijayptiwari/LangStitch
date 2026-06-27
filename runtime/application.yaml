@@ -1,0 +1,19 @@
+app:
+  name: basic_agent
+  version: 0.1.0
+  description: LangStitch basic smoke-test agent (SDK + optional LangSmith tracing).
+
+model:
+  provider: openai
+  name: gpt-4o-mini
+  temperature: 0.2
+
+tracing:
+  enabled: false
+  project: langstitch-basic-agent
+  log_format: text
+  register_on_build: true
+  trace_nodes: true
+
+graph:
+  entrypoint: basic_agent

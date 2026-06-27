@@ -19,8 +19,13 @@ export default defineConfig({
     {
       command: 'npm run dev:api',
       url: 'http://127.0.0.1:8787/api/health',
-      reuseExistingServer: !process.env.CI,
+      // Always start a dedicated API for E2E so a developer's .env (auth on) cannot block tests.
+      reuseExistingServer: false,
       timeout: 120_000,
+      env: {
+        ...process.env,
+        LANGSTITCH_AUTH_ENABLED: 'false',
+      },
     },
     {
       command: 'npm run dev -- --host 127.0.0.1 --port 5173',

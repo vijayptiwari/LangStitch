@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { paletteItems } from '../../lib/nodeRegistry'
 import { NODE_THEMES } from '../../lib/nodeTheme'
 import { useGraphStore } from '../../store/graphStore'
@@ -11,10 +11,50 @@ function randomDropPosition() {
 }
 
 export function NodePalette() {
+  const searchRef = useRef<HTMLInputElement>(null)
+  const [query, setQuery] = useState('')
   const addNode = useGraphStore((s) => s.addNode)
   const componentRegistry = useGraphStore((s) => s.document.componentRegistry)
   const placeCustomNode = useGraphStore((s) => s.placeCustomNode)
   const customItems = customPaletteItems(componentRegistry)
+
+  const q = query.trim().toLowerCase()
+  const filteredPalette = useMemo(
+    () =>
+      q
+        ? paletteItems.filter(
+            (item) =>
+              item.label.toLowerCase().includes(q) ||
+              item.description.toLowerCase().includes(q) ||
+              item.kind.toLowerCase().includes(q),
+          )
+        : paletteItems,
+    [q],
+  )
+  const filteredCustom = useMemo(
+    () =>
+      q
+        ? customItems.filter(
+            (item) =>
+              item.label.toLowerCase().includes(q) ||
+              item.description.toLowerCase().includes(q) ||
+              item.componentId.toLowerCase().includes(q),
+          )
+        : customItems,
+    [customItems, q],
+  )
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey && e.key.toLowerCase() === 'l' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault()
+        searchRef.current?.focus()
+        searchRef.current?.select()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const onDragStart = useCallback((event: React.DragEvent, kind: NodeKind) => {
     event.dataTransfer.setData(DRAG_MIME, kind)
@@ -40,8 +80,18 @@ export function NodePalette() {
     <div className="panel" data-testid="node-palette">
       <h3 className="panel-title">Node Library</h3>
       <p className="panel-subtitle">Drag onto canvas or click to add — each type has a distinct color</p>
+      <input
+        ref={searchRef}
+        className="input palette-search-input"
+        data-testid="palette-search-input"
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Filter nodes… (Alt+L)"
+        aria-label="Filter node palette"
+      />
       <div className="palette-list">
-        {paletteItems.map((item) => {
+        {filteredPalette.map((item) => {
           const theme = NODE_THEMES[item.kind]
           const Icon = theme.icon
           return (
@@ -72,14 +122,14 @@ export function NodePalette() {
         })}
       </div>
 
-      {customItems.length > 0 && (
+      {filteredCustom.length > 0 && (
         <>
           <h3 className="panel-title" data-testid="palette-custom-group">
             Custom Components
           </h3>
           <p className="panel-subtitle">Authored in the Components designer tab</p>
           <div className="palette-list">
-            {customItems.map((item) => {
+            {filteredCustom.map((item) => {
               const Icon = resolveIcon(item.icon)
               return (
                 <button

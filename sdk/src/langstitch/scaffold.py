@@ -62,6 +62,13 @@ external_services:
 
 graph:
   entrypoint: main
+
+tracing:
+  enabled: false
+  project: ${{app.name}}
+  log_format: text
+  register_on_build: true
+  trace_nodes: true
 """
 
     files["env.yaml"] = """# Runtime environment variables — exported into os.environ by load_env().

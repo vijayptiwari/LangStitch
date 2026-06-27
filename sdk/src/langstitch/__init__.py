@@ -79,6 +79,20 @@ from .services import (
 )
 from .skills import skill
 from .tools import tool
+from .tracing import (
+    TracingConfig,
+    configure_tracing,
+    get_correlation_id,
+    get_langsmith_client,
+    get_tracing_config,
+    log_event,
+    register_graph,
+    registered_graphs,
+    reset_tracing,
+    set_correlation_id,
+    trace_node,
+    traced_invoke,
+)
 
 __all__ = [
     "__version__",
@@ -160,4 +174,17 @@ __all__ = [
     "LLMContext",
     "run_llm",
     "run_worker_agent",
+    # tracing / observability
+    "TracingConfig",
+    "configure_tracing",
+    "get_tracing_config",
+    "reset_tracing",
+    "get_langsmith_client",
+    "register_graph",
+    "registered_graphs",
+    "traced_invoke",
+    "trace_node",
+    "get_correlation_id",
+    "set_correlation_id",
+    "log_event",
 ]

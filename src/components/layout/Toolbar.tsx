@@ -396,6 +396,9 @@ export function Toolbar({
               <li data-testid="cycle-139-duplicate-node">
                 <kbd>Alt</kbd>+<kbd>D</kbd> — Duplicate selected node
               </li>
+              <li data-testid="cycle-151-alt-l-focus-search">
+                <kbd>Alt</kbd>+<kbd>L</kbd> — Focus node palette search
+              </li>
               <li data-testid="cycle-91-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>F</kbd> — Focus search (graph name)
               </li>

@@ -10,9 +10,12 @@ __all__ = ["graph_node"]
 
 
 def _register(target: Callable[..., Any], options: dict) -> None:
+    from .tracing import trace_node
+
+    wrapped = trace_node(target)
     spec = NodeSpec(
         name=resolve_name(target, options.get("name")),
-        target=target,
+        target=wrapped,
         description=resolve_description(target, options.get("description")),
         kind=options.get("kind", "function"),
         tags=list(options.get("tags", [])),

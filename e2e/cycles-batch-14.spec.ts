@@ -46,7 +46,7 @@ test.describe('SDLC Batch 14 — cycles 141–150', () => {
 
   test('cycle-145: guardrail validation error when policy empty', async ({ page }) => {
     await page.getByTestId('designer-tab-assets').click()
-    await page.getByRole('button', { name: /Guardrails/i }).click()
+    await page.getByTestId('asset-designers').getByRole('button', { name: 'Guardrails' }).click()
     await page.getByRole('button', { name: /Add guardrail/i }).click()
     const policy = page.locator('[data-testid^="guardrail-policy-"]').last()
     await policy.fill('')

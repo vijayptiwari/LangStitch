@@ -35,7 +35,11 @@ class LangStitchApp:
         apply_env: bool = True,
     ) -> "LangStitchApp":
         config = load_config(root, properties=properties, apply_env=apply_env)
-        return cls(config)
+        from .tracing import configure_tracing
+
+        configure_tracing()
+        app = cls(config)
+        return app
 
     def build_graph(self, *, compile: bool = True) -> Any:
         spec = self.registry.entrypoint_graph()
@@ -44,6 +48,18 @@ class LangStitchApp:
                 "No graph registered. Define one with @graph(entrypoint=True)."
             )
         built = spec.target()
+        from .tracing import get_tracing_config, register_graph
+
+        tcfg = get_tracing_config()
+        if tcfg.register_on_build:
+            structure = built.describe() if isinstance(built, GraphBuilder) else {}
+            register_graph(
+                spec.name,
+                description=spec.description,
+                metadata=dict(spec.metadata or {}),
+                graph_structure=structure,
+            )
+
         if isinstance(built, GraphBuilder):
             self._compiled = built.compile() if compile else built
         else:
@@ -58,7 +74,11 @@ class LangStitchApp:
                 "Compiled graph is not invokable. Install 'langstitch[graph]' and "
                 "return a GraphBuilder or compiled StateGraph from your @graph."
             )
-        return self._compiled.invoke(state, **kwargs)
+        from .tracing import traced_invoke
+
+        spec = self.registry.entrypoint_graph()
+        run_name = spec.name if spec else self.config.name
+        return traced_invoke(self._compiled, state, run_name=run_name, **kwargs)
 
     # ── base helpers (delegate to providers, using this app's config) ──
     def get_llm_provider(self, name: Optional[str] = None, **kwargs: Any) -> Any:
