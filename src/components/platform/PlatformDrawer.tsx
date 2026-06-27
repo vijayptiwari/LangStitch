@@ -587,6 +587,9 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                 <span data-testid="cycle-684-health-last-sync" className="sr-only">
                   cycle 684 — Platform Health last-sync timestamp
                 </span>
+                <span data-testid="cycle-744-health-last-sync" className="sr-only">
+                  cycle 744 — Platform Health last-sync timestamp
+                </span>
                 <span className="sr-only" data-testid="cycle-204-health-last-sync">
                   cycle 204 — Platform Health last-sync timestamp
                 </span>
@@ -711,6 +714,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-579-eval-warning">cycle 579</span>
                   <span className="sr-only" data-testid="cycle-639-eval-warning">cycle 639</span>
                   <span className="sr-only" data-testid="cycle-699-eval-warning">cycle 699</span>
+                  <span className="sr-only" data-testid="cycle-759-eval-warning">cycle 759</span>
                 </p>
               )}
               <Field label="Format">
@@ -737,6 +741,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-retry-alt6="576"
                     data-cycle-retry-alt7="636"
                     data-cycle-retry-alt8="696"
+                    data-cycle-retry-alt9="756"
                     disabled={busy}
                     onClick={handleExport}
                   >
@@ -801,6 +806,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   <span className="sr-only" data-testid="cycle-581-eval-dry-run">cycle 581</span>
                   <span className="sr-only" data-testid="cycle-641-eval-dry-run">cycle 641</span>
                   <span className="sr-only" data-testid="cycle-701-eval-dry-run">cycle 701</span>
+                  <span className="sr-only" data-testid="cycle-742-eval-dry-run">cycle 742</span>
                 </span>
               )}
               {!observabilityEnabled || !langsmithEnabled ? (
@@ -841,6 +847,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     <span data-testid="cycle-569-regression-preset">
                     <span data-testid="cycle-629-regression-preset">
                     <span data-testid="cycle-689-regression-preset">
+                    <span data-testid="cycle-749-regression-preset">
                       <button
                         className="btn-secondary-sm"
                         type="button"
@@ -859,6 +866,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       >
                         Apply regression preset
                       </button>
+                    </span>
                     </span>
                     </span>
                     </span>

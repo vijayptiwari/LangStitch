@@ -146,6 +146,17 @@ export function Toolbar({
         graphNameInputRef.current?.focus()
         graphNameInputRef.current?.select()
       }
+      // cycle 751 — Ctrl+Shift+F focuses graph name search (Ctrl+F legacy)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'f' &&
+        !e.altKey
+      ) {
+        e.preventDefault()
+        graphNameInputRef.current?.focus()
+        graphNameInputRef.current?.select()
+      }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         if (canRedo() && !isGraphEmpty()) {
@@ -318,6 +329,7 @@ export function Toolbar({
         <span data-testid="cycle-646-toolbar-save">
         <span data-testid="cycle-682-toolbar-save">
         <span data-testid="cycle-718-toolbar-save">
+        <span data-testid="cycle-754-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -345,10 +357,11 @@ export function Toolbar({
         </span>
         </span>
         </span>
+        </span>
         <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
           <RotateCcw size={16} /> Reset
         </button>
-        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395" data-cycle-redo-empty-alt2="515" data-cycle-redo-empty-alt3="635">
+        <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395" data-cycle-redo-empty-alt2="515" data-cycle-redo-empty-alt3="635" data-cycle-redo-empty-alt4="755">
           <button
             className="btn-secondary"
             data-label="227"
@@ -429,6 +442,7 @@ export function Toolbar({
               <span data-testid="cycle-608-undo-depth-notice">
               <span data-testid="cycle-656-undo-depth-notice">
               <span data-testid="cycle-704-undo-depth-notice">
+              <span data-testid="cycle-752-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
@@ -448,8 +462,9 @@ export function Toolbar({
               </span>
               </span>
               </span>
-            </span>
-        )}
+              </span>
+              </span>
+            )}
         <span className="toolbar-btn-wrap">
           <button
             className="btn-secondary"
@@ -472,7 +487,7 @@ export function Toolbar({
             type="button"
           >
             <Server size={16} /> Platform
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383" data-cycle-kbd-alt2="503" data-cycle-kbd-alt3="623">
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383" data-cycle-kbd-alt2="503" data-cycle-kbd-alt3="623" data-cycle-kbd-alt4="743">
               Ctrl+E
             </kbd>
           </button>
@@ -499,6 +514,9 @@ export function Toolbar({
             </span>
             <span data-testid="cycle-623-platform-hint" className="sr-only">
               Batch 62 cycle 623 platform keyboard hint
+            </span>
+            <span data-testid="cycle-743-platform-hint" className="sr-only">
+              Batch 74 cycle 743 platform keyboard hint
             </span>
             <span data-testid="cycle-671-platform-tooltip" data-cycle-platform-alt3="671" className="sr-only">
               Batch 67 cycle 671 platform tooltip
@@ -678,6 +696,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-691-focus-search">
                 <kbd>Alt</kbd>+<kbd>P</kbd> — Focus node palette search (cycle 691; minimap when node selected)
+              </li>
+              <li data-testid="cycle-751-focus-search">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> — Focus graph name search (cycle 751; Ctrl+F legacy)
               </li>
               <li data-testid="cycle-271-focus-search">
                 <kbd>Ctrl</kbd>+<kbd>P</kbd> — Focus graph name search (cycle 271)

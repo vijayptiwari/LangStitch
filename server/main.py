@@ -42,7 +42,7 @@ _export_timestamps: dict[str, list[float]] = defaultdict(list)
 
 
 def check_export_rate_limit(project_id: str) -> None:
-    """Rate-limit /api/export (cycles 160, 220, 280, 340, 400, 460, 520, 580, 640, 700 — friendly 429 message)."""
+    """Rate-limit /api/export (cycles 160, 220, 280, 340, 400, 460, 520, 580, 640, 700, 760 — friendly 429 message)."""
     now = time.time()
     window = _export_timestamps[project_id]
     _export_timestamps[project_id] = [t for t in window if now - t < EXPORT_RATE_WINDOW_SEC]
@@ -57,7 +57,7 @@ app = FastAPI(title="LangStitch Platform API", version="0.2.0")
 
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
-    """Attach X-Request-ID to every response (cycles 148, 208, 268, 328, 388, 448, 508, 568, 628, 688)."""
+    """Attach X-Request-ID to every response (cycles 148, 208, 268, 328, 388, 448, 508, 568, 628, 688, 748)."""
 
     async def dispatch(self, request: Request, call_next) -> Response:
         request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())

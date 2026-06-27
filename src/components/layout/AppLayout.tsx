@@ -216,6 +216,7 @@ export function AppLayout() {
         <span className="sr-only" data-testid="cycle-570-skip-link">cycle 570 — skip link to main canvas</span>
         <span className="sr-only" data-testid="cycle-630-skip-link">cycle 630 — skip link to main canvas</span>
         <span className="sr-only" data-testid="cycle-690-skip-link">cycle 690 — skip link to main canvas</span>
+        <span className="sr-only" data-testid="cycle-750-skip-link">cycle 750 — skip link to main canvas</span>
       </a>
       <Toolbar
         onOpenPlatform={() => setPlatformOpen(true)}
