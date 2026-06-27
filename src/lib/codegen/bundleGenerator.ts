@@ -272,7 +272,7 @@ export function generateExportManifest(
       files: [...fileKeys].sort(),
       ...(hasEvalDataset
         ? {
-            // cycles 51, 111, 231, 291, 351 — eval-dataset in export manifest
+            // cycles 51, 111, 231, 291, 351, 411 — eval-dataset in export manifest
             'eval-dataset': {
               enabled: true,
               dataset_name: ev?.datasetName ?? '',

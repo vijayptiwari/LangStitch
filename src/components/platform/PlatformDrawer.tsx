@@ -36,7 +36,7 @@ function projectIdFromDoc(doc: GraphDocument): string {
   return (doc.name || 'my_langgraph').replace(/[^a-zA-Z0-9_-]/g, '_')
 }
 
-const EVAL_HISTORY_LIMIT = 353
+const EVAL_HISTORY_LIMIT = 413
 const EVAL_HISTORY_KEY = (projectId: string) => `langstitch-eval-history-${projectId}`
 const PLATFORM_TAB_KEY = 'langstitch-platform-tab-last-used'
 
@@ -684,7 +684,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               <button className="btn-primary" disabled={busy} onClick={handleExport} type="button" data-testid="cycle-346-export-zip">
                 <Download size={14} /> Download ZIP
               </button>
-              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363">
+              <details className="export-manifest-details" data-testid="export-dry-run-preview" data-cycle="171" data-cycle-manifest="231" data-cycle-manifest-alt="291" data-cycle-manifest-alt2="351" data-cycle-manifest-alt3="411" data-cycle-dry-run="243" data-cycle-dry-run-alt="303" data-cycle-dry-run-alt2="363">
                 <summary>Export dry-run preview (manifest)</summary>
                 <pre className="export-manifest-preview" data-testid="export-manifest-preview">
                   {exportManifestPreview}
@@ -916,6 +916,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                     data-cycle-live="234"
                     data-cycle-live-alt="294"
                     data-cycle-live-alt2="354"
+                    data-cycle-live-alt3="414"
                   >
                     {evalFinishedAnnouncement}
                   </div>
@@ -1010,6 +1011,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                   data-cycle="240"
                   data-cycle-copy="300"
                   data-cycle-copy-alt="360"
+                  data-cycle-copy-alt2="420"
                   onClick={handleCopyLog}
                 >
                   Copy output

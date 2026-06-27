@@ -339,6 +339,7 @@ export function Toolbar({
             className="toolbar-redo-persisted"
             data-testid="toolbar-redo-persisted"
             data-cycle-redo-persist="299"
+            data-cycle-redo-persist-alt="419"
             title={`Last redo: ${redoLastUsed}`}
             aria-hidden
           >
@@ -353,11 +354,13 @@ export function Toolbar({
               <span data-testid="cycle-272-undo-depth-notice">
               <span data-testid="cycle-320-undo-depth-notice">
               <span data-testid="cycle-368-undo-depth-notice">
+              <span data-testid="cycle-416-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -446,7 +449,7 @@ export function Toolbar({
         />
       </div>
       {showShortcuts && (
-        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" onClick={() => setShowShortcuts(false)}>
+        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" onClick={() => setShowShortcuts(false)}>
           <div data-testid="cycle-378-focus-trap">
           <div data-testid="cycle-318-focus-trap">
           <div data-testid="cycle-138-focus-trap">
@@ -479,6 +482,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-355-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer (cycle 355)
+              </li>
+              <li data-testid="cycle-415-toggle-platform">
+                <kbd>Ctrl</kbd>+<kbd>D</kbd> — Toggle Platform drawer (cycle 415)
               </li>
               <li data-testid="cycle-223-open-eval-tab">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Open Platform Eval tab
