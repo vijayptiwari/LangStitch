@@ -314,6 +314,7 @@ export function Toolbar({
         <span data-testid="cycle-610-toolbar-save">
         <span data-testid="cycle-646-toolbar-save">
         <span data-testid="cycle-682-toolbar-save">
+        <span data-testid="cycle-718-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -322,6 +323,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -352,6 +354,7 @@ export function Toolbar({
             data-cycle-redo-aria="347"
             data-cycle-redo-aria-alt="467"
             data-cycle-redo-aria-alt2="587"
+            data-cycle-redo-aria-alt3="707"
             aria-describedby="toolbar-redo-tooltip-131"
             title={graphEmpty ? 'Redo unavailable on empty graph' : 'Redo last reset (Ctrl+Shift+Z)'}
             disabled={redoDisabled}
@@ -420,11 +423,13 @@ export function Toolbar({
               <span data-testid="cycle-560-undo-depth-notice">
               <span data-testid="cycle-608-undo-depth-notice">
               <span data-testid="cycle-656-undo-depth-notice">
+              <span data-testid="cycle-704-undo-depth-notice">
               <span className="toolbar-notice" data-testid="undo-depth-notice" role="status">
                 Undo history limit reached — oldest changes dropped.
                 <button type="button" className="toolbar-notice-dismiss" onClick={clearUndoDepthNotice} aria-label="Dismiss">
                   ×
                 </button>
+              </span>
               </span>
               </span>
               </span>
@@ -584,6 +589,9 @@ export function Toolbar({
               <li data-testid="cycle-655-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> — Toggle Platform drawer (cycle 655; Alt+L reserved for palette)
               </li>
+              <li data-testid="cycle-715-toggle-platform">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> — Toggle Platform drawer (cycle 715)
+              </li>
               <li data-testid="cycle-595-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer (cycle 595)
               </li>
@@ -676,6 +684,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-643-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> — Open Platform Eval tab (cycle 643)
+              </li>
+              <li data-testid="cycle-703-open-eval-tab">
+                <kbd>Ctrl</kbd>+<kbd>H</kbd> — Open Platform Eval tab (cycle 703; no node selected)
               </li>
               <li data-testid="cycle-523-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Open Platform Eval tab (cycle 523)

@@ -121,6 +121,20 @@ export function AppLayout() {
           setPlatformOpen(true)
         }
       }
+      // cycle 703 — Ctrl+H opens Platform Eval tab when no node selected (duplicate when node selected)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'h' &&
+        !e.shiftKey &&
+        !e.altKey &&
+        !selectedNodeId
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformInitialTab('eval')
+          setPlatformOpen(true)
+        }
+      }
       // cycle 655 — Alt+Shift+K toggles Platform drawer (Alt+L reserved for palette search)
       if (
         e.altKey &&
