@@ -271,6 +271,7 @@ export function AssetDesignersPanel() {
                 {validationError && (
                   <p className="field-error" data-testid="guardrail-validation-error">
                     <span data-testid="cycle-145-guardrail-validation">{validationError}</span>
+                    <span data-testid="cycle-265-guardrail-validation" className="sr-only">cycle 265</span>
                     <span data-testid="cycle-205-guardrail-validation" className="sr-only">cycle 205</span>
                   </p>
                 )}

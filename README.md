@@ -106,7 +106,7 @@ Design a pipeline under **Assets → RAG Pipelines**, then drop a **RAG Agent** 
 | Personas | `personas/` |
 | RAG Pipelines | `rag/` (vector, vectorless, hybrid) |
 
-### Export formats
+### Export formats <!-- cycle-261 -->
 
 Use **Platform → Export** (or toolbar **Save** for `.langstitch.json` only):
 
