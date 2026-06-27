@@ -7,6 +7,9 @@ All notable changes to LangStitch are documented here.
 ### Changed
 - **Distribution pivot:** Removed hosted browser IDE (`langstitch.com/app/`). LangStitch is now distributed via **downloadable VSX** (`langstitch.langtailor-canvas` on Open VSX) and **LangTailor** desktop builds. Marketing site, docs, and deploy workflow updated; `deploy-hostinger.yml` no longer builds `/app/`; `publish-docker.yml` ships API image only.
 
+### Fixed
+- **Responsive website:** Added a CSS-only hamburger nav (collapses ≤860px) and a complete set of mobile/tablet breakpoints across the marketing site (`site/`) and docs (`docs/`). Fixed grid/flex blowout where long code blocks forced horizontal page scroll on phones (`min-width: 0` on grid items, `overflow-wrap` on inline code), reduced hero/section padding, and made hero/start/SDK action buttons full-width on small screens. Verified no horizontal bleed at 390px on home, docs, SDK, and LangTailor pages.
+
 ### Added
 - **Batch 77 (Cycles 771–780):** export manifest eval-dataset, OpenAPI export docs, eval history limit 773, eval live region, Ctrl+Shift+O platform toggle, dirty-clears-on-import, docs tooltip, open-shortcuts E2E, redo persistence, Git copy (`e2e/cycles-batch-77.spec.ts`).
 - **Batch 76 (Cycles 761–770):** eval dry-run badge, palette focus ring, Alt+Shift+E eval tab, merge viewport on import, graphStore JSDoc, health reload E2E, platform aria-label, eval collapse, guardrail search, edge truncation (`e2e/cycles-batch-76.spec.ts`).

@@ -93,6 +93,10 @@ h2 {
   gap: 1rem;
 }
 
+.grid > * { min-width: 0; }
+
+:not(pre) > code { overflow-wrap: anywhere; }
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -148,9 +152,36 @@ h2 {
   text-decoration: none;
 }
 
-.nav-links { display: flex; gap: 1.25rem; }
+.nav-links { display: flex; align-items: center; gap: 1.25rem; }
 .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
 .nav-links a:hover { color: var(--text); }
+
+/* Mobile nav toggle (CSS-only hamburger) */
+.nav-toggle { display: none; }
+
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 40px;
+  height: 40px;
+  padding: 9px 8px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
 
 .hero-compact { padding: 2.5rem 1.5rem 2rem; }
 
@@ -234,4 +265,48 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
   text-align: center;
   color: var(--muted);
   font-size: 0.875rem;
+}
+
+/* Tablet + collapsed nav */
+@media (max-width: 860px) {
+  .nav { flex-wrap: wrap; row-gap: 0.5rem; }
+
+  .nav-burger { display: flex; }
+
+  .nav-links {
+    display: none;
+    order: 3;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .nav-toggle:checked ~ .nav-links { display: flex; }
+
+  .nav-links a {
+    display: block;
+    padding: 0.7rem 0.6rem;
+    font-size: 0.95rem;
+    border-radius: 9px;
+  }
+
+  .nav-links a:hover { background: rgba(148, 163, 184, 0.08); }
+
+  .nav-toggle:checked ~ .nav-burger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nav-toggle:checked ~ .nav-burger span:nth-child(2) { opacity: 0; }
+  .nav-toggle:checked ~ .nav-burger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+}
+
+/* Phone */
+@media (max-width: 640px) {
+  .hero { padding: 3rem 1.15rem 2.5rem; }
+  .hero-compact { padding: 2.25rem 1.15rem 1.75rem; }
+  .container { padding: 2rem 1.15rem 3rem; }
+
+  .hero-actions { width: 100%; }
+  .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+  .guide-toc { padding: 0.75rem 0.85rem; }
 }
