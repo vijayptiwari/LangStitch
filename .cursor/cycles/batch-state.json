@@ -11,7 +11,7 @@
   "uatThreshold": 85,
   "status": "RUNNING",
   "lastCompletedBatch": 25,
-  "lastCommit": "f858423",
+  "lastCommit": "8ecb871",
   "startedAt": "2026-06-24T00:00:00Z",
   "notes": "Batch 25 complete (251-260). Milestone: 260 cycles. batch-25 E2E spec."
 }
