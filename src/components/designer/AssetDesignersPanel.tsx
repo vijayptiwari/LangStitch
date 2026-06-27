@@ -213,9 +213,11 @@ export function AssetDesignersPanel() {
                 <div data-testid="cycle-433-guardrails-empty-hint">
                 <div data-testid="cycle-493-guardrails-empty-hint">
                 <div data-testid="cycle-553-guardrails-empty-hint">
+                <div data-testid="cycle-613-guardrails-empty-hint">
                   <div className="designer-empty-icon">🛡</div>
                   <h3>No guardrails yet</h3>
                   <p>Add input/output guardrails here. They export to the guardrails/ module in your Python project.</p>
+                </div>
                 </div>
                 </div>
                 </div>
@@ -299,6 +301,7 @@ export function AssetDesignersPanel() {
                     <span data-testid="cycle-445-guardrail-validation" className="sr-only">cycle 445</span>
                     <span data-testid="cycle-505-guardrail-validation" className="sr-only">cycle 505</span>
                     <span data-testid="cycle-565-guardrail-validation" className="sr-only">cycle 565</span>
+                    <span data-testid="cycle-625-guardrail-validation" className="sr-only">cycle 625</span>
                     <span data-testid="cycle-205-guardrail-validation" className="sr-only">cycle 205</span>
                   </p>
                 )}

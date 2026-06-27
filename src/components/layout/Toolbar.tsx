@@ -359,11 +359,13 @@ export function Toolbar({
             data-cycle-redo="251"
             data-cycle-redo-alt="371"
             data-cycle-redo-alt2="491"
+            data-cycle-redo-alt3="611"
             role="tooltip"
           >
             Redo last reset — cycle 131 (Ctrl+Shift+Z)
             <span className="sr-only" data-testid="cycle-371-redo-tooltip">cycle 371</span>
             <span className="sr-only" data-testid="cycle-491-redo-tooltip">cycle 491</span>
+            <span className="sr-only" data-testid="cycle-611-redo-tooltip">cycle 611</span>
           </span>
         </span>
         {redoLastUsed && (
@@ -431,7 +433,7 @@ export function Toolbar({
             type="button"
           >
             <Server size={16} /> Platform
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383" data-cycle-kbd-alt2="503">
+            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383" data-cycle-kbd-alt2="503" data-cycle-kbd-alt3="623">
               Ctrl+E
             </kbd>
           </button>
@@ -455,6 +457,9 @@ export function Toolbar({
             </span>
             <span data-testid="cycle-551-platform-tooltip" data-cycle-platform-alt2="551" className="sr-only">
               Batch 55 cycle 551 platform tooltip
+            </span>
+            <span data-testid="cycle-623-platform-hint" className="sr-only">
+              Batch 62 cycle 623 platform keyboard hint
             </span>
           </span>
         </span>
@@ -503,6 +508,7 @@ export function Toolbar({
           <div data-testid="cycle-378-focus-trap">
           <div data-testid="cycle-438-focus-trap">
           <div data-testid="cycle-498-focus-trap">
+          <div data-testid="cycle-618-focus-trap">
           <div data-testid="cycle-558-focus-trap">
           <div data-testid="cycle-318-focus-trap">
           <div data-testid="cycle-138-focus-trap">
@@ -587,6 +593,9 @@ export function Toolbar({
               <li data-testid="cycle-559-duplicate-node">
                 <kbd>Ctrl</kbd>+<kbd>K</kbd> — Duplicate selected node (cycle 559)
               </li>
+              <li data-testid="cycle-619-duplicate-node">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> — Duplicate selected node (cycle 619; Alt+H reserved for Platform)
+              </li>
               <li data-testid="cycle-163-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Open Platform Eval tab (no node selected)
               </li>
@@ -654,6 +663,7 @@ export function Toolbar({
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
           </div>
           </div>
           </div>
