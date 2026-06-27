@@ -345,7 +345,7 @@ export function GraphCanvas() {
   )
 
   return (
-    <div className="graph-canvas-wrap" data-testid="graph-canvas" data-cycle-multi="242" data-cycle-ctrl-d="254">
+    <div className="graph-canvas-wrap" data-testid="graph-canvas" data-cycle-multi="242" data-cycle-multi-alt="314" data-cycle-ctrl-d="254">
       <CanvasToolbar />
       <ReactFlow
         nodes={displayNodes}

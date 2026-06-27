@@ -856,7 +856,7 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
                       {evalPassRate != null && (
                         <>
                           {' '}
-                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257">Pass rate: {evalPassRate}%</span>
+                          <span data-testid="eval-result-pass-rate" data-cycle-pass="257" data-cycle-pass-alt="317">Pass rate: {evalPassRate}%</span>
                         </>
                       )}
                       {evalResultUrl && (
@@ -934,12 +934,14 @@ export function PlatformDrawer({ open, onClose, initialTab }: PlatformDrawerProp
               {(busy || deployTabLoading) && (
                 <div data-testid="cycle-132-deploy-skeleton">
                 <div data-testid="cycle-252-deploy-skeleton">
+                <div data-testid="cycle-312-deploy-skeleton">
                   <div className="platform-skeleton" data-testid="deploy-tab-skeleton" aria-hidden>
                     <div className="skeleton-line" />
                     <div className="skeleton-line short" />
                     <div className="skeleton-line" />
                     <div className="skeleton-block" />
                   </div>
+                </div>
                 </div>
                 </div>
               )}
