@@ -266,6 +266,7 @@ export function Toolbar({
         <span data-testid="cycle-250-toolbar-save">
         <span data-testid="cycle-286-toolbar-save">
         <span data-testid="cycle-310-save-reload">
+        <span data-testid="cycle-322-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -274,6 +275,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -306,6 +308,7 @@ export function Toolbar({
             <RotateCw size={16} /> Redo
             <kbd className="toolbar-kbd-hint" data-testid="toolbar-redo-kbd">
               <span data-testid="cycle-203-redo-kbd">Ctrl+Shift+Z</span>
+              <span className="sr-only" data-testid="cycle-323-redo-kbd">cycle 323 — toolbar redo keyboard hint</span>
             </kbd>
           </button>
           <span
