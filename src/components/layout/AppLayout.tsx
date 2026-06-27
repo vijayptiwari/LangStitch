@@ -121,6 +121,20 @@ export function AppLayout() {
           setPlatformOpen(true)
         }
       }
+      // cycle 763 — Alt+Shift+E opens Platform Eval tab (Alt+E reserved for duplicate/palette)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'e' &&
+        !e.ctrlKey &&
+        !e.metaKey
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformInitialTab('eval')
+          setPlatformOpen(true)
+        }
+      }
       // cycle 703 — Ctrl+H opens Platform Eval tab when no node selected (duplicate when node selected)
       if (
         (e.ctrlKey || e.metaKey) &&
@@ -142,6 +156,18 @@ export function AppLayout() {
         e.key.toLowerCase() === 'k' &&
         !e.ctrlKey &&
         !e.metaKey
+      ) {
+        e.preventDefault()
+        if (!isGraphEmpty()) {
+          setPlatformOpen((open) => !open)
+        }
+      }
+      // cycle 775 — Ctrl+Shift+O toggles Platform drawer (Ctrl+P reserved for graph name focus)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'o' &&
+        !e.altKey
       ) {
         e.preventDefault()
         if (!isGraphEmpty()) {

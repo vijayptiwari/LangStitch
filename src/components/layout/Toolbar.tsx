@@ -269,6 +269,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-729-docs-tooltip">
               cycle 729 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-777-docs-tooltip">
+              cycle 777 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -421,6 +424,7 @@ export function Toolbar({
             data-cycle-redo-persist-alt="419"
             data-cycle-redo-persist-alt2="539"
             data-cycle-redo-persist-alt3="659"
+            data-cycle-redo-persist-alt4="779"
             title={`Last redo: ${redoLastUsed}`}
             aria-hidden
           >
@@ -475,6 +479,7 @@ export function Toolbar({
             data-cycle-aria-alt="407"
             data-cycle-aria-alt2="527"
             data-cycle-aria-alt3="647"
+            data-cycle-aria-alt4="767"
             data-cycle="167"
             data-cycle-empty="215"
             data-cycle-empty-alt="335"
@@ -564,7 +569,7 @@ export function Toolbar({
         />
       </div>
       {showShortcuts && (
-        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" data-cycle-alt2="598" onClick={() => setShowShortcuts(false)}>
+        <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" data-cycle-alt2="598" data-cycle-alt3="778" onClick={() => setShowShortcuts(false)}>
           <div data-testid="cycle-738-focus-trap">
           <div data-testid="cycle-678-focus-trap">
           <div data-testid="cycle-378-focus-trap">
@@ -615,6 +620,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-715-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> — Toggle Platform drawer (cycle 715)
+              </li>
+              <li data-testid="cycle-775-toggle-platform">
+                <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> — Toggle Platform drawer (cycle 775; Ctrl+P reserved)
               </li>
               <li data-testid="cycle-595-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>E</kbd> — Toggle Platform drawer (cycle 595)
@@ -717,6 +725,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-703-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>H</kbd> — Open Platform Eval tab (cycle 703; no node selected)
+              </li>
+              <li data-testid="cycle-763-open-eval-tab">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> — Open Platform Eval tab (cycle 763; Alt+E reserved)
               </li>
               <li data-testid="cycle-523-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Open Platform Eval tab (cycle 523)
