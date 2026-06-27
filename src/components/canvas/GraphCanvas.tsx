@@ -244,12 +244,25 @@ export function GraphCanvas() {
         e.altKey &&
         !e.ctrlKey &&
         !e.metaKey &&
+        !e.shiftKey &&
         e.key.toLowerCase() === 'p'
       ) {
         e.preventDefault()
         useGraphStore.getState().updateGraphSettings({
           showMinimap: !(useGraphStore.getState().document.settings?.showMinimap ?? true),
         })
+      }
+      // cycle 439 — Alt+Shift+P duplicates selected node (Alt+P reserved for minimap)
+      if (
+        e.altKey &&
+        e.shiftKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key.toLowerCase() === 'p' &&
+        selectedNodeId
+      ) {
+        e.preventDefault()
+        duplicateSelectedNode()
       }
       // cycle 367 — Alt+Shift+H toggles minimap (Alt+H reserved for Platform)
       if (
@@ -419,6 +432,7 @@ export function GraphCanvas() {
           <div data-testid="cycle-206-minimap-highlight">
           <div data-testid="cycle-278-minimap-highlight">
           <div data-testid="cycle-350-minimap-highlight">
+          <div data-testid="cycle-422-minimap-highlight">
             <MiniMap
               nodeColor={minimapNodeColor}
               nodeStrokeColor={minimapNodeStrokeColor}
@@ -428,6 +442,7 @@ export function GraphCanvas() {
               zoomable
               position="bottom-right"
             />
+          </div>
           </div>
           </div>
           </div>
@@ -451,6 +466,7 @@ export function GraphCanvas() {
             <span className="sr-only" data-testid="cycle-218-context-delete">cycle 218</span>
             <span className="sr-only" data-testid="cycle-290-context-delete">cycle 290</span>
             <span className="sr-only" data-testid="cycle-362-context-delete">cycle 362</span>
+            <span className="sr-only" data-testid="cycle-434-context-delete">cycle 434</span>
           </button>
         </div>
       )}

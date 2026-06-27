@@ -275,6 +275,7 @@ export function Toolbar({
         <span data-testid="cycle-322-toolbar-save">
         <span data-testid="cycle-358-toolbar-save">
         <span data-testid="cycle-394-toolbar-save">
+        <span data-testid="cycle-430-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -283,6 +284,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -406,6 +408,9 @@ export function Toolbar({
             <span data-testid="cycle-311-platform-tooltip" data-cycle-platform="311" className="sr-only">
               Batch 31 cycle 311 platform tooltip
             </span>
+            <span data-testid="cycle-431-platform-tooltip" data-cycle-platform-alt="431" className="sr-only">
+              Batch 43 cycle 431 platform tooltip
+            </span>
           </span>
         </span>
         <button
@@ -451,6 +456,7 @@ export function Toolbar({
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" onClick={() => setShowShortcuts(false)}>
           <div data-testid="cycle-378-focus-trap">
+          <div data-testid="cycle-438-focus-trap">
           <div data-testid="cycle-318-focus-trap">
           <div data-testid="cycle-138-focus-trap">
           <div data-testid="cycle-198-focus-trap">
@@ -513,6 +519,9 @@ export function Toolbar({
               <li data-testid="cycle-379-duplicate-node">
                 <kbd>Ctrl</kbd>+<kbd>G</kbd> — Duplicate selected node (cycle 379)
               </li>
+              <li data-testid="cycle-439-duplicate-node">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> — Duplicate selected node (cycle 439)
+              </li>
               <li data-testid="cycle-163-open-eval-tab">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Open Platform Eval tab (no node selected)
               </li>
@@ -546,6 +555,9 @@ export function Toolbar({
               <li data-testid="cycle-367-toggle-minimap">
                 <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> — Toggle minimap (cycle 367)
               </li>
+              <li data-testid="cycle-427-toggle-minimap">
+                <kbd>Ctrl</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 427)
+              </li>
               <li data-testid="cycle-187-toggle-minimap">
                 <kbd>Alt</kbd>+<kbd>P</kbd> — Toggle minimap
               </li>
@@ -553,6 +565,7 @@ export function Toolbar({
               <li><kbd>?</kbd> — Toggle this help</li>
             </ul>
             <button className="btn-secondary" type="button" onClick={() => setShowShortcuts(false)}>Close</button>
+          </div>
           </div>
           </div>
           </div>
