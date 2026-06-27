@@ -379,7 +379,7 @@ def health():
 
 @app.get("/api/openapi.json")
 def openapi_description():
-    """OpenAPI-style schema describing platform export endpoints (cycles 232, 292, 352, 412, 472)."""
+    """OpenAPI-style schema describing platform export endpoints (cycles 232, 292, 352, 412, 472, 532)."""
     return {
         "openapi": "3.0.3",
         "info": {
@@ -704,7 +704,7 @@ def write_project_files_endpoint(req: ExportRequest):
 
 @app.options("/api/export")
 async def export_project_preflight():
-    """CORS preflight for browser cross-origin export requests (cycles 124, 244, 304, 364, 424, 484)."""
+    """CORS preflight for browser cross-origin export requests (cycles 124, 244, 304, 364, 424, 484, 544)."""
     return Response(status_code=204)
 
 

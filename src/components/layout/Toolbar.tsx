@@ -232,6 +232,9 @@ export function Toolbar({
             <span className="sr-only" data-testid="cycle-489-docs-tooltip">
               cycle 489 — help tooltip links to docs for core
             </span>
+            <span className="sr-only" data-testid="cycle-537-docs-tooltip">
+              cycle 537 — help tooltip links to docs for core
+            </span>
           </div>
         </div>
       </div>
@@ -285,6 +288,7 @@ export function Toolbar({
         <span data-testid="cycle-430-toolbar-save">
         <span data-testid="cycle-466-toolbar-save">
         <span data-testid="cycle-502-toolbar-save">
+        <span data-testid="cycle-538-toolbar-save">
           <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
             <Save size={16} /> Save
           {savedAt && (
@@ -293,6 +297,7 @@ export function Toolbar({
             </span>
           )}
           </button>
+        </span>
         </span>
         </span>
         </span>
@@ -358,6 +363,7 @@ export function Toolbar({
             data-testid="toolbar-redo-persisted"
             data-cycle-redo-persist="299"
             data-cycle-redo-persist-alt="419"
+            data-cycle-redo-persist-alt2="539"
             title={`Last redo: ${redoLastUsed}`}
             aria-hidden
           >
@@ -515,6 +521,9 @@ export function Toolbar({
               <li data-testid="cycle-475-toggle-platform">
                 <kbd>Alt</kbd>+<kbd>K</kbd> — Toggle Platform drawer (cycle 475)
               </li>
+              <li data-testid="cycle-535-toggle-platform">
+                <kbd>Alt</kbd>+<kbd>G</kbd> — Toggle Platform drawer (cycle 535)
+              </li>
               <li data-testid="cycle-415-toggle-platform">
                 <kbd>Ctrl</kbd>+<kbd>D</kbd> — Toggle Platform drawer (cycle 415)
               </li>
@@ -601,6 +610,9 @@ export function Toolbar({
               </li>
               <li data-testid="cycle-487-toggle-minimap">
                 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> — Toggle minimap (cycle 487)
+              </li>
+              <li data-testid="cycle-547-toggle-minimap">
+                <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> — Toggle minimap (cycle 547)
               </li>
               <li data-testid="cycle-187-toggle-minimap">
                 <kbd>Alt</kbd>+<kbd>P</kbd> — Toggle minimap

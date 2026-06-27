@@ -311,6 +311,7 @@ export function AssetDesignersPanel() {
                   data-cycle-guard-alt2="361"
                   data-cycle-guard-alt3="421"
                   data-cycle-guard-alt4="481"
+                  data-cycle-guard-alt5="541"
                   onClick={() => {
                     if (
                       window.confirm(
