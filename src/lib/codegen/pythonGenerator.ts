@@ -17,6 +17,7 @@ import { DEFAULT_GRAPH_SETTINGS, mergeGraphSettings } from '../designerConstants
 import { MAIN_GRAPH_ID } from '../subgraphCanvas'
 import { buildRenderContext, renderTemplate } from './templateEngine'
 import { BUILTIN_MANIFESTS } from '../builtinManifests'
+import { nodeRuntimeFunctionName } from './nodeModuleCodegen'
 
 function stateFieldToPython(field: StateField): string {
   const typeMap: Record<StateField['type'], string> = {
@@ -608,6 +609,7 @@ export function generatePythonCode(
   nodes: Node<StitchNodeData>[],
   edges: Edge[],
   canvasByGraph?: Record<string, CanvasSnapshot>,
+  options: { externalNodeModules?: boolean } = {},
 ): string {
   const remoteGraphs = doc.remoteGraphs ?? []
   const toolRegistry = doc.toolRegistry ?? []
@@ -616,17 +618,29 @@ export function generatePythonCode(
   const componentRegistry = doc.componentRegistry ?? []
   const allCanvases = canvasByGraph ?? { [MAIN_GRAPH_ID]: { nodes, edges } }
 
-  const functions = Object.entries(allCanvases)
-    .flatMap(([, canvas]) =>
-      canvas.nodes.map((n) =>
-        decorateNode(
-          n,
-          generateNodeFunction(n, remoteGraphs, toolRegistry, agentRegistry, componentRegistry),
+  const functions = options.externalNodeModules
+    ? Array.from(
+        new Set(
+          Object.values(allCanvases)
+            .flatMap((canvas) => canvas.nodes)
+            .filter((n) => n.data.kind !== 'start' && n.data.kind !== 'end')
+            .map((n) => nodeRuntimeFunctionName(n)),
         ),
-      ),
-    )
-    .filter(Boolean)
-    .join('\n')
+      )
+        .sort()
+        .map((fn) => `from ..nodes import ${fn}`)
+        .join('\n')
+    : Object.entries(allCanvases)
+        .flatMap(([, canvas]) =>
+          canvas.nodes.map((n) =>
+            decorateNode(
+              n,
+              generateNodeFunction(n, remoteGraphs, toolRegistry, agentRegistry, componentRegistry),
+            ),
+          ),
+        )
+        .filter(Boolean)
+        .join('\n')
 
   const componentImports = collectComponentImports(allCanvases, componentRegistry)
 

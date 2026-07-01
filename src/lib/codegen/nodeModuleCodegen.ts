@@ -11,6 +11,12 @@ export function nodeMetadataHeader(node: Node<StitchNodeData>): string {
   return `# langstitch:node id=${node.id} kind=${d.kind} label=${JSON.stringify(d.label)}`
 }
 
+export function nodeRuntimeFunctionName(node: Node<StitchNodeData>): string {
+  const base = slugify(node.id)
+  if (node.data.kind === 'router' || node.data.kind === 'intent_classifier') return `${base}_route`
+  return base
+}
+
 /**
  * Strip the common leading whitespace from a block (Python textwrap.dedent
  * equivalent) so the body can be safely re-indented to a single function level.
@@ -36,7 +42,46 @@ export function formatNodeModule(
   pkg: string,
 ): string {
   if (node.data.kind === 'start' || node.data.kind === 'end') return ''
-  const fn = slugify(node.id)
+  const fn = nodeRuntimeFunctionName(node)
+  if (node.data.kind === 'router') {
+    const code = (node.data.routerFn || 'def route(state):\n    return "next"').replace(
+      /^def\s+\w+/,
+      `def ${fn}`,
+    )
+    return `${nodeMetadataHeader(node)}
+"""Node: ${node.data.label} (${node.data.kind})"""
+from ${pkg}.state import State
+
+
+${code}
+`
+  }
+  if (node.data.kind === 'intent_classifier') {
+    const code = (node.data.classifierFn || 'def classify(state):\n    return "default"').replace(
+      /^def\s+\w+/,
+      `def ${fn}`,
+    )
+    return `${nodeMetadataHeader(node)}
+"""Node: ${node.data.label} (${node.data.kind})"""
+from ${pkg}.state import State
+
+
+${code}
+`
+  }
+  if (node.data.kind === 'function') {
+    const code = (node.data.code || 'def handler(state):\n    return {}').replace(
+      /^def\s+\w+/,
+      `def ${fn}`,
+    )
+    return `${nodeMetadataHeader(node)}
+"""Node: ${node.data.label} (${node.data.kind})"""
+from ${pkg}.state import State
+
+
+${code}
+`
+  }
   const body = dedent(getNodeCode(node.data)).trim() || 'return {}'
   const indentedBody = body
     .split('\n')
@@ -50,9 +95,9 @@ from ${pkg}.state import State
 
 def ${fn}(state: State) -> dict:
     """${node.data.description ?? node.data.label}"""
-${CUSTOM_REGION_BEGIN}
+    ${CUSTOM_REGION_BEGIN}
 ${indentedBody}
-${CUSTOM_REGION_END}
+    ${CUSTOM_REGION_END}
 `
 }
 
