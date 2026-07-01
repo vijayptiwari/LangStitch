@@ -89,6 +89,7 @@ def test_traced_invoke_without_langsmith():
 
 
 def test_traced_invoke_with_langsmith(monkeypatch):
+    pytest.importorskip("langsmith")
     monkeypatch.setenv("LANGSMITH_API_KEY", "test-key")
     monkeypatch.setenv("LANGCHAIN_TRACING_V2", "true")
     configure_tracing(force=True)
