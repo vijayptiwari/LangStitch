@@ -9,7 +9,7 @@
   "homepage": "https://langtailor.langstitch.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vijayptiwari/LangStitch.git"
+    "url": "https://github.com/LangStitch/langtailor.git"
   },
   "engines": {
     "vscode": "^1.90.0"

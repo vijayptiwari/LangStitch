@@ -153,8 +153,8 @@ Use separate commits for LangStitch vs portfolio if two repos.
 
 ```bash
 git push origin main
-gh run list --repo vijayptiwari/LangStitch --branch main --limit 5
-gh run watch <run-id> --repo vijayptiwari/LangStitch --exit-status
+gh run list --repo LangStitch/langtailor --branch main --limit 5
+gh run watch <run-id> --repo LangStitch/langtailor --exit-status
 ```
 
 Repeat for portfolio repo if updated.

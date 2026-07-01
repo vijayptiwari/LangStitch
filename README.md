@@ -2,10 +2,10 @@
 
 **LangStitch** is a visual, drag-and-drop IDE for building [LangGraph](https://langchain-ai.github.io/langgraph/) workflows — with asset designers, RAG pipelines, Python 3.13 multi-module export, git sync, Docker, and Kubernetes/Helm deployment.
 
-[![CI](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml)
-[![Deploy to Hostinger](https://github.com/vijayptiwari/LangStitch/actions/workflows/deploy-hostinger.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/deploy-hostinger.yml)
-[![LangTailor Extension](https://github.com/vijayptiwari/LangStitch/actions/workflows/langtailor-extension.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/langtailor-extension.yml)
-[![Publish Docker](https://github.com/vijayptiwari/LangStitch/actions/workflows/publish-docker.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/publish-docker.yml)
+[![CI](https://github.com/LangStitch/langtailor/actions/workflows/ci.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/ci.yml)
+[![Deploy to Hostinger](https://github.com/LangStitch/langtailor/actions/workflows/deploy-hostinger.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/deploy-hostinger.yml)
+[![LangTailor Extension](https://github.com/LangStitch/langtailor/actions/workflows/langtailor-extension.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/langtailor-extension.yml)
+[![Publish Docker](https://github.com/LangStitch/langtailor/actions/workflows/publish-docker.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/publish-docker.yml)
 
 | Link | URL |
 |------|-----|
@@ -13,7 +13,7 @@
 | **LangTailor (desktop IDE)** | [langtailor.langstitch.com](https://langtailor.langstitch.com/) |
 | **Canvas extension (Open VSX)** | [langstitch.langtailor-canvas](https://open-vsx.org/extension/langstitch/langtailor-canvas) |
 | **Documentation** | [langstitch.com/docs/](https://langstitch.com/docs/) |
-| **GitHub Releases (VSIX + portable)** | [Releases](https://github.com/vijayptiwari/LangStitch/releases) |
+| **GitHub Releases (VSIX + portable)** | [Releases](https://github.com/LangStitch/langtailor/releases) |
 
 ---
 
@@ -35,14 +35,14 @@ Open any `*.langstitch.json` file to launch the visual canvas custom editor.
 
 ### Option B — LangTailor desktop (Electron IDE)
 
-Download an installer for **Windows**, **macOS**, or **Linux** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases)** (`langtailor-v*` tags). LangTailor is a custom Electron IDE with canvas + code views, integrated terminal, git, Python LSP, and one-click export/build/run.
+Download an installer for **Windows**, **macOS**, or **Linux** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[GitHub Releases](https://github.com/LangStitch/langtailor/releases)** (`langtailor-v*` tags). LangTailor is a custom Electron IDE with canvas + code views, integrated terminal, git, Python LSP, and one-click export/build/run.
 
 ### Option C — Contribute / run locally
 
 For development and CI, run the canvas and Platform API on your machine:
 
 ```bash
-git clone https://github.com/vijayptiwari/LangStitch.git && cd LangStitch
+git clone https://github.com/LangStitch/langtailor.git && cd LangStitch
 npm install && pip install -r server/requirements.txt && npm start
 ```
 

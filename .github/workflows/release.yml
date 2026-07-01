@@ -56,7 +56,7 @@ jobs:
 
             ### Option C — Docker (local Platform API stack)
             ```bash
-            git clone https://github.com/vijayptiwari/LangStitch.git
+            git clone https://github.com/LangStitch/langtailor.git
             cd LangStitch
             docker compose -f docker-compose.prod.yml up
             ```

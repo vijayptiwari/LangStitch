@@ -12,8 +12,8 @@
   "darwinBundleIdentifier": "com.langstitch.langtailor",
   "linuxIconName": "langtailor",
   "urlProtocol": "langtailor",
-  "licenseUrl": "https://github.com/LangStitch/LangStitch/blob/main/LICENSE",
-  "reportIssueUrl": "https://github.com/LangStitch/LangStitch/issues",
+  "licenseUrl": "https://github.com/LangStitch/langtailor/blob/main/LICENSE",
+  "reportIssueUrl": "https://github.com/LangStitch/langtailor/issues",
   "documentationUrl": "https://langstitch.com/docs/",
   "extensionsGallery": {
     "serviceUrl": "https://open-vsx.org/vscode/gallery",

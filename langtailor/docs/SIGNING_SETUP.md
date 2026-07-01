@@ -7,7 +7,7 @@ Unsigned portable builds work for development. Production installers need platfo
 Set repository variable:
 
 ```bash
-gh variable set LANGTAILOR_SIGNING_ENABLED --repo vijayptiwari/LangStitch --body true
+gh variable set LANGTAILOR_SIGNING_ENABLED --repo LangStitch/langtailor --body true
 ```
 
 Signing jobs run only when this is `true` **and** the required secrets are present.

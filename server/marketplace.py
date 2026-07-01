@@ -809,7 +809,7 @@ _SEED_PLUGINS: list[dict[str, Any]] = [
         "category": "Visualization",
         "source": "openvsx",
         "homepage_url": "https://langtailor.langstitch.com",
-        "repo_url": "https://github.com/vijayptiwari/LangStitch",
+        "repo_url": "https://github.com/LangStitch/langtailor",
         "icon_url": None,
         "versions": [
             {

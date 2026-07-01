@@ -111,7 +111,7 @@ venv/
 
     files["README.md"] = f"""# {title}
 
-Generated with the [LangStitch SDK](https://github.com/vijayptiwari/LangStitch).
+Generated with the [LangStitch SDK](https://github.com/LangStitch/langstitch-sdk).
 
 ## Setup
 

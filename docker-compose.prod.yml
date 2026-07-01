@@ -1,11 +1,11 @@
 # LangStitch — run published images from GitHub Container Registry
-# Step 1: git clone https://github.com/vijayptiwari/LangStitch.git && cd LangStitch
+# Step 1: git clone https://github.com/LangStitch/langstitch-backend-service.git && cd langstitch-backend-service
 # Step 2: docker compose -f docker-compose.prod.yml up
 # Open: http://localhost:8080
 
 services:
   api:
-    image: ghcr.io/vijayptiwari/langstitch-api:latest
+    image: ghcr.io/langstitch/langstitch-api:latest
     # Auth, OAuth, SMTP, DB, and marketplace/subdomain settings come from .env
     # (see .env.example). For marketplace.langstitch.com set, at minimum:
     #   LANGSTITCH_AUTH_ENABLED=true
@@ -29,7 +29,7 @@ services:
   # the SPA boots the marketplace when the Host is marketplace.langstitch.com.
   # Point both DNS records at whatever fronts this service (LB / TLS proxy).
   web:
-    image: ghcr.io/vijayptiwari/langstitch-web:latest
+    image: ghcr.io/langstitch/langstitch-web:latest
     ports:
       - "8080:80"
     depends_on:

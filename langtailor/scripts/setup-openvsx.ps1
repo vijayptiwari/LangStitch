@@ -1,8 +1,8 @@
-# Configure Open VSX publishing for vijayptiwari/LangStitch.
+# Configure Open VSX publishing for LangStitch/langtailor.
 # Run from repo root after completing eclipse.org + open-vsx.org publisher agreement.
 
 $ErrorActionPreference = "Stop"
-$Repo = "vijayptiwari/LangStitch"
+$Repo = "LangStitch/langtailor"
 
 Write-Host ""
 Write-Host "LangTailor Open VSX setup" -ForegroundColor Cyan

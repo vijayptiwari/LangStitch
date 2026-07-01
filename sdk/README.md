@@ -34,7 +34,7 @@ Before the PyPI release is live you can depend on it straight from Git:
 ```toml
 [project]
 dependencies = [
-  "langstitch @ git+https://github.com/vijayptiwari/LangStitch.git#subdirectory=sdk",
+  "langstitch-sdk @ git+https://github.com/LangStitch/langstitch-sdk.git",
 ]
 ```
 

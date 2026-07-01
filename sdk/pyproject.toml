@@ -62,7 +62,7 @@ langstitch = "langstitch.cli:main"
 [project.urls]
 Homepage = "https://langstitch.com"
 Documentation = "https://langstitch.com/docs/"
-Repository = "https://github.com/vijayptiwari/LangStitch"
+Repository = "https://github.com/LangStitch/langstitch-sdk"
 
 [build-system]
 requires = ["hatchling"]

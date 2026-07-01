@@ -80,8 +80,8 @@ LangTailor portable ZIPs for Windows and macOS ship with this extension **preins
 
 - [LangTailor desktop IDE](https://langtailor.langstitch.com)
 - [LangStitch platform](https://langstitch.com)
-- [Source repository](https://github.com/vijayptiwari/LangStitch)
-- [Issue tracker](https://github.com/vijayptiwari/LangStitch/issues)
+- [Source repository](https://github.com/LangStitch/langtailor)
+- [Issue tracker](https://github.com/LangStitch/langtailor/issues)
 - [Open VSX listing](https://open-vsx.org/extension/langstitch/langtailor-canvas)
 
 ---

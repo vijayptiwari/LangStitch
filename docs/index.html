@@ -27,7 +27,7 @@
       <a href="#components">Components</a>
       <a href="https://langtailor.langstitch.com">LangTailor</a>
       <a href="https://open-vsx.org/extension/langstitch/langtailor-canvas">VSX</a>
-      <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a>
+      <a href="https://github.com/LangStitch/langtailor">GitHub</a>
     </div>
   </nav>
 
@@ -55,7 +55,7 @@
         </article>
         <article class="card card-highlight">
           <h3>Docker (full stack)</h3>
-          <pre><code>git clone https://github.com/vijayptiwari/LangStitch.git
+          <pre><code>git clone https://github.com/LangStitch/langtailor.git
 cd LangStitch
 docker compose -f docker-compose.prod.yml up</code></pre>
           <p>UI + Platform API at <strong>http://localhost:8080</strong></p>
@@ -122,7 +122,7 @@ pip install "langstitch[server,graph,llm,http]"      # typical agent service
 pip install "langstitch[all]"                        # everything
 
 # pin from Git until the PyPI release is live
-pip install "langstitch @ git+https://github.com/vijayptiwari/LangStitch.git#subdirectory=sdk"</code></pre>
+pip install "langstitch-sdk @ git+https://github.com/LangStitch/langstitch-sdk.git"</code></pre>
       <p class="section-lead">
         <strong>Design note:</strong> importing <code>langstitch</code> never imports FastAPI, LangGraph,
         LangChain, or httpx. Each helper imports its dependency lazily and raises a clear, actionable
@@ -468,7 +468,7 @@ CMD ["langstitch", "run", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
       </div>
       <p class="section-lead">
         Exhaustive signatures and options live in the
-        <a href="https://github.com/vijayptiwari/LangStitch/blob/main/sdk/README.md">SDK README</a>
+        <a href="https://github.com/LangStitch/langstitch-sdk/blob/main/README.md">SDK README</a>
         and source under <code>sdk/src/langstitch/</code>.
       </p>
 
@@ -627,7 +627,7 @@ python -m &lt;package&gt;</code></pre>
         <li><strong>Deploy to Hostinger</strong> — marketing site + docs + LangTailor download page (no hosted browser IDE)</li>
         <li><strong>CI</strong> — build, Playwright E2E, agent smoke tests</li>
         <li><strong>LangTailor extension</strong> — package <code>.vsix</code> and publish to Open VSX</li>
-        <li><strong>Publish Docker</strong> — <code>ghcr.io/vijayptiwari/langstitch-api</code></li>
+        <li><strong>Publish Docker</strong> — <code>ghcr.io/langstitch/langstitch-api</code></li>
         <li><strong>Release</strong> — tagged releases with source archives</li>
       </ul>
     </section>
@@ -643,7 +643,7 @@ npm run agent:run</code></pre>
   <footer class="footer">
     <p>
       LangStitch · MIT ·
-      <a href="https://github.com/vijayptiwari/LangStitch">GitHub</a> ·
+      <a href="https://github.com/LangStitch/langtailor">GitHub</a> ·
       <a href="../">Home</a> ·
       <a href="https://langtailor.langstitch.com">Download VSX</a> ·
       <a href="../langtailor/">LangTailor</a> ·

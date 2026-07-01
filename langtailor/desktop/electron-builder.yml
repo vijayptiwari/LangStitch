@@ -38,5 +38,5 @@ nsis:
   allowToChangeInstallationDirectory: true
 publish:
   provider: github
-  owner: vijayptiwari
-  repo: LangStitch
+  owner: LangStitch
+  repo: langtailor

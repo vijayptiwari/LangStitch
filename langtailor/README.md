@@ -74,4 +74,4 @@ Manual sign-off: [docs/testing/UAT_CHECKLIST.md](../docs/testing/UAT_CHECKLIST.m
 
 ## Downloads
 
-[langtailor.langstitch.com](https://langtailor.langstitch.com) · [GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases)
+[langtailor.langstitch.com](https://langtailor.langstitch.com) · [GitHub Releases](https://github.com/LangStitch/langtailor/releases)

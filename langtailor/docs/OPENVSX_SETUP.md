@@ -4,7 +4,7 @@ Publish `langstitch.langtailor-canvas` to [Open VSX](https://open-vsx.org) so VS
 
 ## Prerequisites
 
-- GitHub account with access to `vijayptiwari/LangStitch`
+- GitHub account with access to `LangStitch/langtailor`
 - Extension `publisher` in `package.json` is **`langstitch`** (namespace must match)
 
 ## Step 1 — Eclipse + GitHub accounts
@@ -48,8 +48,8 @@ For a **verified** `langstitch` publisher under the LangStitch org, open an issu
 ### Option B — manual `gh` CLI
 
 ```bash
-gh secret set OVSX_PAT --repo vijayptiwari/LangStitch
-gh variable set OPENVSX_PUBLISH_ENABLED --repo vijayptiwari/LangStitch --body true
+gh secret set OVSX_PAT --repo LangStitch/langtailor
+gh variable set OPENVSX_PUBLISH_ENABLED --repo LangStitch/langtailor --body true
 ```
 
 | Name | Type | Value |
@@ -62,7 +62,7 @@ gh variable set OPENVSX_PUBLISH_ENABLED --repo vijayptiwari/LangStitch --body tr
 Automatic on every `langtailor-v*` GitHub Release, or run manually:
 
 ```bash
-gh workflow run "Publish LangTailor to Open VSX" --repo vijayptiwari/LangStitch -f version=0.1.1
+gh workflow run "Publish LangTailor to Open VSX" --repo LangStitch/langtailor -f version=0.1.1
 ```
 
 Verify: [open-vsx.org/extension/langstitch/langtailor-canvas](https://open-vsx.org/extension/langstitch/langtailor-canvas)
