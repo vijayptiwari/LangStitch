@@ -64,17 +64,37 @@ class ProviderConfig:
     name: str
     client_id: str
     client_secret: str
-    server_metadata_url: str
     scope: str
+    # OIDC providers expose a discovery document; plain OAuth2 providers
+    # (e.g. GitHub) instead declare explicit endpoints.
+    server_metadata_url: str = ""
+    authorize_url: str = ""
+    access_token_url: str = ""
+    api_base_url: str = ""
+    userinfo_endpoint: str = ""
 
     @property
     def configured(self) -> bool:
         return bool(self.client_id and self.client_secret)
 
+    @property
+    def is_oidc(self) -> bool:
+        return bool(self.server_metadata_url)
+
 
 def _providers() -> dict[str, ProviderConfig]:
     tenant = os.environ.get("MICROSOFT_TENANT_ID", "common")
     return {
+        "github": ProviderConfig(
+            name="github",
+            client_id=os.environ.get("GITHUB_CLIENT_ID", ""),
+            client_secret=os.environ.get("GITHUB_CLIENT_SECRET", ""),
+            scope="read:user user:email",
+            authorize_url="https://github.com/login/oauth/authorize",
+            access_token_url="https://github.com/login/oauth/access_token",
+            api_base_url="https://api.github.com/",
+            userinfo_endpoint="https://api.github.com/user",
+        ),
         "google": ProviderConfig(
             name="google",
             client_id=os.environ.get("GOOGLE_CLIENT_ID", ""),

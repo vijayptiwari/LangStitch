@@ -398,6 +398,117 @@ export function NodeDesigner() {
           </>
         )}
 
+        {data.kind === 'hitl' && (
+          <Section title="Human-in-the-loop">
+            <Field label="Interaction type" hint="What the human is asked to do at this checkpoint">
+              <select
+                className="input"
+                value={data.interactionType}
+                onChange={(e) => set({ interactionType: e.target.value as typeof data.interactionType })}
+              >
+                <option value="approval">Approval (approve / reject)</option>
+                <option value="edit">Edit & continue</option>
+                <option value="input">Collect free-form input</option>
+              </select>
+            </Field>
+            <Field label="Prompt to human" hint="Shown to the reviewer when the graph pauses">
+              <textarea
+                className="textarea"
+                rows={3}
+                value={data.promptMessage}
+                onChange={(e) => set({ promptMessage: e.target.value })}
+                placeholder="Please review and approve before continuing."
+              />
+            </Field>
+            {data.interactionType === 'approval' && (
+              <div className="branch-editor">
+                <input
+                  className="input"
+                  value={data.approveLabel}
+                  placeholder="Approve label"
+                  onChange={(e) => set({ approveLabel: e.target.value })}
+                />
+                <input
+                  className="input"
+                  value={data.rejectLabel}
+                  placeholder="Reject label"
+                  onChange={(e) => set({ rejectLabel: e.target.value })}
+                />
+              </div>
+            )}
+            <label className="designer-check">
+              <input type="checkbox" checked={data.allowEdit} onChange={(e) => set({ allowEdit: e.target.checked })} />
+              Allow the human to edit the state payload
+            </label>
+            <Field label="Output state key" hint="Where the human decision is written">
+              <input className="input" value={data.outputKey} onChange={(e) => set({ outputKey: e.target.value })} />
+            </Field>
+            <Field label="Timeout (seconds)" hint="0 = wait indefinitely">
+              <input
+                className="input"
+                type="number"
+                min={0}
+                value={data.timeoutSeconds}
+                onChange={(e) => set({ timeoutSeconds: Number(e.target.value) })}
+              />
+            </Field>
+          </Section>
+        )}
+
+        {data.kind === 'response_transformer' && (
+          <Section title="Response transformer">
+            <Field label="Transform mode">
+              <select
+                className="input"
+                value={data.transformType}
+                onChange={(e) => set({ transformType: e.target.value as typeof data.transformType })}
+              >
+                <option value="template">String template (.format)</option>
+                <option value="expression">Python expression</option>
+                <option value="python">Python function</option>
+              </select>
+            </Field>
+            {data.transformType === 'template' && (
+              <Field label="Template" hint="Use {state_key} placeholders, e.g. {messages}">
+                <textarea
+                  className="textarea code designer-code"
+                  rows={6}
+                  value={data.template}
+                  onChange={(e) => set({ template: e.target.value })}
+                  placeholder="Final answer: {messages}"
+                />
+              </Field>
+            )}
+            {data.transformType === 'expression' && (
+              <Field label="Expression" hint="Evaluated with `state` in scope; result is written to output key">
+                <textarea
+                  className="textarea code designer-code"
+                  rows={4}
+                  value={data.expression}
+                  onChange={(e) => set({ expression: e.target.value })}
+                  placeholder="state.get('messages', [])[-1]"
+                />
+              </Field>
+            )}
+            {data.transformType === 'python' && (
+              <Field label="Source code" hint="Receives state dict, returns partial state update">
+                <textarea
+                  className="textarea code designer-code"
+                  rows={10}
+                  value={data.code}
+                  onChange={(e) => set({ code: e.target.value })}
+                />
+              </Field>
+            )}
+            <Field label="Read from state key">
+              <input className="input" value={data.inputKey} onChange={(e) => set({ inputKey: e.target.value })} />
+            </Field>
+            <Field label="Write to state key">
+              <input className="input" value={data.outputKey} onChange={(e) => set({ outputKey: e.target.value })} />
+            </Field>
+          </Section>
+        )}
+
         {data.kind === 'function' && (
           <Section title="Python function">
             <Field label="Function name">

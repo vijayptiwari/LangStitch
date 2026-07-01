@@ -41,6 +41,7 @@ import {
 } from '../lib/subgraphCanvas'
 import { mergeComponentRegistry } from '../lib/customComponents'
 import { saveViewport, loadViewport } from '../lib/viewportStorage'
+import { hasCustomCode } from '../lib/nodeCode'
 
 function isCanvasLocked(state: { document: GraphDocument }): boolean {
   return Boolean(state.document.settings?.locked)
@@ -164,6 +165,8 @@ interface GraphStore {
   removeNode: (nodeId: string) => void
   /** Select a node or clear selection. */
   selectNode: (nodeId: string | null) => void
+  /** Select every node on the active canvas (Ctrl+A). */
+  selectAllNodes: () => void
   /** Toggle generated Python code panel visibility. */
   toggleCodePanel: () => void
 
@@ -445,7 +448,22 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
   onNodesChange: (changes) => {
     const filtered = filterLockedNodeChanges(changes, isCanvasLocked(get()))
     if (filtered.length === 0) return
-    applyCanvasUpdate(get, set, applyNodeChanges(filtered, get().nodes), get().edges)
+    const allowed = filtered.filter((change) => {
+      if (change.type !== 'remove') return true
+      const node = get().nodes.find((n) => n.id === change.id)
+      if (!node) return true
+      if (node.data.kind === 'start' || node.data.kind === 'end') return false
+      if (hasCustomCode(node.data)) {
+        return window.confirm(
+          `Node "${node.data.label}" contains custom code that will be permanently lost.\n\nDelete anyway?`,
+        )
+      }
+      return true
+    })
+    if (allowed.length === 0) return
+    const hasRemove = allowed.some((c) => c.type === 'remove')
+    if (hasRemove) pushUndoHistory(get(), set)
+    applyCanvasUpdate(get, set, applyNodeChanges(allowed, get().nodes), get().edges)
   },
 
   onEdgesChange: (changes) => {
@@ -504,6 +522,12 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
     if (isCanvasLocked(get())) return
     const node = get().nodes.find((n) => n.id === nodeId)
     if (node?.data.kind === 'start' || node?.data.kind === 'end') return
+    if (node && hasCustomCode(node.data)) {
+      const ok = window.confirm(
+        `Node "${node.data.label}" contains custom code that will be permanently lost.\n\nDelete anyway?`,
+      )
+      if (!ok) return
+    }
     pushUndoHistory(get(), set)
     applyCanvasUpdate(
       get,
@@ -519,6 +543,17 @@ export const useGraphStore = create<GraphStore>((set, get) => ({
       selectedNodeId: nodeId,
       designerTab: nodeId ? 'node' : get().designerTab,
     }),
+  selectAllNodes: () => {
+    const all = get().nodes
+    if (all.length === 0) return
+    const selectable = all.filter((n) => n.data?.kind !== 'start' && n.data?.kind !== 'end')
+    const target = selectable.length > 0 ? selectable : all
+    const targetIds = new Set(target.map((n) => n.id))
+    set({
+      nodes: all.map((n) => ({ ...n, selected: targetIds.has(n.id) })),
+      selectedNodeId: target.length === 1 ? target[0].id : null,
+    })
+  },
   toggleCodePanel: () => set({ showCodePanel: !get().showCodePanel }),
 
   setDesignerTab: (tab) => set({ designerTab: tab }),

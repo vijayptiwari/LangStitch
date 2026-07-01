@@ -23,6 +23,7 @@ os.environ.setdefault(
     "LANGSTITCH_WORKSPACE",
     os.path.join(tempfile.gettempdir(), ".langstitch", "ls_test_ws"),
 )
+os.environ.setdefault("LANGSTITCH_AUTH_ENABLED", "false")
 
 from starlette.testclient import TestClient  # noqa: E402
 

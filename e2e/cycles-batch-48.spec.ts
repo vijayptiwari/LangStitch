@@ -21,7 +21,7 @@ test.describe('SDLC Batch 48 — cycles 481–490', () => {
     await expect(removeBtn).toBeVisible()
   })
 
-  test('cycle-482: edge label truncation on long labels', async ({ page }) => {
+  test('cycle-482: edge label truncation on long labels', async () => {
     const source = readFileSync('src/components/canvas/TruncatedEdge.tsx', 'utf-8')
     expect(source).toContain('data-cycle-truncate-alt3="482"')
     expect(source).toMatch(/truncate|ellipsis/i)

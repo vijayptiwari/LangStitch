@@ -9,6 +9,7 @@ import { createNodeData, nodeTypes, DRAG_MIME } from '../lib/nodeRegistry'
 import type { NodeKind } from '../types/graph'
 import { initVsCodeBridge } from './vscodeBridge'
 import '../index.css'
+import '../ide-shell.css'
 
 function WebviewWorkspace() {
   const addNode = useGraphStore((s) => s.addNode)

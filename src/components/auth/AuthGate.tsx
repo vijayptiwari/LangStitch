@@ -1,34 +1,38 @@
 import { useEffect, type ReactNode } from 'react'
 import { useAuthStore } from '../../store/authStore'
-import { LoginScreen } from './LoginScreen'
+import { initApiBase, applyDesktopToken } from '../../lib/api/authClient'
 import './auth.css'
 
 /**
- * Resolves auth state on mount. When auth is enabled and the user is not
- * signed in, the login screen is shown; otherwise the app renders normally.
- * If the API is unreachable (static demo), auth resolves as disabled and the
- * app renders without a login gate.
+ * Resolves auth state on mount. In the desktop IDE we also listen for OAuth
+ * deep-link callbacks (langtailor://auth/callback?token=…) and refresh auth
+ * when the user returns from GitHub sign-in in the system browser.
  */
 export function AuthGate({ children }: { children: ReactNode }) {
-  const status = useAuthStore((s) => s.status)
-  const needsLogin = useAuthStore((s) => s.needsLogin)
   const refresh = useAuthStore((s) => s.refresh)
 
   useEffect(() => {
-    void refresh()
+    void (async () => {
+      await initApiBase()
+      await refresh()
+    })()
+
+    const api = window.langtailor
+    const offToken = api?.onAuthToken?.((token) => {
+      void (async () => {
+        await applyDesktopToken(token)
+        await refresh()
+      })()
+    })
+    const offError = api?.onAuthError?.((err) => {
+      useAuthStore.getState().setAuthError(`Sign-in failed (${err}). Try again.`)
+    })
+
+    return () => {
+      offToken?.()
+      offError?.()
+    }
   }, [refresh])
-
-  if (status === 'loading') {
-    return (
-      <div className="auth-splash" data-testid="auth-splash">
-        Loading workspace…
-      </div>
-    )
-  }
-
-  if (needsLogin) {
-    return <LoginScreen />
-  }
 
   return <>{children}</>
 }

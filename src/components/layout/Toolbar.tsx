@@ -1,45 +1,55 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  Blocks,
-  FolderOpen,
+  Bug,
+  ChevronDown,
+  FilePlus,
+  Hammer,
+  HelpCircle,
+  History,
   Layers,
+  Play,
   Plus,
   RotateCcw,
   RotateCw,
-  Save,
   Server,
-  Terminal,
-  HelpCircle,
+  Upload,
 } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
+import { useIdeStore } from '../../store/ideStore'
 import { useFocusTrap } from '../../hooks/useFocusTrap'
+import { workspaceDisplayName } from '../../lib/workspace'
 import { exportGraphDocument } from '../../lib/codegen/pythonGenerator'
-import type { GraphDocument } from '../../types/graph'
+import { runGraphMode } from '../../lib/runGraph'
 import { UserMenu } from '../auth/UserMenu'
 
-function LangStitchLogo() {
+function LangTailorLogo() {
   return (
-    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden>
-      <circle cx="9" cy="16" r="3.25" fill="#a5b4fc" />
-      <circle cx="23" cy="9" r="3.25" fill="#818cf8" />
-      <circle cx="23" cy="23" r="3.25" fill="#6366f1" />
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden>
+      <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#ltBg)" />
+      {/* needle + thread "tailoring" the graph */}
+      <circle cx="10" cy="11" r="2.4" fill="#c7d2fe" />
+      <circle cx="22" cy="11" r="2.4" fill="#a5b4fc" />
+      <circle cx="16" cy="22" r="2.4" fill="#818cf8" />
       <path
-        d="M12.2 15.2 19.8 10.8 M12.2 16.8 19.8 21.2"
+        d="M10 11 C 13 16, 19 16, 22 11"
         stroke="#e0e7ff"
-        strokeWidth="1.75"
+        strokeWidth="1.6"
         strokeLinecap="round"
+        fill="none"
       />
       <path
-        d="M9 16 H23"
-        stroke="url(#lsGlow)"
-        strokeWidth="1"
+        d="M10 11 L 16 22 L 22 11"
+        stroke="#eef2ff"
+        strokeWidth="1.6"
         strokeLinecap="round"
-        opacity="0.35"
+        strokeLinejoin="round"
+        fill="none"
+        opacity="0.55"
       />
       <defs>
-        <linearGradient id="lsGlow" x1="9" y1="16" x2="23" y2="16">
-          <stop stopColor="#6366f1" />
-          <stop offset="1" stopColor="#a5b4fc" />
+        <linearGradient id="ltBg" x1="2" y1="2" x2="30" y2="30">
+          <stop stopColor="#4f46e5" />
+          <stop offset="1" stopColor="#7c3aed" />
         </linearGradient>
       </defs>
     </svg>
@@ -49,18 +59,13 @@ function LangStitchLogo() {
 const REDO_LAST_USED_KEY = 'langstitch-toolbar-redo-last-used'
 const DOCS_URL = 'https://langstitch.com/docs/'
 
-export function Toolbar({
-  onOpenPlatform,
-  onOpenMarketplace,
-}: {
-  onOpenPlatform: () => void
-  onOpenMarketplace: () => void
-}) {
+export function Toolbar() {
   const graphDoc = useGraphStore((s) => s.document)
   const isDirty = useGraphStore((s) => s.isDirty)
   const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
-  const loadProject = useGraphStore((s) => s.loadProject)
   const resetProject = useGraphStore((s) => s.resetProject)
+  const openPlatform = useIdeStore((s) => s.openPlatform)
+  const workspacePath = useIdeStore((s) => s.workspacePath)
   const redoProject = useGraphStore((s) => s.redoProject)
   const canRedo = useGraphStore((s) => s.canRedo)
   const isGraphEmpty = useGraphStore((s) => s.isGraphEmpty)
@@ -68,14 +73,28 @@ export function Toolbar({
   const clearUndoDepthNotice = useGraphStore((s) => s.clearUndoDepthNotice)
   const addSubgraph = useGraphStore((s) => s.addSubgraph)
   const navigateToGraph = useGraphStore((s) => s.navigateToGraph)
-  const showCodePanel = useGraphStore((s) => s.showCodePanel)
-  const toggleCodePanel = useGraphStore((s) => s.toggleCodePanel)
   const setDocumentMeta = useGraphStore((s) => s.setDocumentMeta)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const graphNameInputRef = useRef<HTMLInputElement>(null)
   const shortcutsPanelRef = useRef<HTMLDivElement>(null)
-  const [savedAt, setSavedAt] = useState<string | null>(null)
+  const projectMenuRef = useRef<HTMLDivElement>(null)
   const [showShortcuts, setShowShortcuts] = useState(false)
+  const [showProjectMenu, setShowProjectMenu] = useState(false)
+
+  const runProjectAction = useCallback((fn: () => void) => {
+    setShowProjectMenu(false)
+    fn()
+  }, [])
+
+  useEffect(() => {
+    if (!showProjectMenu) return
+    const onDocClick = (e: MouseEvent) => {
+      if (projectMenuRef.current && !projectMenuRef.current.contains(e.target as Node)) {
+        setShowProjectMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [showProjectMenu])
   const [redoAvailable, setRedoAvailable] = useState(false)
   const [redoLastUsed, setRedoLastUsed] = useState<string | null>(() => {
     try {
@@ -110,7 +129,6 @@ export function Toolbar({
     a.download = `${graphDoc.name || 'graph'}.langstitch.json`
     a.click()
     URL.revokeObjectURL(url)
-    setSavedAt(new Date().toLocaleTimeString())
   }, [getProjectPayload, graphDoc.name])
 
   useEffect(() => {
@@ -118,11 +136,6 @@ export function Toolbar({
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault()
         saveProject()
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
-        e.preventDefault()
-        graphNameInputRef.current?.focus()
-        graphNameInputRef.current?.select()
       }
       // cycle 271 — Ctrl+P focuses graph name search (alternate chord)
       if (
@@ -180,30 +193,9 @@ export function Toolbar({
 
   const graphEmpty = isGraphEmpty()
   const redoDisabled = !redoAvailable || graphEmpty
-
-  const openProject = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        const raw = JSON.parse(reader.result as string) as Record<string, unknown>
-        if (raw.document) {
-          loadProject(raw as Parameters<typeof loadProject>[0])
-        } else {
-          const { nodes, edges, canvasByGraph, navigationPath, ...docFields } = raw
-          loadProject({
-            document: docFields as unknown as GraphDocument,
-            nodes: nodes as Parameters<typeof loadProject>[0]['nodes'],
-            edges: edges as Parameters<typeof loadProject>[0]['edges'],
-            canvasByGraph: canvasByGraph as Parameters<typeof loadProject>[0]['canvasByGraph'],
-            navigationPath: navigationPath as string[] | undefined,
-          })
-        }
-      } catch {
-        alert('Invalid project file')
-      }
-    }
-    reader.readAsText(file)
-  }
+  // On the desktop app, Project actions live in the native menu bar (Project
+  // menu), so we hide the in-app dropdown to avoid a duplicate.
+  const isElectron = typeof window !== 'undefined' && !!window.langtailor?.isElectron
 
   const handleNewSubgraph = () => {
     const name = prompt('Subgraph name', 'Worker Graph')
@@ -212,69 +204,81 @@ export function Toolbar({
 
   return (
     <header className="toolbar" data-testid="toolbar">
-      <div className="toolbar-brand">
-        <div className="logo">
-          <LangStitchLogo />
+      {isElectron ? (
+        // Desktop: the native title bar already brands the app, so the header
+        // shows the active workspace (one window = one workspace) — no duplicate
+        // logo/wordmark.
+        <div className="toolbar-workspace" data-testid="toolbar-workspace">
+          <span className="workspace-label">Workspace</span>
+          <span className="workspace-name" data-testid="workspace-name" title={workspacePath ?? undefined}>
+            {workspaceDisplayName(workspacePath)}
+          </span>
         </div>
-        <div>
-          <div className="brand-title" data-testid="brand-title">LangStitch</div>
-          <div className="brand-subtitle">
-            Visual LangGraph IDE
-            <a
-              href={DOCS_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="help-docs-link"
-              data-testid="help-docs-link-core"
-              title="Open LangStitch documentation (cycle 153)"
-            >
-              Docs
-            </a>
-            <span className="sr-only" data-testid="cycle-153-docs-tooltip">
-              cycle 153 — help links to langstitch.com/docs
-            </span>
-            <span className="sr-only" data-testid="cycle-201-docs-tooltip">
-              cycle 201 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-249-docs-tooltip">
-              cycle 249 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-297-docs-tooltip">
-              cycle 297 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-345-docs-tooltip">
-              cycle 345 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-393-docs-tooltip">
-              cycle 393 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-441-docs-tooltip">
-              cycle 441 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-489-docs-tooltip">
-              cycle 489 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-537-docs-tooltip">
-              cycle 537 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-585-docs-tooltip">
-              cycle 585 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-633-docs-tooltip">
-              cycle 633 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-681-docs-tooltip">
-              cycle 681 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-729-docs-tooltip">
-              cycle 729 — help tooltip links to docs for core
-            </span>
-            <span className="sr-only" data-testid="cycle-777-docs-tooltip">
-              cycle 777 — help tooltip links to docs for core
-            </span>
+      ) : (
+        <div className="toolbar-brand">
+          <div className="logo">
+            <LangTailorLogo />
+          </div>
+          <div>
+            <div className="brand-title" data-testid="brand-title">LangTailor</div>
+            <div className="brand-subtitle">
+              Visual LangGraph IDE
+              <a
+                href={DOCS_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="help-docs-link"
+                data-testid="help-docs-link-core"
+                title="Open LangStitch documentation (cycle 153)"
+              >
+                Docs
+              </a>
+              <span className="sr-only" data-testid="cycle-153-docs-tooltip">
+                cycle 153 — help links to langstitch.com/docs
+              </span>
+              <span className="sr-only" data-testid="cycle-201-docs-tooltip">
+                cycle 201 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-249-docs-tooltip">
+                cycle 249 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-297-docs-tooltip">
+                cycle 297 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-345-docs-tooltip">
+                cycle 345 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-393-docs-tooltip">
+                cycle 393 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-441-docs-tooltip">
+                cycle 441 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-489-docs-tooltip">
+                cycle 489 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-537-docs-tooltip">
+                cycle 537 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-585-docs-tooltip">
+                cycle 585 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-633-docs-tooltip">
+                cycle 633 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-681-docs-tooltip">
+                cycle 681 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-729-docs-tooltip">
+                cycle 729 — help tooltip links to docs for core
+              </span>
+              <span className="sr-only" data-testid="cycle-777-docs-tooltip">
+                cycle 777 — help tooltip links to docs for core
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="toolbar-center">
         <input
@@ -310,9 +314,6 @@ export function Toolbar({
       </div>
 
       <div className="toolbar-actions">
-        <button className="btn-secondary" data-testid="toolbar-open" onClick={() => fileInputRef.current?.click()} type="button">
-          <FolderOpen size={16} /> Open
-        </button>
         <span data-testid="cycle-142-toolbar-save">
         <span data-testid="cycle-214-toolbar-save">
         <span data-testid="cycle-250-toolbar-save">
@@ -333,14 +334,6 @@ export function Toolbar({
         <span data-testid="cycle-682-toolbar-save">
         <span data-testid="cycle-718-toolbar-save">
         <span data-testid="cycle-754-toolbar-save">
-          <button className="btn-secondary" data-testid="toolbar-save" onClick={saveProject} type="button">
-            <Save size={16} /> Save
-          {savedAt && (
-            <span className="toolbar-saved-at" data-testid="toolbar-saved-at">
-              {savedAt}
-            </span>
-          )}
-          </button>
         </span>
         </span>
         </span>
@@ -361,9 +354,34 @@ export function Toolbar({
         </span>
         </span>
         </span>
-        <button className="btn-secondary" onClick={() => { resetProject(); setRedoAvailable(canRedo()) }} type="button">
-          <RotateCcw size={16} /> Reset
-        </button>
+        {/* On desktop, "New" / "Reset" live in the native File menu (New Graph),
+            so we hide these header duplicates to reduce clutter. */}
+        {!isElectron && (
+          <>
+            <button
+              className="btn-secondary"
+              data-testid="toolbar-new-graph"
+              onClick={() => {
+                if (isDirty && !window.confirm('Start a new graph? Unsaved changes will be lost.')) return
+                resetProject()
+                setRedoAvailable(canRedo())
+              }}
+              type="button"
+              title="Start a new graph"
+            >
+              <FilePlus size={16} /> New
+            </button>
+            <button
+              className="btn-secondary"
+              data-testid="toolbar-reset"
+              onClick={() => { resetProject(); setRedoAvailable(canRedo()) }}
+              type="button"
+              title="Reset to the starter graph"
+            >
+              <RotateCcw size={16} /> Reset
+            </button>
+          </>
+        )}
         <span className="toolbar-btn-wrap" data-testid="cycle-155-redo-empty-guard" data-cycle-redo="275" data-cycle-redo-empty-alt="395" data-cycle-redo-empty-alt2="515" data-cycle-redo-empty-alt3="635" data-cycle-redo-empty-alt4="755">
           <button
             className="btn-secondary"
@@ -469,82 +487,72 @@ export function Toolbar({
               </span>
               </span>
             )}
-        <span className="toolbar-btn-wrap">
+        {!isElectron && (
+        <div className="toolbar-menu" ref={projectMenuRef} data-testid="toolbar-project-menu">
           <button
-            className="btn-secondary"
-            data-testid="toolbar-platform"
-            title={graphEmpty ? 'Platform unavailable on empty graph' : 'Platform (Ctrl+E)'}
-            aria-label="Open Platform drawer"
-            data-cycle-aria="287"
-            data-cycle-aria-alt="407"
-            data-cycle-aria-alt2="527"
-            data-cycle-aria-alt3="647"
-            data-cycle-aria-alt4="767"
-            data-cycle="167"
-            data-cycle-empty="215"
-            data-cycle-empty-alt="335"
-            data-cycle-empty-alt2="455"
-            data-cycle-empty-alt3="575"
-            data-cycle-empty-alt4="695"
-            aria-describedby="toolbar-platform-tooltip"
-            onClick={onOpenPlatform}
-            disabled={graphEmpty}
+            className={`btn-secondary ${showProjectMenu ? 'active' : ''}`}
+            data-testid="toolbar-project"
+            aria-haspopup="menu"
+            aria-expanded={showProjectMenu}
+            onClick={() => setShowProjectMenu((v) => !v)}
             type="button"
+            title="Project actions"
           >
-            <Server size={16} /> Platform
-            <kbd className="toolbar-kbd-hint" data-testid="toolbar-platform-kbd" data-cycle-kbd="263" data-cycle-kbd-alt="383" data-cycle-kbd-alt2="503" data-cycle-kbd-alt3="623" data-cycle-kbd-alt4="743">
-              Ctrl+E
-            </kbd>
+            <Server size={16} /> Project
+            <ChevronDown size={14} />
           </button>
-          <span
-            id="toolbar-platform-tooltip"
-            className="toolbar-btn-tooltip"
-            data-testid="toolbar-platform-tooltip"
-            role="tooltip"
-          >
-            <span data-testid="cycle-143-platform-hint">
-              Open Platform — export, deploy, eval (Ctrl+E) — cycle 143
-            </span>
-            <span data-testid="cycle-191-platform-tooltip" className="sr-only">
-              Batch 19 cycle 191 platform tooltip
-            </span>
-            <span data-testid="cycle-311-platform-tooltip" data-cycle-platform="311" className="sr-only">
-              Batch 31 cycle 311 platform tooltip
-            </span>
-            <span data-testid="cycle-431-platform-tooltip" data-cycle-platform-alt="431" className="sr-only">
-              Batch 43 cycle 431 platform tooltip
-            </span>
-            <span data-testid="cycle-551-platform-tooltip" data-cycle-platform-alt2="551" className="sr-only">
-              Batch 55 cycle 551 platform tooltip
-            </span>
-            <span data-testid="cycle-623-platform-hint" className="sr-only">
-              Batch 62 cycle 623 platform keyboard hint
-            </span>
-            <span data-testid="cycle-743-platform-hint" className="sr-only">
-              Batch 74 cycle 743 platform keyboard hint
-            </span>
-            <span data-testid="cycle-671-platform-tooltip" data-cycle-platform-alt3="671" className="sr-only">
-              Batch 67 cycle 671 platform tooltip
-            </span>
-          </span>
-        </span>
-        <button
-          className={`btn-secondary ${showCodePanel ? 'active' : ''}`}
-          data-testid="toolbar-code"
-          onClick={toggleCodePanel}
-          type="button"
-        >
-          <Terminal size={16} /> Code
-        </button>
-        <button
-          className="btn-secondary"
-          data-testid="toolbar-marketplace"
-          onClick={onOpenMarketplace}
-          type="button"
-          title="Plugin & connector marketplace"
-        >
-          <Blocks size={16} /> Marketplace
-        </button>
+          {showProjectMenu && (
+            <div className="toolbar-menu-list" role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                className="toolbar-menu-item"
+                data-testid="project-export"
+                onClick={() => runProjectAction(() => openPlatform('export'))}
+              >
+                <Upload size={15} /> Export
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="toolbar-menu-item"
+                data-testid="project-build"
+                onClick={() => runProjectAction(() => void runGraphMode('build'))}
+              >
+                <Hammer size={15} /> Build
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="toolbar-menu-item"
+                data-testid="project-run"
+                onClick={() => runProjectAction(() => void runGraphMode('run'))}
+              >
+                <Play size={15} /> Run
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="toolbar-menu-item"
+                data-testid="project-debug"
+                onClick={() => runProjectAction(() => void runGraphMode('debug'))}
+              >
+                <Bug size={15} /> Debug
+              </button>
+              <div className="toolbar-menu-sep" />
+              <button
+                type="button"
+                role="menuitem"
+                className="toolbar-menu-item"
+                data-testid="project-version"
+                onClick={() => runProjectAction(() => openPlatform('versions'))}
+              >
+                <History size={15} /> Version
+              </button>
+            </div>
+          )}
+        </div>
+        )}
         <button
           className="btn-secondary"
           data-testid="toolbar-shortcuts"
@@ -555,18 +563,6 @@ export function Toolbar({
           <HelpCircle size={16} />
         </button>
         <UserMenu />
-        <input
-          ref={fileInputRef}
-          type="file"
-          data-testid="toolbar-open-input"
-          accept=".langstitch.json,application/json"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) openProject(file)
-            e.target.value = ''
-          }}
-        />
       </div>
       {showShortcuts && (
         <div className="shortcuts-overlay" role="dialog" data-testid="shortcuts-modal" data-cycle="238" data-cycle-alt="418" data-cycle-alt2="598" data-cycle-alt3="778" onClick={() => setShowShortcuts(false)}>

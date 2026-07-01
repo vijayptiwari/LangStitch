@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semver without v prefix (e.g. 0.1.2)'
+        description: 'Semver without v prefix (e.g. 0.2.0)'
         required: true
-        default: '0.1.2'
+        default: '0.2.0'
 
 permissions:
   contents: write
@@ -19,12 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - name: Build VSIX bundles
         run: |
           npm ci
@@ -47,94 +45,85 @@ jobs:
           name: langtailor-vsix
           path: dist-langtailor/*.vsix
 
-  bundle-windows:
-    needs: build-vsix
-    runs-on: windows-latest
-    env:
-      LANGTAILOR_SIGNING_ENABLED: ${{ vars.LANGTAILOR_SIGNING_ENABLED }}
-      WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
-      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: langtailor-vsix
-          path: dist-langtailor
-
-      - name: Bundle portable Windows IDE
-        shell: pwsh
-        run: ./langtailor/scripts/bundle-windows.ps1
-
-      - name: Sign Windows bundle (optional)
-        if: vars.LANGTAILOR_SIGNING_ENABLED == 'true'
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          $zip = Get-ChildItem LangTailor-win-x64-portable.zip
-          $dir = Join-Path $env:RUNNER_TEMP "win-bundle"
-          if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }
-          Expand-Archive $zip.FullName -DestinationPath $dir
-          if (Test-Path (Join-Path $dir "bin\codium.cmd")) {
-            $bundleRoot = $dir
-          } else {
-            $bundleRoot = (Get-ChildItem $dir -Directory | Select-Object -First 1).FullName
-          }
-          ./langtailor/scripts/sign-windows.ps1 -BundleDir $bundleRoot
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: langtailor-windows-portable
-          path: |
-            LangTailor-win-x64-portable.zip
-            LangTailor-win-x64-portable-signed.zip
-
-  bundle-macos:
-    needs: build-vsix
+  build-electron:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - arch: arm64
-          - arch: x64
-    runs-on: macos-14
+          - os: windows-latest
+            platform: win
+          - os: macos-14
+            platform: mac
+          - os: ubuntu-latest
+            platform: linux
+    runs-on: ${{ matrix.os }}
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       LANGTAILOR_SIGNING_ENABLED: ${{ vars.LANGTAILOR_SIGNING_ENABLED }}
+      WINDOWS_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_BASE64 }}
+      WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
       APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-      APPLE_ID: ${{ secrets.APPLE_ID }}
-      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/setup-node@v4
         with:
-          name: langtailor-vsix
-          path: dist-langtailor
+          node-version: 22
+          cache: npm
 
-      - name: Bundle portable macOS IDE (${{ matrix.arch }})
-        run: chmod +x langtailor/scripts/bundle-macos.sh && ./langtailor/scripts/bundle-macos.sh "${{ matrix.arch }}"
-
-      - name: Sign macOS DMG (optional)
-        if: vars.LANGTAILOR_SIGNING_ENABLED == 'true'
-        continue-on-error: true
+      - name: Build renderer + Electron main
         run: |
-          chmod +x langtailor/scripts/sign-macos.sh
-          unzip -q "LangTailor-darwin-${{ matrix.arch }}-portable.zip" -d "$RUNNER_TEMP/bundle"
-          ./langtailor/scripts/sign-macos.sh "${{ matrix.arch }}" "$RUNNER_TEMP/bundle"
+          npm ci
+          npm run build:desktop
+          cd langtailor/desktop
+          npm install
+          npm run build:main
+
+      - name: Package Electron (Windows)
+        if: matrix.platform == 'win'
+        run: |
+          cd langtailor/desktop
+          npx electron-builder --win --config electron-builder.yml
+
+      - name: Package Electron (macOS)
+        if: matrix.platform == 'mac'
+        run: |
+          cd langtailor/desktop
+          npx electron-builder --mac --config electron-builder.yml
+
+      - name: Package Electron (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          cd langtailor/desktop
+          npx electron-builder --linux --config electron-builder.yml
 
       - uses: actions/upload-artifact@v4
         with:
-          name: langtailor-macos-${{ matrix.arch }}
-          path: |
-            LangTailor-darwin-${{ matrix.arch }}-portable.zip
-            LangTailor-darwin-${{ matrix.arch }}.dmg
+          name: langtailor-electron-${{ matrix.platform }}
+          path: dist-langtailor/electron/**/*
+
+  electron-smoke:
+    needs: build-electron
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/download-artifact@v4
+        with:
+          name: langtailor-electron-linux
+          path: dist-langtailor/electron
+      - name: Electron smoke (optional artifact)
+        run: |
+          echo "Electron artifacts downloaded for manual/smoke verification"
+          ls -la dist-langtailor/electron || true
 
   publish:
-    needs: [build-vsix, bundle-windows, bundle-macos]
-    if: always() && needs.build-vsix.result == 'success'
+    needs: [build-vsix, build-electron]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -143,24 +132,21 @@ jobs:
           path: dist-langtailor
 
       - uses: actions/download-artifact@v4
-        if: needs.bundle-windows.result == 'success'
         continue-on-error: true
         with:
-          name: langtailor-windows-portable
+          name: langtailor-electron-win
           path: dist-release
 
       - uses: actions/download-artifact@v4
-        if: needs.bundle-macos.result == 'success'
         continue-on-error: true
         with:
-          name: langtailor-macos-arm64
+          name: langtailor-electron-mac
           path: dist-release
 
       - uses: actions/download-artifact@v4
-        if: needs.bundle-macos.result == 'success'
         continue-on-error: true
         with:
-          name: langtailor-macos-x64
+          name: langtailor-electron-linux
           path: dist-release
 
       - name: Resolve release tag
@@ -172,15 +158,14 @@ jobs:
             echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: LangTailor ${{ steps.tag.outputs.tag }}
           generate_release_notes: true
           files: |
             dist-langtailor/*.vsix
-            dist-release/*
+            dist-release/**/*
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

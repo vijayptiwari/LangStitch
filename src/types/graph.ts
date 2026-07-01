@@ -11,6 +11,8 @@ export type NodeKind =
   | 'agent'
   | 'rag'
   | 'intent_classifier'
+  | 'hitl'
+  | 'response_transformer'
   | 'custom'
 
 export type StateFieldType = 'str' | 'int' | 'float' | 'bool' | 'list' | 'dict' | 'messages'
@@ -33,6 +35,8 @@ export interface RouterBranch {
 export interface BaseNodeData extends Record<string, unknown> {
   label: string
   description?: string
+  /** User-editable implementation body (Python) for round-trip codegen. */
+  customCode?: string
 }
 
 export interface LLMNodeData extends BaseNodeData {
@@ -203,6 +207,33 @@ export interface PersonaDefinition {
   vocabulary: string
 }
 
+export type HitlInteractionType = 'approval' | 'edit' | 'input'
+
+/** Human-in-the-loop checkpoint — pauses the graph (LangGraph `interrupt`). */
+export interface HitlNodeData extends BaseNodeData {
+  kind: 'hitl'
+  interactionType: HitlInteractionType
+  promptMessage: string
+  outputKey: string
+  approveLabel: string
+  rejectLabel: string
+  allowEdit: boolean
+  timeoutSeconds: number
+}
+
+export type ResponseTransformType = 'template' | 'expression' | 'python'
+
+/** Shape/format the response before returning it (template, expression, or code). */
+export interface ResponseTransformerNodeData extends BaseNodeData {
+  kind: 'response_transformer'
+  transformType: ResponseTransformType
+  template: string
+  expression: string
+  code: string
+  inputKey: string
+  outputKey: string
+}
+
 export interface StartNodeData extends BaseNodeData {
   kind: 'start'
 }
@@ -230,6 +261,8 @@ export type StitchNodeData =
   | AgentNodeData
   | RagNodeData
   | IntentClassifierNodeData
+  | HitlNodeData
+  | ResponseTransformerNodeData
   | CustomNodeData
 
 export interface LifecycleHooks {

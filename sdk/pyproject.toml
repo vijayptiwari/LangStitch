@@ -1,6 +1,6 @@
 [project]
-name = "langstitch"
-version = "0.1.0"
+name = "langstitch-sdk"
+version = "0.2.0"
 description = "LangStitch SDK — decorators, config, and CLI for building LangGraph applications with a clean project scaffold."
 readme = "README.md"
 requires-python = ">=3.10"

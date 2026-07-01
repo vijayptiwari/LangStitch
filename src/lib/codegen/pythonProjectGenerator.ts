@@ -12,6 +12,7 @@ import type {
 import { slugify } from '../nodeRegistry'
 import { MAIN_GRAPH_ID } from '../subgraphCanvas'
 import { generatePythonCode } from './pythonGenerator'
+import { formatNodeModule } from './nodeModuleCodegen'
 
 const LANGSTITCH_GENERATOR_VERSION = '0.1.0'
 
@@ -388,14 +389,7 @@ function generateNodeModules(
       seen.add(fn)
       imports.push(`from .${fn} import ${fn}`)
 
-      files[modulePath(doc, 'nodes', `${fn}.py`)] = `"""Node: ${node.data.label} (${node.data.kind})"""
-from ${pkg}.state import State
-
-
-def ${fn}(state: State) -> dict:
-    """${node.data.description ?? node.data.label}"""
-    return {}
-`
+      files[modulePath(doc, 'nodes', `${fn}.py`)] = formatNodeModule(doc, node, pkg)
     }
   }
 
@@ -638,6 +632,60 @@ spec:
   return files
 }
 
+function generateMcpConnections(doc: GraphDocument): string {
+  const servers = doc.mcpServers ?? []
+  return `# MCP connections
+MCP_SERVERS = {
+${servers.map((s) => {
+  if (s.transport === 'stdio') {
+    return `    "${s.id}": {"transport": "stdio", "command": ${JSON.stringify(s.command)}, "args": ${JSON.stringify((s.args ?? '').split(' ').filter(Boolean))}},`
+  }
+  return `    "${s.id}": {"transport": "${s.transport}", "url": ${JSON.stringify(s.url)}},`
+}).join('\n')}
+}
+
+MCP_TOOLS = {
+${servers.flatMap((s) => s.tools.map((t) => `    "${s.id}:${t.name}": {"server": "${s.id}", "name": ${JSON.stringify(t.name)}, "description": ${JSON.stringify(t.description)}},`)).join('\n')}
+}
+
+MCP_RESOURCES = {
+${servers.flatMap((s) => s.resources.map((r) => `    "${r.uri}": {"server": "${s.id}", "name": ${JSON.stringify(r.name)}, "mime": "${r.mimeType}"},`)).join('\n')}
+}
+`
+}
+
+function generateRemoteConnections(doc: GraphDocument): string {
+  const remoteGraphs = doc.remoteGraphs ?? []
+  const remoteAgents = (doc.agentRegistry ?? []).filter((a) => a.kind === 'remote')
+  return `# Remote graph and agent connections
+REMOTE_GRAPHS = {
+${remoteGraphs.map((r) => `    "${r.id}": {"url": ${JSON.stringify(r.url)}, "name": ${JSON.stringify(r.name)}, "version": ${JSON.stringify(r.version)}, "auth_env": ${JSON.stringify(r.authEnvVar || '')}},`).join('\n')}
+}
+
+REMOTE_AGENTS = {
+${remoteAgents.map((a) => `    "${a.id}": {"url": ${JSON.stringify(a.remoteUrl)}, "name": ${JSON.stringify(a.name)}, "auth_env": ${JSON.stringify(a.authEnvVar || '')}},`).join('\n')}
+}
+`
+}
+
+function generateA2aConnections(doc: GraphDocument): string {
+  const a2aAgents = (doc.agentRegistry ?? []).filter((a) => a.kind === 'a2a')
+  const a2a = doc.settings?.a2a
+  return `# A2A agent connections
+A2A_AGENTS = {
+${a2aAgents.map((a) => `    "${a.id}": {"agent_card_url": ${JSON.stringify(a.a2aAgentCardUrl)}, "name": ${JSON.stringify(a.name)}, "auth_env": ${JSON.stringify(a.authEnvVar || a2a?.authEnvVar || '')}},`).join('\n')}
+}
+
+A2A_CONFIG = {
+    "enabled": ${a2a?.enabled ? 'True' : 'False'},
+    "agent_card_url": ${JSON.stringify(a2a?.agentCardUrl ?? '')},
+    "skill_id": ${JSON.stringify(a2a?.skillId ?? '')},
+    "auth_env": ${JSON.stringify(a2a?.authEnvVar ?? '')},
+    "protocol_version": ${JSON.stringify(a2a?.protocolVersion ?? '0.2')},
+}
+`
+}
+
 export function generatePythonProject(
   doc: GraphDocument,
   projectJson: string,
@@ -866,8 +914,9 @@ ${(doc.toolRegistry ?? []).map((t) => `    "${t.id}": {"name": ${JSON.stringify(
   // Resources & connections
   files[`src/${pkg}/resources/__init__.py`] = pyModuleInit()
   files[`src/${pkg}/connections/__init__.py`] = pyModuleInit()
-  files[`src/${pkg}/connections/mcp.py`] = `# MCP connections\nMCP_SERVERS = {}\n`
-  files[`src/${pkg}/connections/remote.py`] = `# Remote graph connections\nREMOTE_GRAPHS = {}\n`
+  files[`src/${pkg}/connections/mcp.py`] = generateMcpConnections(doc)
+  files[`src/${pkg}/connections/remote.py`] = generateRemoteConnections(doc)
+  files[`src/${pkg}/connections/a2a.py`] = generateA2aConnections(doc)
 
   // Node modules (per-node files)
   Object.assign(files, generateNodeModules(doc, canvases))

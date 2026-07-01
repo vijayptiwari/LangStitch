@@ -12,6 +12,8 @@ export const nodeTypes: Record<NodeKind, string> = {
   agent: 'agentNode',
   rag: 'ragNode',
   intent_classifier: 'intentClassifierNode',
+  hitl: 'hitlNode',
+  response_transformer: 'responseTransformerNode',
   custom: 'customNode',
 }
 
@@ -176,6 +178,39 @@ export const paletteItems: PaletteItem[] = [
         { id: 'i2', label: 'sales', description: 'Sales and purchasing', examples: 'buy, price, order' },
         { id: 'i3', label: 'fallback', description: 'Default route', examples: '' },
       ],
+    },
+  },
+  {
+    kind: 'hitl',
+    label: 'Human-in-the-Loop',
+    description: 'Pause for human approval, edit, or input — maps to interrupt()',
+    icon: 'user-check',
+    defaultData: {
+      kind: 'hitl',
+      label: 'Human Review',
+      interactionType: 'approval',
+      promptMessage: 'Please review and approve before continuing.',
+      outputKey: 'human_decision',
+      approveLabel: 'Approve',
+      rejectLabel: 'Reject',
+      allowEdit: false,
+      timeoutSeconds: 0,
+    },
+  },
+  {
+    kind: 'response_transformer',
+    label: 'Response Transformer',
+    description: 'Reshape / format the response — template, expression, or Python',
+    icon: 'wand',
+    defaultData: {
+      kind: 'response_transformer',
+      label: 'Response Transformer',
+      transformType: 'template',
+      template: '{messages}',
+      expression: "state.get('messages', [])[-1]",
+      code: 'def transform(state):\n    return {"response": state.get("messages", "")}',
+      inputKey: 'messages',
+      outputKey: 'response',
     },
   },
 ]

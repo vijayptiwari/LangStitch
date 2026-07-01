@@ -1,12 +1,13 @@
-const API_BASE = import.meta.env.VITE_PLATFORM_API ?? '/api'
+import { getApiBase, apiAuthHeaders } from './apiBase'
 
 async function request<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const authHeaders = await apiAuthHeaders()
+  const res = await fetch(`${getApiBase()}${path}`, {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    headers: { ...authHeaders, ...options?.headers },
     ...options,
   })
   if (!res.ok) {
@@ -103,10 +104,11 @@ export const platformApi = {
     format: string,
     files: Record<string, string>,
   ) => {
-    const res = await fetch(`${API_BASE}/export`, {
+    const authHeaders = await apiAuthHeaders()
+    const res = await fetch(`${getApiBase()}/export`, {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders,
       body: JSON.stringify({ project_id: projectId, format, files }),
     })
     if (!res.ok) {
@@ -128,9 +130,15 @@ export const platformApi = {
   importProject: async (projectId: string, file: File, format = 'langstitch') => {
     const fd = new FormData()
     fd.append('file', file)
+    const authHeaders = await apiAuthHeaders()
     const res = await fetch(
-      `${API_BASE}/import?project_id=${encodeURIComponent(projectId)}&format=${format}`,
-      { method: 'POST', credentials: 'include', body: fd },
+      `${getApiBase()}/import?project_id=${encodeURIComponent(projectId)}&format=${format}`,
+      {
+        method: 'POST',
+        credentials: 'include',
+        headers: authHeaders.Authorization ? { Authorization: authHeaders.Authorization } : undefined,
+        body: fd,
+      },
     )
     if (!res.ok) throw new Error(await res.text())
     return res.json() as Promise<ProjectData & { ok: boolean }>

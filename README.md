@@ -33,9 +33,9 @@ codium --install-extension langstitch.langtailor-canvas
 
 Open any `*.langstitch.json` file to launch the visual canvas custom editor.
 
-### Option B — LangTailor desktop (full IDE)
+### Option B — LangTailor desktop (Electron IDE)
 
-Download a portable build for **Windows** or **macOS** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases)** (`langtailor-v*` tags). LangTailor bundles the canvas extension, marketplace sync, and a full code editor.
+Download an installer for **Windows**, **macOS**, or **Linux** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[GitHub Releases](https://github.com/vijayptiwari/LangStitch/releases)** (`langtailor-v*` tags). LangTailor is a custom Electron IDE with canvas + code views, integrated terminal, git, Python LSP, and one-click export/build/run.
 
 ### Option C — Contribute / run locally
 
@@ -193,7 +193,7 @@ Built and deployed by [`.github/workflows/deploy-hostinger.yml`](.github/workflo
 | [**Deploy to Hostinger**](.github/workflows/deploy-hostinger.yml) | Push to `main` | Build marketing/docs/marketplace sites + FTPS upload |
 | [**LangTailor extension**](.github/workflows/langtailor-extension.yml) | Push (extension paths) | Build webview + package `.vsix` artifact |
 | [**LangTailor Open VSX**](.github/workflows/langtailor-openvsx.yml) | Release / manual | Publish `langstitch.langtailor-canvas` to Open VSX |
-| [**LangTailor release**](.github/workflows/langtailor-release.yml) | Tag `langtailor-v*` | VSIX + Windows/macOS portable zips |
+| [**LangTailor release**](.github/workflows/langtailor-release.yml) | Tag `langtailor-v*` | VSIX + Electron installers (Win/macOS/Linux) |
 | [**Publish Docker**](.github/workflows/publish-docker.yml) | Push to `main` / tags | GHCR `langstitch-api` image |
 | [**CI**](.github/workflows/ci.yml) | Push / PR | Build, E2E, agent smoke |
 | [**Release**](.github/workflows/release.yml) | Tag `v*` / manual | GitHub Release + source archive |
@@ -230,7 +230,7 @@ npm run agent:run
 LangStitch/
 ├── site/             Public sites: landing + langtailor/ + sdk/ subdomain pages
 ├── docs/             Documentation site
-├── langtailor/       Desktop IDE overlay + VS Code extensions
+├── langtailor/       Electron desktop IDE + VS Code extensions
 ├── src/              React canvas (shared: extension webview + local dev)
 ├── src/webview/      VS Code webview entry + bridge
 ├── server/           FastAPI platform API

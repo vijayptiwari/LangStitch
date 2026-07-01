@@ -147,13 +147,29 @@ def _get_oauth():
     for name, provider in settings.providers.items():
         if not provider.configured:
             continue
-        oauth.register(
-            name=name,
-            client_id=provider.client_id,
-            client_secret=provider.client_secret,
-            server_metadata_url=provider.server_metadata_url,
-            client_kwargs={"scope": provider.scope},
-        )
+        if provider.is_oidc:
+            oauth.register(
+                name=name,
+                client_id=provider.client_id,
+                client_secret=provider.client_secret,
+                server_metadata_url=provider.server_metadata_url,
+                client_kwargs={"scope": provider.scope},
+            )
+        else:
+            # Plain OAuth2 (e.g. GitHub) with explicit endpoints.
+            oauth.register(
+                name=name,
+                client_id=provider.client_id,
+                client_secret=provider.client_secret,
+                authorize_url=provider.authorize_url,
+                access_token_url=provider.access_token_url,
+                api_base_url=provider.api_base_url,
+                userinfo_endpoint=provider.userinfo_endpoint,
+                client_kwargs={
+                    "scope": provider.scope,
+                    "token_endpoint_auth_method": "client_secret_post",
+                },
+            )
     _oauth = oauth
     return _oauth
 
@@ -176,8 +192,13 @@ def _upsert_user(userinfo: dict[str, Any], provider: str) -> dict[str, Any]:
 
     subject = str(userinfo.get("sub") or userinfo.get("id") or "")
     email = userinfo.get("email")
-    name = userinfo.get("name") or userinfo.get("given_name") or email
-    avatar = userinfo.get("picture")
+    name = (
+        userinfo.get("name")
+        or userinfo.get("given_name")
+        or userinfo.get("login")  # GitHub username fallback
+        or email
+    )
+    avatar = userinfo.get("picture") or userinfo.get("avatar_url")
     if not subject:
         raise HTTPException(status_code=400, detail="Provider did not return a subject id")
 

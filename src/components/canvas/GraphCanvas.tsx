@@ -12,13 +12,23 @@ import {
   type Viewport,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import {
+  AlignCenterHorizontal,
+  AlignCenterVertical,
+  AlignEndVertical,
+  AlignLeft,
+  AlignRight,
+  AlignStartVertical,
+} from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
 import type { StitchNodeData } from '../../types/graph'
 import { DEFAULT_GRAPH_SETTINGS } from '../../lib/designerConstants'
 import { getNodeColor } from '../../lib/nodeTheme'
 import { loadViewport } from '../../lib/viewportStorage'
+import { downloadGraphImage, isVsCode } from '../../webview/vscodeBridge'
+import type { AlignMode } from '../../lib/layout/autoLayout'
 import { CanvasToolbar } from './CanvasToolbar'
-import { CanvasControlsPanel } from './CanvasControlsPanel'
+import { CanvasSearch } from './CanvasSearch'
 import { TruncatedEdge } from './TruncatedEdge'
 import { StartNode } from './nodes/StartNode'
 import { EndNode } from './nodes/EndNode'
@@ -30,6 +40,8 @@ import { SubgraphNode } from './nodes/SubgraphNode'
 import { AgentNode } from './nodes/AgentNode'
 import { RagNode } from './nodes/RagNode'
 import { IntentClassifierNode } from './nodes/IntentClassifierNode'
+import { HitlNode } from './nodes/HitlNode'
+import { ResponseTransformerNode } from './nodes/ResponseTransformerNode'
 import { CustomComponentNode } from './nodes/CustomComponentNode'
 import { ShapeNode } from './nodes/ShapeNode'
 import { LabelNode } from './nodes/LabelNode'
@@ -46,6 +58,8 @@ const nodeTypes = {
   agentNode: AgentNode,
   ragNode: RagNode,
   intentClassifierNode: IntentClassifierNode,
+  hitlNode: HitlNode,
+  responseTransformerNode: ResponseTransformerNode,
   customNode: CustomComponentNode,
   shapeNode: ShapeNode,
   labelNode: LabelNode,
@@ -82,12 +96,20 @@ export function GraphCanvas() {
   const onEdgesChange = useGraphStore((s) => s.onEdgesChange)
   const onConnect = useGraphStore((s) => s.onConnect)
   const selectNode = useGraphStore((s) => s.selectNode)
+  const selectAllNodes = useGraphStore((s) => s.selectAllNodes)
   const duplicateSelectedNode = useGraphStore((s) => s.duplicateSelectedNode)
   const removeNode = useGraphStore((s) => s.removeNode)
   const selectedNodeId = useGraphStore((s) => s.selectedNodeId)
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId: string } | null>(
-    null,
-  )
+  const beautifyActiveCanvas = useGraphStore((s) => s.beautifyActiveCanvas)
+  const alignSelection = useGraphStore((s) => s.alignSelection)
+  const updateGraphSettings = useGraphStore((s) => s.updateGraphSettings)
+  const [contextMenu, setContextMenu] = useState<{
+    x: number
+    y: number
+    nodeId: string | null
+  } | null>(null)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const { fitView } = useReactFlow()
   const setDesignerTab = useGraphStore((s) => s.setDesignerTab)
   const enterSubgraph = useGraphStore((s) => s.enterSubgraph)
   const updateViewport = useGraphStore((s) => s.updateViewport)
@@ -97,6 +119,7 @@ export function GraphCanvas() {
   const showMinimap = document.settings?.showMinimap ?? DEFAULT_GRAPH_SETTINGS.showMinimap
   const locked = document.settings?.locked ?? false
   const annotations = useGraphStore((s) => s.annotations)
+  const selectedCount = nodes.filter((n) => n.selected).length
 
   const minimapNodeColor = useCallback(
     (n: Node<StitchNodeData>) => getNodeColor(n.data?.kind as string | undefined),
@@ -159,7 +182,38 @@ export function GraphCanvas() {
   )
 
   useEffect(() => {
+    const isEditableTarget = (t: EventTarget | null) => {
+      const el = t as HTMLElement | null
+      if (!el) return false
+      const tag = el.tagName
+      return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable
+    }
     const onKey = (e: KeyboardEvent) => {
+      // Ctrl/Cmd+A — select all components on the active canvas.
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'a' &&
+        !e.shiftKey &&
+        !e.altKey &&
+        !isEditableTarget(e.target)
+      ) {
+        e.preventDefault()
+        selectAllNodes()
+        return
+      }
+      // Ctrl/Cmd+F — open canvas search (canvas mode only; this handler is
+      // mounted only while the canvas is rendered).
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === 'f' &&
+        !e.shiftKey &&
+        !e.altKey &&
+        !isEditableTarget(e.target)
+      ) {
+        e.preventDefault()
+        setSearchOpen(true)
+        return
+      }
       if (
         (e.ctrlKey || e.metaKey) &&
         e.key.toLowerCase() === 'd' &&
@@ -330,7 +384,7 @@ export function GraphCanvas() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selectedNodeId, duplicateSelectedNode])
+  }, [selectedNodeId, duplicateSelectedNode, selectAllNodes])
 
   useEffect(() => {
     if (!contextMenu) return
@@ -347,18 +401,46 @@ export function GraphCanvas() {
     (e: React.MouseEvent, node: Node<StitchNodeData>) => {
       e.preventDefault()
       e.stopPropagation()
-      if (node.data?.kind === 'start' || node.data?.kind === 'end') return
-      selectNode(node.id)
-      setContextMenu({ x: e.clientX, y: e.clientY, nodeId: node.id })
+      const deletable = node.data?.kind !== 'start' && node.data?.kind !== 'end'
+      if (deletable) selectNode(node.id)
+      setContextMenu({ x: e.clientX, y: e.clientY, nodeId: deletable ? node.id : null })
     },
     [selectNode],
   )
 
+  const onPaneContextMenu = useCallback(
+    (e: React.MouseEvent | MouseEvent) => {
+      e.preventDefault()
+      setContextMenu({ x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY, nodeId: null })
+    },
+    [],
+  )
+
   const handleContextDelete = useCallback(() => {
-    if (!contextMenu) return
+    if (!contextMenu?.nodeId) return
     removeNode(contextMenu.nodeId)
     setContextMenu(null)
   }, [contextMenu, removeNode])
+
+  const handleBeautify = useCallback(() => {
+    beautifyActiveCanvas()
+    requestAnimationFrame(() => fitView({ padding: 0.2, duration: 400 }))
+    setContextMenu(null)
+  }, [beautifyActiveCanvas, fitView])
+
+  const handleExportImage = useCallback(() => {
+    setContextMenu(null)
+    if (isVsCode()) return
+    void downloadGraphImage('png')
+  }, [])
+
+  const handleAlign = useCallback(
+    (mode: AlignMode) => {
+      alignSelection(mode)
+      setContextMenu(null)
+    },
+    [alignSelection],
+  )
 
   const onMoveEnd = useCallback(
     (_: unknown, viewport: Viewport) => {
@@ -447,7 +529,8 @@ export function GraphCanvas() {
         onConnect={onConnect}
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
-        onNodeContextMenu={locked ? undefined : onNodeContextMenu}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneContextMenu={onPaneContextMenu}
         onPaneClick={onPaneClick}
         onMoveEnd={onMoveEnd}
         onBeforeDelete={onBeforeDelete}
@@ -469,7 +552,7 @@ export function GraphCanvas() {
         proOptions={{ hideAttribution: true }}
       >
         <ViewportRestore />
-        <CanvasControlsPanel />
+        <CanvasSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
         <Background
           variant={BackgroundVariant.Dots}
           gap={26}
@@ -513,23 +596,109 @@ export function GraphCanvas() {
           data-testid="canvas-context-menu"
           style={{ top: contextMenu.y, left: contextMenu.x }}
           onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
         >
           <button
             type="button"
             className="canvas-context-menu-item"
-            data-testid="canvas-context-delete"
-            onClick={handleContextDelete}
+            data-testid="canvas-context-select-all"
+            onClick={() => {
+              selectAllNodes()
+              setContextMenu(null)
+            }}
           >
-            <span data-testid="cycle-146-context-delete">Delete node</span>
-            <span className="sr-only" data-testid="cycle-218-context-delete">cycle 218</span>
-            <span className="sr-only" data-testid="cycle-290-context-delete">cycle 290</span>
-            <span className="sr-only" data-testid="cycle-362-context-delete">cycle 362</span>
-            <span className="sr-only" data-testid="cycle-434-context-delete">cycle 434</span>
-            <span className="sr-only" data-testid="cycle-506-context-delete">cycle 506</span>
-            <span className="sr-only" data-testid="cycle-578-context-delete">cycle 578</span>
-            <span className="sr-only" data-testid="cycle-650-context-delete">cycle 650</span>
-            <span className="sr-only" data-testid="cycle-722-context-delete">cycle 722</span>
+            Select all <kbd>Ctrl+A</kbd>
           </button>
+          <button
+            type="button"
+            className="canvas-context-menu-item"
+            data-testid="canvas-context-search"
+            onClick={() => {
+              setSearchOpen(true)
+              setContextMenu(null)
+            }}
+          >
+            Search graph <kbd>Ctrl+F</kbd>
+          </button>
+          <div className="canvas-context-sep" />
+          <button
+            type="button"
+            className="canvas-context-menu-item"
+            data-testid="canvas-context-beautify"
+            disabled={locked}
+            onClick={handleBeautify}
+          >
+            Beautify layout
+          </button>
+          {selectedCount >= 2 && (
+            <div className="canvas-context-align" data-testid="canvas-context-align">
+              <span className="canvas-context-align-label">Align</span>
+              <div className="canvas-context-align-row">
+                <button type="button" disabled={locked} title="Left" onClick={() => handleAlign('left')}>
+                  <AlignLeft size={13} />
+                </button>
+                <button type="button" disabled={locked} title="Center" onClick={() => handleAlign('hcenter')}>
+                  <AlignCenterHorizontal size={13} />
+                </button>
+                <button type="button" disabled={locked} title="Right" onClick={() => handleAlign('right')}>
+                  <AlignRight size={13} />
+                </button>
+                <button type="button" disabled={locked} title="Top" onClick={() => handleAlign('top')}>
+                  <AlignStartVertical size={13} />
+                </button>
+                <button type="button" disabled={locked} title="Middle" onClick={() => handleAlign('vcenter')}>
+                  <AlignCenterVertical size={13} />
+                </button>
+                <button type="button" disabled={locked} title="Bottom" onClick={() => handleAlign('bottom')}>
+                  <AlignEndVertical size={13} />
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="canvas-context-sep" />
+          <button
+            type="button"
+            className="canvas-context-menu-item"
+            data-testid="canvas-context-lock"
+            onClick={() => {
+              updateGraphSettings({ locked: !locked })
+              setContextMenu(null)
+            }}
+          >
+            {locked ? 'Unlock canvas' : 'Lock canvas'}
+          </button>
+          <button
+            type="button"
+            className="canvas-context-menu-item"
+            data-testid="canvas-context-snap"
+            onClick={() => {
+              updateGraphSettings({ snapToGrid: !snapToGrid })
+              setContextMenu(null)
+            }}
+          >
+            {snapToGrid ? 'Disable snap to grid' : 'Snap to grid'}
+          </button>
+          <button
+            type="button"
+            className="canvas-context-menu-item"
+            data-testid="canvas-context-export-image"
+            onClick={handleExportImage}
+          >
+            Download as image
+          </button>
+          {contextMenu.nodeId && (
+            <>
+              <div className="canvas-context-sep" />
+              <button
+                type="button"
+                className="canvas-context-menu-item danger"
+                data-testid="canvas-context-delete"
+                onClick={handleContextDelete}
+              >
+                Delete node
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

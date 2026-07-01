@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_PLATFORM_API ?? '/api'
+import { getApiBase, apiAuthHeaders } from './apiBase'
 
 export type PluginKind = 'plugin' | 'connector'
 
@@ -91,9 +91,10 @@ async function parseJsonResponse<T>(res: Response): Promise<T> {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const authHeaders = await apiAuthHeaders()
+  const res = await fetch(`${getApiBase()}${path}`, {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    headers: { ...authHeaders, ...options?.headers },
     ...options,
   })
   if (!res.ok) {
@@ -166,9 +167,11 @@ export const marketplaceApi = {
       if (input.input_schema) fd.append('input_schema', input.input_schema)
       if (input.output_schema) fd.append('output_schema', input.output_schema)
       fd.append('artifact', input.artifact)
-      const res = await fetch(`${API_BASE}/marketplace/publish/upload`, {
+      const authHeaders = await apiAuthHeaders()
+      const res = await fetch(`${getApiBase()}/marketplace/publish/upload`, {
         method: 'POST',
         credentials: 'include',
+        headers: authHeaders.Authorization ? { Authorization: authHeaders.Authorization } : undefined,
         body: fd,
       })
       if (!res.ok) {

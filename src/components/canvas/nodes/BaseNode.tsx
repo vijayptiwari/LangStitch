@@ -1,7 +1,11 @@
-import { Handle, Position } from '@xyflow/react'
+import { Handle, Position, useNodeId } from '@xyflow/react'
 import type { NodeKind } from '../../../types/graph'
 import { getNodeTheme, type NodeTheme } from '../../../lib/nodeTheme'
 import type { StitchNodeData } from '../../../types/graph'
+import { useIdeStore } from '../../../store/ideStore'
+import { useGraphStore } from '../../../store/graphStore'
+import { virtualNodePath } from '../../../lib/codegen/nodeModuleCodegen'
+import { firstExecutableLine } from '../../../lib/breakpoints'
 
 export type StitchShellProps = {
   id: string
@@ -47,9 +51,34 @@ export function BaseNodeShell({
   const theme = themeOverride ?? getNodeTheme(kind)
   const Icon = theme.icon
 
+  const nodeId = useNodeId()
+  // Breakpoints only apply to executable graph nodes (not start/end).
+  const isExecutable = !!nodeId && kind !== 'start' && kind !== 'end'
+  const document = useGraphStore((s) => s.document)
+  const filePath = isExecutable ? virtualNodePath(document, nodeId) : null
+  const hasBreakpoint = useIdeStore((s) =>
+    filePath ? (s.breakpoints[filePath]?.length ?? 0) > 0 : false,
+  )
+  const isDebugActive = useIdeStore((s) => !!nodeId && s.debugNodeId === nodeId)
+
+  const onToggleBreakpoint = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!filePath) return
+    const ide = useIdeStore.getState()
+    if ((ide.breakpoints[filePath]?.length ?? 0) > 0) {
+      ide.setBreakpoints(filePath, [])
+    } else {
+      const content = ide.virtualFiles[filePath]
+      const line = content ? firstExecutableLine(content) : 1
+      ide.toggleBreakpoint(filePath, line)
+    }
+  }
+
   return (
     <div
-      className={`graph-node graph-node--${kind}${selected ? ' graph-node--selected' : ''}`}
+      className={`graph-node graph-node--${kind}${selected ? ' graph-node--selected' : ''}${
+        hasBreakpoint ? ' graph-node--breakpoint' : ''
+      }${isDebugActive ? ' graph-node--debugging' : ''}`}
       style={
         {
           '--node-color': theme.color,
@@ -61,6 +90,16 @@ export function BaseNodeShell({
     >
       <div className="graph-node__shine" aria-hidden />
       <div className="graph-node__accent-bar" aria-hidden />
+
+      {isExecutable && (
+        <button
+          type="button"
+          className={`graph-node__bp${hasBreakpoint ? ' active' : ''}`}
+          title={hasBreakpoint ? 'Remove breakpoint (synced to code)' : 'Add breakpoint (synced to code)'}
+          aria-label="Toggle breakpoint"
+          onClick={onToggleBreakpoint}
+        />
+      )}
 
       {targetHandles?.map((h) => (
         <Handle

@@ -35,6 +35,9 @@ jobs:
       - name: Typecheck and build
         run: npm run build
 
+      - name: Unit tests
+        run: npm run test:unit
+
       - name: Build LangTailor webview + extension
         run: |
           npm run build:webview
@@ -51,3 +54,6 @@ jobs:
 
       - name: Run basic agent smoke test
         run: python runtime/basic_agent.py
+
+      - name: Parser sidecar tests
+        run: pytest runtime/tests/test_parse_graph.py -q

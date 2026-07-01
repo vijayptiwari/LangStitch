@@ -21,3 +21,15 @@ playwright/.cache/
 *.db
 !e2e/**/*.db
 dist-langtailor/
+langtailor/desktop/node_modules/
+langtailor/desktop/renderer-dist/
+langtailor/desktop/langtailor/
+langtailor/desktop/dist/
+my_langgraph/
+basic_agent_saved/
+rate-limit-test-batch*/
+probe.txt
+probe2.txt
+docs-probe.txt
+testfolder.txt
+e2e-full-run.log

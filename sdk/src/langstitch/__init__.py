@@ -13,7 +13,7 @@ Public API::
 from __future__ import annotations
 
 from ._version import __version__
-from .agents import worker_agent
+from .agents import agent, remote_agent, worker_agent
 from .app import LangStitchApp
 from .config import (
     AppConfig,
@@ -36,8 +36,44 @@ from .context import (
 from .graph import END, START, GraphBuilder, graph
 from .guardrails import input_guardrail, output_guardrail
 from .hitl import human_interrupt
+from .a2a import (
+    A2AAuthError,
+    A2AIdentity,
+    AgentCapabilities,
+    AgentCard,
+    AgentSkill,
+    A2AMessage,
+    A2APart,
+    a2a_agent,
+    a2a_authenticator,
+    a2a_skill,
+    authenticate,
+    authorize,
+    build_agent_card,
+    langstitch_a2a_server,
+    load_a2a_server_config,
+    select_skills,
+)
+from .a2a_client import (
+    A2AClient,
+    AsyncA2AClient,
+    a2a_client,
+    ainvoke_a2a_agent,
+    async_a2a_client,
+    invoke_a2a_agent,
+)
 from .mcp import langstitch_mcp_server, mcp_prompt, mcp_resource, mcp_tool
 from .nodes import graph_node
+from .orchestration import (
+    AgentDelegationError,
+    Supervisor,
+    get_supervisor,
+    handoff,
+    invoke_remote_agent,
+    make_handoff_tool,
+    run_agent,
+    supervisor,
+)
 from .persona import persona
 from .policy import business_policy
 from .registries import (
@@ -108,11 +144,45 @@ __all__ = [
     "langstitch_graph_server",
     "tool",
     "worker_agent",
+    # multi-agent (local / remote / a2a)
+    "agent",
+    "remote_agent",
+    "run_agent",
+    "invoke_remote_agent",
+    "AgentDelegationError",
+    "supervisor",
+    "Supervisor",
+    "get_supervisor",
+    "handoff",
+    "make_handoff_tool",
     # mcp
     "langstitch_mcp_server",
     "mcp_tool",
     "mcp_resource",
     "mcp_prompt",
+    # a2a (agent-to-agent)
+    "langstitch_a2a_server",
+    "a2a_skill",
+    "a2a_agent",
+    "a2a_authenticator",
+    "AgentCard",
+    "AgentSkill",
+    "AgentCapabilities",
+    "A2AMessage",
+    "A2APart",
+    "A2AIdentity",
+    "A2AAuthError",
+    "authenticate",
+    "authorize",
+    "select_skills",
+    "build_agent_card",
+    "load_a2a_server_config",
+    "A2AClient",
+    "AsyncA2AClient",
+    "a2a_client",
+    "async_a2a_client",
+    "invoke_a2a_agent",
+    "ainvoke_a2a_agent",
     # graph
     "GraphBuilder",
     "START",

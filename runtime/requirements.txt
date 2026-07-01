@@ -1,0 +1,6 @@
+# LangTailor desktop runtime — bundled with the app (extraResources: runtime).
+# Open-source Python language server powering code-mode IntelliSense.
+python-lsp-server[all]>=1.11.0
+
+# Debugging support for the Run/Debug panel.
+debugpy>=1.8.0

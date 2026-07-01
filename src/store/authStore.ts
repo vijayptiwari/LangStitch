@@ -16,11 +16,12 @@ interface AuthState {
   providers: AuthProvider[]
   user: AuthUser | null
   isAdmin: boolean
-  /** True when auth is on and nobody is logged in → show the login screen. */
   needsLogin: boolean
+  authError: string | null
   refresh: () => Promise<void>
   login: (provider: AuthProvider) => void
   logout: () => Promise<void>
+  setAuthError: (message: string | null) => void
 }
 
 function derive(ctx: AuthContext) {
@@ -40,17 +41,29 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAdmin: false,
   needsLogin: false,
+  authError: null,
 
   refresh: async () => {
     const ctx = await fetchAuthContext()
-    set({ status: 'ready', ...derive(ctx) })
+    set({ status: 'ready', authError: null, ...derive(ctx) })
   },
 
-  login: (provider) => startLogin(provider),
+  login: (provider) => {
+    set({ authError: null })
+    try {
+      startLogin(provider)
+    } catch (e) {
+      set({
+        authError: e instanceof Error ? e.message : 'Sign-in is unavailable',
+      })
+    }
+  },
 
   logout: async () => {
     await apiLogout()
     const ctx = await fetchAuthContext()
-    set({ status: 'ready', ...derive(ctx) })
+    set({ status: 'ready', authError: null, ...derive(ctx) })
   },
+
+  setAuthError: (message) => set({ authError: message }),
 }))

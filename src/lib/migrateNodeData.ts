@@ -145,6 +145,11 @@ export function migrateNodeData(data: StitchNodeData): StitchNodeData {
     if (value !== undefined) config[key] = value
   }
 
+  const legacyCode =
+    data.kind === 'function'
+      ? (data as { code?: string }).code
+      : (data as { customCode?: string }).customCode
+
   const migrated: CustomNodeData = {
     kind: 'custom',
     label: data.label,
@@ -152,6 +157,7 @@ export function migrateNodeData(data: StitchNodeData): StitchNodeData {
     componentId,
     config,
     outputKey: (data as { outputKey?: string }).outputKey,
+    ...(legacyCode?.trim() ? { customCode: legacyCode } : {}),
   }
   return migrated
 }

@@ -23,10 +23,15 @@ __all__ = [
     "ServerSpec",
     "ToolSpec",
     "AgentSpec",
+    "SupervisorSpec",
     "MCPServerSpec",
     "MCPToolSpec",
     "MCPResourceSpec",
     "MCPPromptSpec",
+    "A2AServerSpec",
+    "A2ASkillSpec",
+    "A2AAgentSpec",
+    "A2AAuthenticatorSpec",
     "Registry",
     "get_registry",
     "reset_registry",
@@ -117,12 +122,48 @@ class ToolSpec(_BaseSpec):
 
 @dataclass
 class AgentSpec(_BaseSpec):
-    """A worker (sub) agent that can be delegated to from a node."""
+    """A delegatable agent — local, remote graph, or A2A.
+
+    ``transport`` selects how it runs when delegated to via ``run_agent``:
+
+    * ``local``  — ``target`` is invoked in-process (a worker sub-agent).
+    * ``remote`` — an HTTP call to ``url`` (or an ``external_services`` entry
+      named by ``service``) is made; auth reuses the SDK services layer.
+    * ``a2a``    — delegated through the A2A client (see :mod:`langstitch.a2a`).
+
+    ``roles`` is the RBAC allow-list gating *who may delegate to this agent*
+    (empty = unrestricted, matching tools/MCP/A2A semantics).
+    """
 
     role: str = ""
     tools: List[str] = field(default_factory=list)
     persona: Optional[str] = None
     tags: List[str] = field(default_factory=list)
+    enabled: bool = True
+    transport: str = "local"  # local | remote | a2a
+    url: str = ""
+    service: str = ""  # external_services key supplying base_url + auth
+    auth_env: str = ""  # env var holding a bearer token (when no service)
+    roles: List[str] = field(default_factory=list)
+
+
+@dataclass
+class SupervisorSpec(_BaseSpec):
+    """A supervisor that routes between member agents (the supervisor pattern).
+
+    ``members`` are the names of the agents it can delegate to. ``router`` is
+    ``llm`` (an LLM picks the next member from a structured choice) or ``custom``
+    (the decorated callable returns the next member name). ``finish`` is the node
+    to route to when the supervisor decides it is done (defaults to ``END``).
+    """
+
+    members: List[str] = field(default_factory=list)
+    router: str = "llm"  # llm | custom
+    model: str = ""
+    persona: Optional[str] = None
+    instructions: str = ""
+    finish: str = "__end__"
+    roles: List[str] = field(default_factory=list)
     enabled: bool = True
 
 
@@ -155,6 +196,73 @@ class MCPPromptSpec(_BaseSpec):
     roles: List[str] = field(default_factory=list)
 
 
+@dataclass
+class A2AServerSpec(_BaseSpec):
+    """The class that exposes this app as an Agent-to-Agent (A2A) agent.
+
+    Mirrors :class:`ServerSpec` but for the A2A protocol: it advertises an Agent
+    Card and answers JSON-RPC ``message/send`` calls. ``auth_required`` and
+    ``rbac_enabled`` toggle the inbound auth and RBAC layers; ``default_roles``
+    are granted to anonymous callers when auth is not required.
+    """
+
+    title: str = "LangStitch A2A Agent"
+    version: str = "0.1.0"
+    protocol_version: str = "0.2"
+    host: str = "0.0.0.0"
+    port: int = 8100
+    url: str = ""  # public base URL advertised in the agent card
+    auth_required: bool = True
+    rbac_enabled: bool = True
+    default_roles: List[str] = field(default_factory=list)
+    streaming: bool = False
+    properties: Optional[str] = None  # config file path; None -> auto-discover
+
+
+@dataclass
+class A2ASkillSpec(_BaseSpec):
+    """A capability advertised in the Agent Card and invokable over A2A.
+
+    ``roles`` is the RBAC allow-list: a caller must hold at least one of these
+    roles to invoke the skill. An empty list means the skill is unrestricted
+    (the same convention used by tool/MCP role selection).
+    """
+
+    skill_id: str = ""
+    roles: List[str] = field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
+    input_modes: List[str] = field(default_factory=list)
+    output_modes: List[str] = field(default_factory=list)
+    examples: List[str] = field(default_factory=list)
+    enabled: bool = True
+
+
+@dataclass
+class A2AAgentSpec(_BaseSpec):
+    """A remote A2A agent this application can call.
+
+    ``service`` optionally references an ``external_services`` entry so the
+    outbound call reuses the SDK auth layer (bearer/api_key/oauth2). ``roles``
+    gates which local callers may delegate to this remote agent.
+    """
+
+    agent_card_url: str = ""
+    service: str = ""  # external_services key supplying base_url + auth
+    skill_id: str = ""
+    roles: List[str] = field(default_factory=list)
+    enabled: bool = True
+
+
+@dataclass
+class A2AAuthenticatorSpec(_BaseSpec):
+    """A pluggable inbound authenticator for the A2A server.
+
+    ``target`` is a callable ``(headers: dict) -> A2AIdentity | dict | None``
+    used to verify inbound credentials (e.g. JWT/JWKS, an IdP introspection
+    call) instead of the built-in static token table.
+    """
+
+
 class Registry:
     """Thread-safe container of all decorated components in an application."""
 
@@ -170,6 +278,7 @@ class Registry:
         self.configurations: Dict[str, ConfigurationSpec] = {}
         self.tools: Dict[str, ToolSpec] = {}
         self.worker_agents: Dict[str, AgentSpec] = {}
+        self.supervisors: Dict[str, SupervisorSpec] = {}
         self.server: Optional[ServerSpec] = None
         # Monotonic counter bumped on every mutation so dynamic registries can
         # detect staleness and refresh lazily.
@@ -178,6 +287,10 @@ class Registry:
         self.mcp_resources: Dict[str, MCPResourceSpec] = {}
         self.mcp_prompts: Dict[str, MCPPromptSpec] = {}
         self.mcp_server: Optional[MCPServerSpec] = None
+        self.a2a_server: Optional[A2AServerSpec] = None
+        self.a2a_skills: Dict[str, A2ASkillSpec] = {}
+        self.a2a_agents: Dict[str, A2AAgentSpec] = {}
+        self.a2a_authenticator: Optional[A2AAuthenticatorSpec] = None
 
     # ── registration ──
     def add_node(self, spec: NodeSpec) -> None:
@@ -208,6 +321,11 @@ class Registry:
     def add_worker_agent(self, spec: AgentSpec) -> None:
         with self._lock:
             self.worker_agents[spec.name] = spec
+            self.revision += 1
+
+    def add_supervisor(self, spec: SupervisorSpec) -> None:
+        with self._lock:
+            self.supervisors[spec.name] = spec
             self.revision += 1
 
     def add_policy(self, spec: PolicySpec) -> None:
@@ -242,6 +360,24 @@ class Registry:
         with self._lock:
             self.mcp_server = spec
 
+    def set_a2a_server(self, spec: A2AServerSpec) -> None:
+        with self._lock:
+            self.a2a_server = spec
+
+    def add_a2a_skill(self, spec: A2ASkillSpec) -> None:
+        with self._lock:
+            self.a2a_skills[spec.name] = spec
+            self.revision += 1
+
+    def add_a2a_agent(self, spec: A2AAgentSpec) -> None:
+        with self._lock:
+            self.a2a_agents[spec.name] = spec
+            self.revision += 1
+
+    def set_a2a_authenticator(self, spec: A2AAuthenticatorSpec) -> None:
+        with self._lock:
+            self.a2a_authenticator = spec
+
     # ── lookups ──
     def entrypoint_graph(self) -> Optional[GraphSpec]:
         explicit = [g for g in self.graphs.values() if g.entrypoint]
@@ -262,11 +398,15 @@ class Registry:
             "configurations": sorted(self.configurations),
             "tools": sorted(self.tools),
             "worker_agents": sorted(self.worker_agents),
+            "supervisors": sorted(self.supervisors),
             "server": self.server.name if self.server else None,
             "mcp_server": self.mcp_server.name if self.mcp_server else None,
             "mcp_tools": sorted(self.mcp_tools),
             "mcp_resources": sorted(self.mcp_resources),
             "mcp_prompts": sorted(self.mcp_prompts),
+            "a2a_server": self.a2a_server.name if self.a2a_server else None,
+            "a2a_skills": sorted(self.a2a_skills),
+            "a2a_agents": sorted(self.a2a_agents),
         }
 
     def clear(self) -> None:
@@ -281,11 +421,16 @@ class Registry:
             self.configurations.clear()
             self.tools.clear()
             self.worker_agents.clear()
+            self.supervisors.clear()
             self.server = None
             self.mcp_tools.clear()
             self.mcp_resources.clear()
             self.mcp_prompts.clear()
             self.mcp_server = None
+            self.a2a_server = None
+            self.a2a_skills.clear()
+            self.a2a_agents.clear()
+            self.a2a_authenticator = None
             self.revision += 1
 
 

@@ -17,14 +17,21 @@
     "test:e2e:marketplace": "playwright test -c playwright.marketplace.config.ts",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
+    "test:unit": "vitest run",
+    "test:e2e:desktop": "playwright test -c playwright.desktop.config.ts",
+    "build:desktop": "vite build --config vite.desktop.config.ts",
     "agent:run": "python runtime/basic_agent.py"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
+    "@monaco-editor/react": "^4.7.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "@xyflow/react": "^12.6.0",
     "fflate": "^0.8.2",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.511.0",
+    "monaco-editor": "^0.52.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zustand": "^5.0.5"
@@ -43,6 +50,7 @@
     "globals": "^16.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
   }
 }

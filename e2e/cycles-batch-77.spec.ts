@@ -1,8 +1,5 @@
 import { readFileSync } from 'fs'
 import { test, expect } from '@playwright/test'
-import { createDefaultDocument } from '../src/lib/codegen/pythonGenerator'
-import { generateLangsmithJson } from '../src/lib/codegen/pythonProjectGenerator'
-import { DEFAULT_EVAL } from '../src/lib/designerConstants'
 
 test.describe('SDLC Batch 77 — cycles 771–780', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,0 +1,42 @@
+appId: com.langstitch.langtailor
+productName: LangTailor
+copyright: Copyright © LangStitch
+directories:
+  output: ../../dist-langtailor/electron
+  buildResources: build
+files:
+  - dist/**/*
+  - renderer-dist/**/*
+  - package.json
+extraResources:
+  - from: ../../runtime
+    to: runtime
+    filter:
+      - "**/*"
+fileAssociations:
+  - ext: langstitch.json
+    name: LangStitch Graph
+    role: Editor
+protocols:
+  - name: LangTailor
+    schemes:
+      - langtailor
+win:
+  target:
+    - nsis
+    - portable
+  artifactName: LangTailor-${version}-win-${arch}.${ext}
+mac:
+  target:
+    - dmg
+  artifactName: LangTailor-${version}-darwin-${arch}.${ext}
+  category: public.app-category.developer-tools
+  hardenedRuntime: true
+  gatekeeperAssess: false
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+publish:
+  provider: github
+  owner: vijayptiwari
+  repo: LangStitch

@@ -24,7 +24,7 @@ In your `pyproject.toml`:
 ```toml
 [project]
 dependencies = [
-  "langstitch>=0.1.0",            # from PyPI
+  "langstitch-sdk>=0.2.0",        # from PyPI
   # extras: "langstitch[server,graph,llm,http]>=0.1.0"
 ]
 ```
@@ -61,11 +61,17 @@ langstitch run         # start the API server
 | `@configuration` | Bind a section of `application.yaml` to a dataclass. |
 | `@langstitch_graph_server` | Turn a class into a runnable graph API server (`protocol`, `port`, `name`, `properties`). |
 | `@tool` | Register a callable an LLM can invoke (`roles`, `tags`, `input_schema`). |
-| `@worker_agent` | Register a delegatable sub-agent (`role`, `tools`, `persona`). |
+| `@worker_agent` | Register a delegatable local sub-agent (`role`, `tools`, `persona`). |
+| `@agent` | Register a delegatable agent of any `transport` (`local`/`remote`/`a2a`), with `roles` for delegation RBAC. |
+| `@supervisor` | Register a router over member `agents` (the supervisor pattern; `router="llm"\|"custom"`). |
 | `@langstitch_mcp_server` | Mark the MCP server class + transport (`protocol="stdio"\|"sse"\|"streamable-http"\|"http"\|"websocket"`, `properties`). |
 | `@mcp_tool` | Expose a callable as an MCP tool (`name`, `roles`, `description`). |
 | `@mcp_resource` | Expose a readable MCP resource (`name`, `uri`, `mime_type`). |
 | `@mcp_prompt` | Expose a reusable MCP prompt (`name`, `description`, `arguments`). |
+| `@langstitch_a2a_server` | Publish the app as an Agent-to-Agent (A2A) agent behind auth + RBAC (`auth_required`, `rbac_enabled`, `url`, `port`, `properties`). |
+| `@a2a_skill` | Expose an A2A skill advertised in the Agent Card (`skill_id`, `roles`, `tags`, `examples`). |
+| `@a2a_agent` | Register a remote A2A agent this app can call (`agent_card_url`, `service`, `roles`). |
+| `@a2a_authenticator` | Plug in a custom inbound A2A credential verifier (JWT/JWKS, IdP introspection). |
 
 Every decorator works bare or parameterized:
 
@@ -225,6 +231,163 @@ Auth types and their options (string values support `${ENV_VAR}` interpolation):
 
 `propagate_headers` forwards the listed inbound request headers (case-insensitive)
 onto the outbound client. `get_async_http_client("<service>")` is the async variant.
+
+## Multi-agent systems (local, remote, A2A)
+
+Agents are registered as `AgentSpec` records and delegated to uniformly via
+`run_agent`, regardless of where they run. RBAC `roles` on each agent gate who
+may delegate; remote/A2A auth reuses the services layer.
+
+```python
+from langstitch import agent, remote_agent, run_agent
+
+# Local sub-agent (a callable):
+@agent(tools=["web"], roles=["analyst"])
+def researcher(state: dict) -> dict:
+    return {"findings": "..."}
+
+# Remote graph (HTTP /invoke) — auth via an external_services entry:
+remote_agent("legal", url="/invoke", service="legal_svc", roles=["counsel"])
+
+# A2A peer — url is the Agent Card; auth via service or env bearer:
+agent(name="billing", transport="a2a",
+      url="https://billing/.well-known/agent.json", service="billing_a2a")
+
+# One call dispatches to the right transport; caller_roles enables RBAC:
+out = run_agent({"input": "review contract"}, "legal", caller_roles=["counsel"])
+```
+
+`run_agent` raises `AgentDelegationError` (`403` denied / `404` unknown). Pass a
+`Context` via `ctx=` to run a *local* agent in an isolated child context (see
+`run_worker_agent`).
+
+### Supervisor pattern (routing)
+
+```python
+from langstitch import supervisor, get_supervisor
+
+@supervisor(agents=["researcher", "legal"], router="custom")
+def triage(state) -> str:                     # returns the next agent name
+    return "legal" if state.get("contract") else "researcher"
+
+# router="llm" (default) lets an LLM pick the next agent from the member list.
+
+team = get_supervisor("triage").build()       # a GraphBuilder wiring the team
+graph = team.compile()                         # needs the `graph` extra
+```
+
+The supervisor routes with LangGraph `Command(goto=...)`; members return control
+to the supervisor until it routes to `finish` (defaults to `END`).
+
+### Swarm pattern (handoffs)
+
+```python
+from langstitch import graph_node, handoff, make_handoff_tool
+
+@graph_node
+def intake(state):
+    return handoff("billing", update={"reason": "refund"})   # -> Command(goto=...)
+
+transfer = make_handoff_tool("legal")   # an LLM-invokable handoff tool (swarm)
+```
+
+`handoff()` / `Supervisor.route()` build real `Command` objects and require the
+`graph` (LangGraph) extra; the decorators and routing *decisions* (`choose`)
+work without it.
+
+## Agent-to-Agent (A2A) over the auth + RBAC layers
+
+The SDK can both **publish** the app as an [A2A](https://a2a-protocol.org) agent
+and **consume** other A2A agents — reusing the same auth and RBAC layers as the
+rest of the SDK.
+
+### Publish: serve your app as an A2A agent
+
+`@langstitch_a2a_server` exposes an Agent Card at `/.well-known/agent.json` and
+answers JSON-RPC `message/send` calls. Each `@a2a_skill` is advertised in the
+card and carries a `roles` allow-list (an empty list = unrestricted, the same
+convention used by tools/MCP).
+
+```python
+from langstitch import langstitch_a2a_server, a2a_skill
+
+@langstitch_a2a_server(title="Billing Agent", url="https://billing.acme.com/")
+class BillingAgent:
+    ...
+
+@a2a_skill(skill_id="refund", roles=["billing"], tags=["payments"])
+def refund(state: dict) -> dict:
+    # state has: input (caller text), message, metadata, a2a_identity
+    caller = state["a2a_identity"]["subject"]
+    return {"output": f"refund processed for {caller}"}
+
+# BillingAgent.serve()   # run with uvicorn (needs the `server` extra)
+```
+
+The **auth layer** (who is calling) and **RBAC layer** (may they call this
+skill) are configured under `a2a.server` and enforced on every request:
+
+```yaml
+a2a:
+  server:
+    auth:
+      required: true
+      scheme: bearer                 # bearer | api_key
+      tokens:                        # static credential -> identity table
+        ${BILLING_PEER_TOKEN}:
+          subject: orders-agent
+          roles: [billing]
+    rbac:
+      enabled: true
+      default_roles: [guest]         # granted to anonymous callers when auth is optional
+```
+
+- Inbound credentials are resolved to an `A2AIdentity` by `authenticate()`
+  (a `401` is returned when a required credential is missing/invalid).
+- `authorize()` then checks the caller's roles against the skill's `roles`
+  (a `403` when denied); unknown/disabled skills return `404`.
+- The Agent Card is RBAC-filtered to the caller's visible skills once
+  authenticated, and the inbound `Authorization` header is propagated onto
+  downstream `external_services` calls.
+
+For real identity providers, replace the static token table with a verifier:
+
+```python
+from langstitch import a2a_authenticator
+
+@a2a_authenticator
+def verify(headers: dict):
+    claims = decode_jwt(headers.get("authorization", ""))   # your JWKS check
+    if not claims:
+        return None                                         # fall through to token table
+    return {"subject": claims["sub"], "roles": claims.get("roles", [])}
+```
+
+### Consume: call another A2A agent (auth via the services layer)
+
+Outbound calls reuse the `external_services` auth (`bearer` / `basic` /
+`api_key` / `oauth2` + header propagation). Reference a service for credentials,
+or pass an agent card URL with a bearer token / env var directly.
+
+```python
+from langstitch import a2a_agent, a2a_client, invoke_a2a_agent
+
+# Declare a remote agent that authenticates via an external_services entry:
+a2a_agent("orders", agent_card_url="https://orders.acme.com/.well-known/agent.json",
+          service="orders_a2a", roles=["billing"])
+
+# One-shot call:
+result = invoke_a2a_agent("create order #42", agent="orders", skill_id="create")
+
+# Or keep a client for the card + multiple messages:
+with a2a_client("orders") as client:
+    card = client.get_agent_card()
+    reply = client.send_message("status of #42", skill_id="status")
+```
+
+`async_a2a_client` / `ainvoke_a2a_agent` are the async equivalents. Both client
+and server are pure-Python except for the lazily-imported `http` (httpx) and
+`server` (FastAPI) extras.
 
 ## Dynamic registries & graph-server internal tools
 

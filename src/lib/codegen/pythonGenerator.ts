@@ -270,7 +270,6 @@ function generateToolRegistry(tools: ToolDefinition[]): string {
 }
 
 function generateAgentRegistry(agents: AgentDefinition[], doc: GraphDocument): string {
-  if (!agents.length) return ''
   const lines = ['# Agent registry — sub-agents, remote, A2A', 'AGENT_REGISTRY = {']
   for (const a of agents) {
     lines.push(`    "${a.id}": {`)
@@ -284,31 +283,61 @@ function generateAgentRegistry(agents: AgentDefinition[], doc: GraphDocument): s
     lines.push('    },')
   }
   lines.push('}')
+  lines.push('')
+  lines.push('# Register agents with the LangStitch SDK runtime.')
+  lines.push('# Remote/A2A agents reuse the SDK auth layer via service/auth_env where configured.')
+  for (const a of agents) {
+    if (a.kind === 'remote') {
+      lines.push(`remote_agent(`)
+      lines.push(`    ${JSON.stringify(a.id)},`)
+      lines.push(`    url=${JSON.stringify(a.remoteUrl || '')},`)
+      lines.push(`    auth_env=${JSON.stringify(a.authEnvVar || '')},`)
+      lines.push(`    description=${JSON.stringify(a.description || a.name)},`)
+      lines.push(`    tools=${JSON.stringify(a.toolIds || [])},`)
+      lines.push(`)`)
+      continue
+    }
+    if (a.kind === 'a2a') {
+      lines.push(`register_agent(`)
+      lines.push(`    name=${JSON.stringify(a.id)},`)
+      lines.push(`    transport="a2a",`)
+      lines.push(`    url=${JSON.stringify(a.a2aAgentCardUrl || '')},`)
+      lines.push(`    auth_env=${JSON.stringify(a.authEnvVar || doc.settings?.a2a?.authEnvVar || '')},`)
+      lines.push(`    description=${JSON.stringify(a.description || a.name)},`)
+      lines.push(`    tools=${JSON.stringify(a.toolIds || [])},`)
+      lines.push(`)`)
+      continue
+    }
+    if (a.kind === 'supervisor') {
+      lines.push(`# Supervisor agent ${JSON.stringify(a.id)} is registered by @supervisor when configured.`)
+      continue
+    }
+    lines.push(`register_agent(`)
+    lines.push(`    name=${JSON.stringify(a.id)},`)
+    lines.push(`    transport="local",`)
+    lines.push(`    description=${JSON.stringify(a.description || a.name)},`)
+    lines.push(`    tools=${JSON.stringify(a.toolIds || [])},`)
+    lines.push(`)`)
+  }
   const a2a = doc.settings?.a2a
   if (a2a?.enabled) {
     lines.push('')
-    lines.push('# A2A protocol client')
+    lines.push('# Default A2A protocol client configuration')
     lines.push('A2A_CONFIG = {')
     lines.push(`    "agent_card_url": "${a2a.agentCardUrl}",`)
     lines.push(`    "skill_id": "${a2a.skillId}",`)
     lines.push(`    "protocol_version": "${a2a.protocolVersion}",`)
     lines.push(`    "auth_env": "${a2a.authEnvVar}",`)
     lines.push('}')
-    lines.push('')
-    lines.push('async def invoke_a2a_agent(agent_card_url: str, message: dict) -> dict:')
-    lines.push('    """Invoke an A2A-compatible remote agent."""')
-    lines.push('    import httpx')
-    lines.push('    headers = {}')
-    lines.push(`    token = os.environ.get("${a2a.authEnvVar}")`)
-    lines.push('    if token:')
-    lines.push('        headers["Authorization"] = f"Bearer {token}"')
-    lines.push('    # Fetch agent card, send message per A2A protocol')
-    lines.push('    async with httpx.AsyncClient() as client:')
-    lines.push('        card = await client.get(agent_card_url, headers=headers)')
-    lines.push('        card.raise_for_status()')
-    lines.push('        # TODO: implement A2A message/send per protocol version')
-    lines.push('        return {"messages": [{"role": "assistant", "content": "A2A response stub"}]}')
   }
+  lines.push('')
+  lines.push('def _agent_input(state: State) -> dict:')
+  lines.push('    """Return the state payload delegated to SDK agents."""')
+  lines.push('    return dict(state)')
+  lines.push('')
+  lines.push('def _agent_output(result, default_key: str = "agent_result") -> dict:')
+  lines.push('    """Normalize SDK agent results into graph state updates."""')
+  lines.push('    return result if isinstance(result, dict) else {default_key: result}')
   return lines.join('\n') + '\n'
 }
 
@@ -360,20 +389,44 @@ function generateNodeFunction(
     case 'agent': {
       if (data.connectionType === 'a2a') {
         const agent = agentRegistry.find((a) => a.id === data.a2aAgentId)
-        return `async def ${fnName}(state: State) -> dict:\n    """A2A agent: ${agent?.name ?? data.a2aAgentId}"""\n    emit_audit_event("a2a_message", {"agent": "${data.a2aAgentId}"})\n    # result = await invoke_a2a_agent("${agent?.a2aAgentCardUrl ?? ''}", state)\n    return ${data.outputMapping || '{}'}\n`
+        const agentId = data.a2aAgentId || agent?.id || ''
+        const mapped = data.outputMapping && data.outputMapping.trim() !== '{}' ? `\n    return ${data.outputMapping}` : '\n    return _agent_output(result, "a2a_result")'
+        return `def ${fnName}(state: State) -> dict:\n    """A2A agent: ${agent?.name ?? data.a2aAgentId}"""\n    emit_audit_event("a2a_message", {"agent": "${agentId}"})\n    result = run_agent(_agent_input(state), "${agentId}", skill_id=(globals().get("A2A_CONFIG", {}) or {}).get("skill_id", ""))\n    emit_audit_event("a2a_message", {"agent": "${agentId}", "status": "completed"})${mapped}\n`
       }
       if (data.connectionType === 'remote') {
         const agent = agentRegistry.find((a) => a.id === data.remoteAgentId)
-        return `def ${fnName}(state: State) -> dict:\n    """Remote agent: ${agent?.name ?? data.remoteAgentId}"""\n    emit_audit_event("agent_delegate", {"agent": "${data.remoteAgentId}", "type": "remote"})\n    # POST ${agent?.remoteUrl ?? 'UNSET'}\n    return ${data.outputMapping || '{}'}\n`
+        const agentId = data.remoteAgentId || agent?.id || ''
+        const mapped = data.outputMapping && data.outputMapping.trim() !== '{}' ? `\n    return ${data.outputMapping}` : '\n    return _agent_output(result, "remote_result")'
+        return `def ${fnName}(state: State) -> dict:\n    """Remote agent: ${agent?.name ?? data.remoteAgentId}"""\n    emit_audit_event("agent_delegate", {"agent": "${agentId}", "type": "remote"})\n    result = run_agent(_agent_input(state), "${agentId}")${mapped}\n`
       }
       if (data.connectionType === 'subagent') {
         return `def ${fnName}(state: State) -> dict:\n    """Sub-agent subgraph: ${data.subgraphId}"""\n    emit_audit_event("agent_delegate", {"agent": "${data.subgraphId}", "type": "subagent"})\n    # result = ${slugify(data.subgraphId)}_graph.invoke(${data.inputMapping || '{}'})\n    return ${data.outputMapping || '{}'}\n`
       }
       const agent = agentRegistry.find((a) => a.id === data.agentRegistryId)
-      return `def ${fnName}(state: State) -> dict:\n    """Agent: ${agent?.name ?? data.agentRegistryId}"""\n    emit_audit_event("agent_delegate", {"agent": "${data.agentRegistryId}"})\n    return ${data.outputMapping || '{}'}\n`
+      const agentId = data.agentRegistryId || agent?.id || ''
+      const mapped = data.outputMapping && data.outputMapping.trim() !== '{}' ? `\n    return ${data.outputMapping}` : '\n    return _agent_output(result)'
+      return `def ${fnName}(state: State) -> dict:\n    """Agent: ${agent?.name ?? data.agentRegistryId}"""\n    emit_audit_event("agent_delegate", {"agent": "${agentId}"})\n    result = run_agent(_agent_input(state), "${agentId}")${mapped}\n`
     }
     case 'function':
       return `${data.code.replace(/^def\s+\w+/, `def ${fnName}`)}\n`
+    case 'hitl': {
+      const outKey = data.outputKey || 'human_decision'
+      const interaction = data.interactionType || 'approval'
+      return `def ${fnName}(state: State) -> dict:\n    """${data.description ?? data.label}"""\n    from langgraph.types import interrupt\n    emit_audit_event("hitl_interrupt", {"type": "${interaction}", "node": "${fnName}"})\n    decision = interrupt({\n        "message": ${JSON.stringify(data.promptMessage ?? 'Human review required.')},\n        "type": "${interaction}",\n        "allow_edit": ${data.allowEdit ? 'True' : 'False'},\n        "payload": dict(state),\n    })\n    return {"${outKey}": decision}\n`
+    }
+    case 'response_transformer': {
+      const outKey = data.outputKey || 'response'
+      const inKey = data.inputKey || 'messages'
+      if (data.transformType === 'python') {
+        const code = (data.code && data.code.trim()) || `def transform(state):\n    return {"${outKey}": state.get("${inKey}", "")}`
+        return `${code.replace(/^def\s+\w+/, `def ${fnName}`)}\n`
+      }
+      if (data.transformType === 'expression') {
+        const expr = (data.expression && data.expression.trim()) || `state.get(${JSON.stringify(inKey)})`
+        return `def ${fnName}(state: State) -> dict:\n    """${data.description ?? data.label}"""\n    value = ${expr}\n    return {"${outKey}": value}\n`
+      }
+      return `def ${fnName}(state: State) -> dict:\n    """${data.description ?? data.label}"""\n    template = ${JSON.stringify(data.template ?? '{messages}')}\n    rendered = template.format(**state)\n    return {"${outKey}": rendered}\n`
+    }
     case 'router':
       return `${data.routerFn.replace(/^def\s+\w+/, `def ${fnName}_route`)}\n`
     case 'intent_classifier':
@@ -441,6 +494,8 @@ const DECORATABLE_NODE_KINDS = new Set<StitchNodeData['kind']>([
   'agent',
   'rag',
   'subgraph',
+  'hitl',
+  'response_transformer',
 ])
 
 /** Prefix a generated node `def` with an `@graph_node(...)` registration decorator. */
@@ -610,7 +665,17 @@ Tools: ${toolRegistry.length} · Agents: ${agentRegistry.length} · MCP servers:
 ${evalDatasetLine ? `${evalDatasetLine}\n` : ''}"""
 
 import os
-from langstitch import graph_node, graph, GraphBuilder, START, END, human_interrupt
+from langstitch import (
+    graph_node,
+    graph,
+    GraphBuilder,
+    START,
+    END,
+    human_interrupt,
+    run_agent,
+    agent as register_agent,
+    remote_agent,
+)
 ${componentImports.length ? '\n' + componentImports.join('\n') + '\n' : ''}
 ${stateClass}
 

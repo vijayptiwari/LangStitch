@@ -149,6 +149,7 @@ export function MarketplacePortal({
   ]
 
   const providerLabels: Record<string, string> = {
+    github: 'GitHub',
     google: 'Google',
     microsoft: 'Microsoft',
     linkedin: 'LinkedIn',
@@ -167,7 +168,7 @@ export function MarketplacePortal({
             <Blocks size={20} className="mk-header-logo" />
             <div>
               <div className="mk-title">Marketplace</div>
-              <div className="mk-subtitle">Plugins &amp; connectors for LangStitch</div>
+              <div className="mk-subtitle">Plugins &amp; connectors for LangTailor</div>
             </div>
           </div>
           <div className="mk-tabs" role="tablist">

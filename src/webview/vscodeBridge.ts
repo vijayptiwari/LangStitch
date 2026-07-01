@@ -8,6 +8,7 @@ import { zipSync, unzipSync, strFromU8 } from 'fflate'
 import { toJpeg, toPng } from 'html-to-image'
 import { getNodesBounds, getViewportForBounds } from '@xyflow/react'
 import { useGraphStore } from '../store/graphStore'
+import { useIdeStore } from '../store/ideStore'
 import { exportGraphDocument } from '../lib/codegen/pythonGenerator'
 import { buildExportBundle } from '../lib/codegen/bundleGenerator'
 import type { ExportFormat } from '../lib/codegen/bundleGenerator'
@@ -186,6 +187,12 @@ export function initVsCodeBridge(): void {
 
     if ((msg.type === 'init' || msg.type === 'update') && typeof msg.text === 'string') {
       loadFromText(msg.text)
+      // host:init carries the workspace file path (one window = one workspace).
+      const wsPath = (msg as { path?: string }).path
+      if (typeof wsPath === 'string') {
+        useIdeStore.getState().setWorkspacePath(wsPath)
+        useIdeStore.getState().addRecentProject(wsPath)
+      }
       return
     }
 

@@ -1,27 +1,127 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
+import {
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+} from 'lucide-react'
 import { GraphCanvas } from '../canvas/GraphCanvas'
 import { Toolbar } from './Toolbar'
-import { CodePanel } from './CodePanel'
 import { NodePalette } from '../panels/NodePalette'
 import { DesignerPanel } from '../designer/DesignerPanel'
 import { PlatformDrawer } from '../platform/PlatformDrawer'
-import { MarketplacePortal } from '../marketplace/MarketplacePortal'
+import { IdeLayout } from '../ide/IdeLayout'
+import { CodeEditorView } from '../code/CodeEditorView'
 import { useGraphStore } from '../../store/graphStore'
+import { useIdeStore } from '../../store/ideStore'
 import { createNodeData, nodeTypes, DRAG_MIME } from '../../lib/nodeRegistry'
+import { runGraphMode } from '../../lib/runGraph'
+import { exportGraphDocument } from '../../lib/codegen/pythonGenerator'
 import type { NodeKind } from '../../types/graph'
 
 export function AppLayout() {
-  const showCodePanel = useGraphStore((s) => s.showCodePanel)
   const addNode = useGraphStore((s) => s.addNode)
   const placeCustomNode = useGraphStore((s) => s.placeCustomNode)
   const isGraphEmpty = useGraphStore((s) => s.isGraphEmpty)
   const selectedNodeId = useGraphStore((s) => s.selectedNodeId)
+  const [paletteCollapsed, setPaletteCollapsed] = useState(false)
+  const [designerCollapsed, setDesignerCollapsed] = useState(false)
   const [platformOpen, setPlatformOpen] = useState(false)
-  const [marketplaceOpen, setMarketplaceOpen] = useState(false)
   const [platformInitialTab, setPlatformInitialTab] = useState<
     'git' | 'export' | 'import' | 'versions' | 'build' | 'deploy' | 'eval' | undefined
   >()
+  // Mirror store-driven platform requests (Project menu, Evaluator panel) into
+  // the local drawer state so existing keyboard shortcuts keep working too.
+  const platformTab = useIdeStore((s) => s.platformTab)
+  const closePlatform = useIdeStore((s) => s.closePlatform)
+  const openPlatform = useIdeStore((s) => s.openPlatform)
+  const setViewMode = useIdeStore((s) => s.setViewMode)
+  const setCommandPaletteOpen = useIdeStore((s) => s.setCommandPaletteOpen)
+  const setQuickOpenOpen = useIdeStore((s) => s.setQuickOpenOpen)
+  const setBottomPanel = useIdeStore((s) => s.setBottomPanel)
+  const getProjectPayload = useGraphStore((s) => s.getProjectPayload)
+  useEffect(() => {
+    if (platformTab) {
+      setPlatformInitialTab(platformTab)
+      setPlatformOpen(true)
+    }
+  }, [platformTab])
+
+  // Bridge the desktop native menu (File/View/Project/Help) into renderer
+  // actions. The Electron main process posts `{ type: 'menu', action }` messages.
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      const msg = event.data as { type?: string; action?: string } | null
+      if (msg?.type !== 'menu' || !msg.action) return
+      switch (msg.action) {
+        case 'build':
+          void runGraphMode('build')
+          break
+        case 'run':
+          void runGraphMode('run')
+          break
+        case 'debug':
+          void runGraphMode('debug')
+          break
+        case 'test':
+          void runGraphMode('test')
+          break
+        case 'export':
+          openPlatform('export')
+          break
+        case 'version':
+          openPlatform('versions')
+          break
+        case 'settings':
+          setViewMode('canvas')
+          setDesignerCollapsed(false)
+          break
+        case 'view-canvas':
+          setViewMode('canvas')
+          break
+        case 'view-code':
+          setViewMode('code')
+          break
+        case 'command-palette':
+          setCommandPaletteOpen(true)
+          break
+        case 'quick-open':
+          setQuickOpenOpen(true)
+          break
+        case 'terminal':
+          setBottomPanel('terminal')
+          break
+        case 'save': {
+          const payload = getProjectPayload()
+          const json = exportGraphDocument(
+            payload.document,
+            payload.nodes,
+            payload.edges,
+            payload.canvasByGraph,
+            payload.navigationPath,
+          )
+          const blob = new Blob([json], { type: 'application/json' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `${payload.document.name || 'graph'}.langstitch.json`
+          a.click()
+          URL.revokeObjectURL(url)
+          break
+        }
+      }
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [
+    openPlatform,
+    setViewMode,
+    setCommandPaletteOpen,
+    setQuickOpenOpen,
+    setBottomPanel,
+    getProjectPayload,
+  ])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -233,49 +333,93 @@ export function AppLayout() {
         data-testid="skip-to-canvas"
       >
         <span data-testid="cycle-150-skip-link">Skip to canvas</span>
-        <span className="sr-only" data-testid="cycle-210-skip-link">cycle 210 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-270-skip-link">cycle 270 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-330-skip-link">cycle 330 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-390-skip-link">cycle 390 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-450-skip-link">cycle 450 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-510-skip-link">cycle 510 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-570-skip-link">cycle 570 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-630-skip-link">cycle 630 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-690-skip-link">cycle 690 — skip link to main canvas</span>
-        <span className="sr-only" data-testid="cycle-750-skip-link">cycle 750 — skip link to main canvas</span>
       </a>
-      <Toolbar
-        onOpenPlatform={() => setPlatformOpen(true)}
-        onOpenMarketplace={() => setMarketplaceOpen(true)}
-      />
-      <div className="workspace">
-        <aside className="sidebar left">
-          <NodePalette />
-        </aside>
-        <main
-          id="graph-canvas-main"
-          className="canvas-area"
-          data-testid="graph-canvas-area"
-          tabIndex={-1}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
+      <Toolbar />
+      <IdeLayout codeView={<CodeEditorView />}>
+        <div
+          className="workspace"
+          style={{
+            gridTemplateColumns: `${paletteCollapsed ? '40px' : '264px'} 1fr ${
+              designerCollapsed ? '40px' : '360px'
+            }`,
+          }}
         >
-          <ReactFlowProvider>
-            <GraphCanvas />
-          </ReactFlowProvider>
-        </main>
-        <DesignerPanel />
-      </div>
-      {showCodePanel && <CodePanel />}
+          {paletteCollapsed ? (
+            <button
+              type="button"
+              className="panel-rail panel-rail-left"
+              data-testid="expand-palette"
+              title="Show node library"
+              onClick={() => setPaletteCollapsed(false)}
+            >
+              <PanelLeftOpen size={18} />
+              <span className="panel-rail-label">Node Library</span>
+            </button>
+          ) : (
+            <aside className="sidebar left">
+              <div className="panel-collapse-head">
+                <span className="panel-collapse-title">Node Library</span>
+                <button
+                  type="button"
+                  className="panel-collapse-btn"
+                  data-testid="collapse-palette"
+                  title="Collapse node library"
+                  onClick={() => setPaletteCollapsed(true)}
+                >
+                  <PanelLeftClose size={16} />
+                </button>
+              </div>
+              <NodePalette />
+            </aside>
+          )}
+          <main
+            id="graph-canvas-main"
+            className="canvas-area"
+            data-testid="graph-canvas-area"
+            tabIndex={-1}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+          >
+            <ReactFlowProvider>
+              <GraphCanvas />
+            </ReactFlowProvider>
+          </main>
+          {designerCollapsed ? (
+            <button
+              type="button"
+              className="panel-rail panel-rail-right"
+              data-testid="expand-designer"
+              title="Show properties"
+              onClick={() => setDesignerCollapsed(false)}
+            >
+              <PanelRightOpen size={18} />
+              <span className="panel-rail-label">Properties</span>
+            </button>
+          ) : (
+            <div className="designer-wrap">
+              <button
+                type="button"
+                className="panel-collapse-btn designer-collapse-btn"
+                data-testid="collapse-designer"
+                title="Collapse properties"
+                onClick={() => setDesignerCollapsed(true)}
+              >
+                <PanelRightClose size={16} />
+              </button>
+              <DesignerPanel />
+            </div>
+          )}
+        </div>
+      </IdeLayout>
       <PlatformDrawer
         open={platformOpen}
         onClose={() => {
           setPlatformOpen(false)
           setPlatformInitialTab(undefined)
+          closePlatform()
         }}
         initialTab={platformInitialTab}
       />
-      <MarketplacePortal open={marketplaceOpen} onClose={() => setMarketplaceOpen(false)} />
     </div>
   )
 }
