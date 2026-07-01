@@ -2,10 +2,9 @@
 
 **LangStitch** is a visual, drag-and-drop IDE for building [LangGraph](https://langchain-ai.github.io/langgraph/) workflows — with asset designers, RAG pipelines, Python 3.13 multi-module export, git sync, Docker, and Kubernetes/Helm deployment.
 
-[![CI](https://github.com/LangStitch/langtailor/actions/workflows/ci.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/ci.yml)
-[![Deploy to Hostinger](https://github.com/LangStitch/langtailor/actions/workflows/deploy-hostinger.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/deploy-hostinger.yml)
-[![LangTailor Extension](https://github.com/LangStitch/langtailor/actions/workflows/langtailor-extension.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/langtailor-extension.yml)
-[![Publish Docker](https://github.com/LangStitch/langtailor/actions/workflows/publish-docker.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/publish-docker.yml)
+[![CI](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml/badge.svg)](https://github.com/vijayptiwari/LangStitch/actions/workflows/ci.yml)
+[![LangTailor CI](https://github.com/LangStitch/langtailor/actions/workflows/ci.yml/badge.svg)](https://github.com/LangStitch/langtailor/actions/workflows/ci.yml)
+[![SDK CI](https://github.com/LangStitch/langstitch-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/LangStitch/langstitch-sdk/actions/workflows/ci.yml)
 
 | Link | URL |
 |------|-----|
@@ -13,13 +12,13 @@
 | **LangTailor (desktop IDE)** | [langtailor.langstitch.com](https://langtailor.langstitch.com/) |
 | **Canvas extension (Open VSX)** | [langstitch.langtailor-canvas](https://open-vsx.org/extension/langstitch/langtailor-canvas) |
 | **Documentation** | [langstitch.com/docs/](https://langstitch.com/docs/) |
-| **GitHub Releases (VSIX + portable)** | [Releases](https://github.com/LangStitch/langtailor/releases) |
+| **GitHub Releases (VSIX + portable)** | [langtailor-releases](https://github.com/LangStitch/langtailor-releases/releases) |
 
 ---
 
 ## Get LangStitch
 
-LangStitch ships as a **downloadable VS Code extension (`.vsix`)** and as **LangTailor** — a portable desktop IDE (Code-OSS + preinstalled extensions). There is no hosted browser IDE.
+LangStitch ships as a **downloadable VS Code extension (`.vsix`)** and as **LangTailor** — a custom Electron desktop IDE with canvas/code views, integrated terminal, build/run, and marketplace support. There is no hosted browser IDE.
 
 ### Option A — Install the canvas extension (recommended)
 
@@ -35,14 +34,14 @@ Open any `*.langstitch.json` file to launch the visual canvas custom editor.
 
 ### Option B — LangTailor desktop (Electron IDE)
 
-Download an installer for **Windows**, **macOS**, or **Linux** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[GitHub Releases](https://github.com/LangStitch/langtailor/releases)** (`langtailor-v*` tags). LangTailor is a custom Electron IDE with canvas + code views, integrated terminal, git, Python LSP, and one-click export/build/run.
+Download an installer for **Windows**, **macOS**, or **Linux** from **[langtailor.langstitch.com](https://langtailor.langstitch.com/)** or **[langtailor-releases](https://github.com/LangStitch/langtailor-releases/releases)** (`langtailor-v*` tags). LangTailor is a custom Electron IDE with canvas + code views, integrated terminal, git, Python LSP, and one-click export/build/run.
 
 ### Option C — Contribute / run locally
 
 For development and CI, run the canvas and Platform API on your machine:
 
 ```bash
-git clone https://github.com/LangStitch/langtailor.git && cd LangStitch
+git clone https://github.com/vijayptiwari/LangStitch.git && cd LangStitch
 npm install && pip install -r server/requirements.txt && npm start
 ```
 
@@ -128,8 +127,8 @@ All node types are **Component Designer manifests** (built-in + marketplace/cust
 
 LangStitch remembers your last export format per project in the editor session. Re-import via **Platform → Import** (`.langstitch.json` or exported ZIP).
 
-### Python export (langstitch SDK)
-Multi-module ZIP using the **langstitch** Python SDK (`langstitch[graph,server]`). Includes `app/server.py` with `@langstitch_graph_server`, `deploy/helm/<slug>/`, and **`langsmith.json`** for IDE re-import.
+### Python export (LangStitch SDK)
+Multi-module ZIP using the **LangStitch SDK** (`langstitch-sdk[graph,server]`). Includes `app/server.py` with `@langstitch_graph_server`, `deploy/helm/<slug>/`, and **`langsmith.json`** for IDE re-import.
 
 ```bash
 pip install -e ".[dev]"
@@ -186,17 +185,32 @@ Built and deployed by [`.github/workflows/deploy-hostinger.yml`](.github/workflo
 
 ---
 
-## GitHub Actions
+## LangStitch org repositories
+
+This folder is the **development monorepo**. Production code is split across the [LangStitch](https://github.com/LangStitch) org:
+
+| Repo | Role |
+|------|------|
+| [langtailor](https://github.com/LangStitch/langtailor) | Private VS Code extension + portable desktop build source |
+| [langtailor-releases](https://github.com/LangStitch/langtailor-releases) | Public VSIX + installer downloads |
+| [langstitch-sdk](https://github.com/LangStitch/langstitch-sdk) | Python SDK → **PyPI** (`langstitch-sdk`) |
+| [langstitch-backend-service](https://github.com/LangStitch/langstitch-backend-service) | Platform API (`server/`, `php/`) → GHCR + Hostinger |
+| [langstitch-site](https://github.com/LangStitch/langstitch-site) | langstitch.com marketing site |
+| [langtailor-site](https://github.com/LangStitch/langtailor-site) | langtailor.langstitch.com download page |
+| [marketplace-web](https://github.com/LangStitch/marketplace-web) | marketplace.langstitch.com deploy pipeline |
+| [langstitch-docs](https://github.com/LangStitch/langstitch-docs) | sdk.langstitch.com (MkDocs) |
+
+Sync changes from here into the matching org repo before release — do **not** force-push this monorepo into `langtailor`.
+
+---
+
+## GitHub Actions (this monorepo)
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| [**Deploy to Hostinger**](.github/workflows/deploy-hostinger.yml) | Push to `main` | Build marketing/docs/marketplace sites + FTPS upload |
-| [**LangTailor extension**](.github/workflows/langtailor-extension.yml) | Push (extension paths) | Build webview + package `.vsix` artifact |
-| [**LangTailor Open VSX**](.github/workflows/langtailor-openvsx.yml) | Release / manual | Publish `langstitch.langtailor-canvas` to Open VSX |
-| [**LangTailor release**](.github/workflows/langtailor-release.yml) | Tag `langtailor-v*` | VSIX + Electron installers (Win/macOS/Linux) |
-| [**Publish Docker**](.github/workflows/publish-docker.yml) | Push to `main` / tags | GHCR `langstitch-api` image |
-| [**CI**](.github/workflows/ci.yml) | Push / PR | Build, E2E, agent smoke |
-| [**Release**](.github/workflows/release.yml) | Tag `v*` / manual | GitHub Release + source archive |
+| [**CI**](.github/workflows/ci.yml) | Push / PR | Build, unit tests, E2E, agent smoke |
+| [**SDK**](.github/workflows/sdk.yml) | Push / PR (`sdk/**`) | Local SDK folder validation (publish via `langstitch-sdk` repo) |
+| [**Release**](.github/workflows/release.yml) | Tag `v*` / manual | Source archive for this dev monorepo |
 
 ---
 
